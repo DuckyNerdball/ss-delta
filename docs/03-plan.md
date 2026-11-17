@@ -729,8 +729,10 @@ only: no Rosetta, no Intel Macs.
   * ☑ The ten modules as `.dylib` in 95 s; ST03A natively, 0 native-to-JIT
     calls, rendered as on Windows; 23,280 + 684 dynarmic tests, 0 failing
     (2026-11-17, 08-macos).
-  * ☐ Native runs 54.8 fps against the JIT's 57.8: thread QoS
-    (efficiency cores, **hypothesis**); a longer play session natively.
+  * ☑ Frame pacing: macOS wakes timed waits 25–50% late; real-time
+    threads (fork `09587ca1`) give 60.0 fps natively, p99 17 ms
+    (2026-11-17, 08-macos).
+  * ☐ A longer play session natively (audio included).
 * ☐ **12e A setup for macOS** (kit): zig or the Command Line Tools,
   measured on the M5; packaging (folder or `.app`), signing and
   quarantine; a release job. Record the choice in decisions.md.

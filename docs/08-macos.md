@@ -298,10 +298,8 @@ the lower half of the picture: none.
   **23,280 instruction tests and 684 function tests over the ten
   modules, 0 failing.** The tests' CMake now links Zydis only where
   dynarmic built it (x86-64 hosts).
-* **Native is slower than the JIT on average** (54.8 against 57.8 fps),
-  with a better tail (p99 23 ms against 29). **Hypothesis**: macOS puts
-  the lighter guest threads on the efficiency cores. To test with thread
-  QoS (`pthread_set_qos_class_self_np`) on the guest and render threads.
+* Native was slower than the JIT at first (54.8 against 57.8 fps): see
+  *Frame pacing* below, fixed.
 * MoltenVK warns "Metal does not support disabling primitive restart"
   (`[mvk-warn]`, stdout) for some pipelines. **Hypothesis**: harmless,
   since the game's index buffers don't contain 0xFFFF by accident. To
@@ -313,6 +311,49 @@ the lower half of the picture: none.
 * dynarmic prints "Unhandled EXC_BAD_ACCESS at pc ..." (stdout, 5 with
   `disabled`, 1,007 with `double-buffer`): noise, the macOS form of the
   Linux "Unhandled SIGSEGV" lines (07-linux).
+
+## Frame pacing: timed waits on macOS (2026-11-17)
+
+Natively, ST03A first ran at 52–54 fps, the JIT at 54–56. Windows holds
+59.9 fps in the same measurement. The measurement: Stage Select into
+ST03A, 30 s standing still, the last 9 s of `VITA3K_FRAME_LOG`, three
+interleaved runs per configuration (`build/macos/perf.sh`).
+
+* **Not the code.** `ps -M` and `sample` showed every thread waiting
+  nearly all the time; the busiest thread used about 33% of a core. The
+  frame times spread from 15 to 22 ms (p50 18.2) instead of snapping to
+  vblanks.
+* **Not the cores.** QoS `USER_INTERACTIVE` on the frame-critical threads
+  (the first **hypothesis**: guest threads on the efficiency cores)
+  changed nothing over repeated runs (53.8 against 54.2 fps). Neither did
+  `taskpolicy -l 0 -t 0`, nor vsync off.
+* **Timed waits wake late.** A benchmark (`build/macos/overshoot*.cpp`,
+  not committed): `nanosleep`, `pthread_cond_timedwait` and even
+  `mach_wait_until` all wake **25% of the wait late, up to 5 ms, while the
+  user is active** (`caffeinate -u`), and **50%, up to 10 ms, when the
+  user is idle**. A 16 ms wait wakes 4 or 8 ms late. QoS `USER_INTERACTIVE`,
+  `NSProcessInfo` `NSActivityLatencyCritical` and `taskpolicy -l 0`
+  don't change it; started from Terminal in the GUI session, it is the
+  same. Low Power Mode is off.
+* The game waits out its 16,000 µs frame timer and then flips on the next
+  vblank ([D16](decisions.md), fork `7f8a001c`): 0.67 ms to spare. The
+  emulated vblank is a timed sleep too.
+* **Real-time threads wake on time.** `THREAD_TIME_CONSTRAINT_POLICY`
+  (computation 5 ms, constraint 10 ms, preemptible): about 10 µs late at
+  every length. In the game (fork `09587ca1`, `util::raise_thread_qos()`
+  at the start of guest threads, the vblank, render, GXM display and GPU
+  wait threads, and the session loop): **60.0 fps natively, p50/p90/p99
+  16.7/16.7/16.8 ms** standing still, **60.0 fps, p99 17.0 ms** on the
+  moving route (0 native-to-JIT calls). The JIT reaches 60.0 too, with a
+  worse tail (p99 28.7 ms). The vblank thread alone isn't enough
+  (52 fps): the game's frame timer runs on a guest thread.
+* macOS demotes a real-time thread that computes past its budget without
+  blocking, so a busy guest thread (loading) can't starve the system.
+  `VITA3K_QOS=0` turns it off. **Hypothesis**: Core Audio's own real-time
+  thread is unaffected (it has a higher priority); to listen for
+  crackles in play.
+* Every measurement over SSH so far ran with the user idle (50% slack),
+  a state a player never plays in. The fix makes that irrelevant.
 
 ## Developing on the Mac
 
