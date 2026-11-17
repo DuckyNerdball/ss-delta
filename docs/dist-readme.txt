@@ -1,8 +1,10 @@
-ss-delta: Soul Sacrifice Delta (PCSA00152, 1.30) on PC.
+ss-delta: Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, 1.30) on PC.
 
 ss-delta.exe runs the game installed in a Vita file system ([paths] vita_fs in
 ss-delta.ini; default: the fs folder next to this file), with the game's code
-recompiled to native code (ssd_aot_*.dll, built from your own dump).
+recompiled to native code (ssd_aot_*.dll, built from your own dump). The US
+and EU games are the same build: either one runs. When both are installed,
+the US one does; ss-delta.exe --title-id PCSF00532 starts the EU one.
 
 Settings: press F1, or hold Select (Back/View) on a gamepad for a second, to
 open the settings menu over the paused game (Up/Down choose, Left/Right or
@@ -25,7 +27,8 @@ is in the game since update 1.30, and ss-delta.exe records them in your save
 once ([game] dlc in ss-delta.ini; a copy of the previous file goes to
 ss-delta\save-backups).
 
-Saves are in the Vita file system (ux0\user\00\savedata\PCSA00152). To use a
+Saves are in the Vita file system (ux0\user\00\savedata\PCSA00152, or
+PCSF00532 for the EU game). To use a
 save from a Vita (decrypted, e.g. with VitaShell or Apollo), run
   ss-delta.exe --import-save <folder or .zip> [--slot 2]
 The game has three save slots (default 1); the save folder as it was is kept

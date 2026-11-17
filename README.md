@@ -1,6 +1,6 @@
 # ss-delta
 
-A native PC port of **Soul Sacrifice Delta** (PS Vita, US PCSA00152, v1.30)
+A native PC port of **Soul Sacrifice Delta** (PS Vita, US PCSA00152 or EU PCSF00532, v1.30)
 by static recompilation, built from the player's own dump. The game's code,
 and the firmware modules it loads, are recompiled ahead of time to C++ and
 run natively inside a fork of Vita3K, which supplies the rest of the
@@ -74,7 +74,8 @@ the release page.
 ## What you need
 
 * Windows 10 or 11, x64, a GPU with Vulkan.
-* Your own copy of the game, US version (PCSA00152) at **update 1.30**: a
+* Your own copy of the game, US (PCSA00152) or EU (PCSF00532) version, at
+  **update 1.30**: a
   decrypted dump (folder, `.zip` or `.vpk`, with the 1.30 patch merged),
   or the PSN `.pkg` with its licence `work.bin` plus the 1.30 patch pkg.
   The add-ons' content is part of 1.30.

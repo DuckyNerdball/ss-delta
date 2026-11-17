@@ -135,6 +135,38 @@ About 270 of the 704 imports are online/NP and can be stubbed. That leaves
 about 430 that need real behaviour. **SceGxm's 116 is the bulk of the real
 work.**
 
+### EU version (PCSF00532 1.30): the same build [local, 2026-11-17]
+
+Compared from the owner's EU dump (NoNpDrm zip, app + 1.30 patch), with the
+modules as `ss-delta.exe --dump-elfs` writes them (decrypted, at their load
+addresses), against the US ones:
+
+* Installed `eboot.bin` (1.30): SHA-256 `a1055b12…d27197` (US `a13a1bfe…e64fed`),
+  in `game.json`.
+* `libc`, `libfios2`, `libult` and every firmware module the game loads
+  (sysmodule, libSceFt2, libpvf, libscemp4, libsceavplayer, adhoc_matching):
+  **byte-identical** to the US dumps, at the same addresses.
+* `eboot.elf`: same size and segments; **1,215 bytes differ**, none of
+  them code. In segment 0, two read-only words: the build time string
+  (`Jul 29 2014 16:55:43`, US `16:56:14`, at `0x81b98ab8`) and a 4-byte
+  build stamp at `0x81b285c0`. In segment 1, about 300 words of initialised
+  data (`0x81c9a860`–`0x81ce25e4`) that differ by a near-constant amount,
+  values derived from the build time. The EU eboot is the US build,
+  linked 31 s earlier.
+* `recompile.py` gives the same code hash (`f6f20671281686e3`) and
+  byte-identical C++ for both eboots. So the recompiled modules are
+  interchangeable, and every guest address `ss-delta.exe` uses (frame
+  timer, loading task) holds for EU.
+* `param.sfo`: same `c_date` 20140729 and SDK, same `NP_COMMUNICATION_ID`
+  and imports from the original game's four regions. Languages: EU has
+  English, French, Spanish, German, Italian and English (UK) entries; US has
+  English, French, Spanish and Portuguese. Saves go to
+  `savedata/PCSF00532`. How the game picks its language and region at run
+  time was not traced (**hypothesis**: the system language and the
+  content ID).
+* The EU game boots in `ss-delta.exe` on the JIT and on native code (see
+  02-baseline).
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |

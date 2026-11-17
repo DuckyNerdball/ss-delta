@@ -618,6 +618,22 @@ built without the JIT.
 
 **Exit:** `ss-delta.exe` built from the submodules plays a quest as before.
 
+## EU version (S) ☑
+
+[D19](decisions.md); GitHub issue #2.
+
+* ☑ EU 1.30 against US: the same build, identical code and modules
+  (01-research, "EU version").
+* ☑ The frontend runs whichever region is installed
+  (`Profile::other_title_ids`, `--title-id`); saves, `boot_config.ini` and
+  the add-on check use that title.
+* ☑ `game.json`: `other_title_ids` and the EU eboot hash; the kit's
+  install and setup accept either region.
+* ☑ Checked (2026-11-17, 02-baseline): installed from the EU dump; a US
+  save loads; a quest at 60 fps, loading at 30; the US game unchanged.
+
+**Exit:** an EU dump installs and plays like a US one.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine

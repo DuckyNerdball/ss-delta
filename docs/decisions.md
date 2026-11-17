@@ -703,3 +703,24 @@ game's executable. The same decision is utakata's D9.
 it makes every platform easy, but it distributes a derivative of the
 game's code.
 
+
+## D19 — The EU version is supported by the same executable and modules (accepted, 2026-11-17)
+
+**Context:** a player asked for the EU release (PCSF00532, GitHub issue
+#2). Its 1.30 eboot is the US build linked 31 s earlier: the same code,
+the same recompiled C++ and the same addresses, with only build stamps in
+the data different (01-research, "EU version").
+
+**Decision:**
+
+* One `ss-delta.exe` for both regions. The shared frontend's
+  `Profile::other_title_ids` lists the other title IDs; the frontend runs
+  whichever is installed (US first; `--title-id` picks one when both
+  are), and the game's code uses that title for its files and save folder.
+* `game.json` has `other_title_ids` and both eboot hashes. The kit's
+  install and setup accept either region and recompile what is
+  installed.
+* No region-specific code: the frame-rate addresses hold for both.
+
+**Rejected:** a second executable or `game.json` per region. It would
+double the build, the release and the docs for a binary that is the same.

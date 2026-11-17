@@ -1331,3 +1331,28 @@ agreed with the Vita and blue was far higher (far ground 92,100,156 against
 * Six quest maps (ST16A, ST03A, ST02A, ST01A, ST06A, ST09A) with and without
   it: 60 fps in both; screenshots differ only by what moved, apart from
   ST02A. **Owner: the fix looks right.**
+
+## EU version (PCSF00532 1.30): installed and played (2026-11-17)
+
+The owner's EU dump, through `install-game.py --name scratch-eu` with
+`game.json`'s EU hash (D19); Radeon 760M, Vulkan, native code (all ten
+modules), `frame_rate = 60`.
+
+* Install: `eboot.bin (PCSF00532): 1.30 (EU)`; every module recompiled
+  with nothing left to the fallback CPU; the eboot's code hash
+  `f6f20671281686e3`, as for US (01-research, "EU version").
+* Title menu: 60 fps, English. A US save (a copy of slot 2, story
+  complete) imported with `--import-save` went to `savedata/PCSF00532`.
+  The game listed it, loaded it and reached the Librom at 59–61 fps.
+* Stage Select (`bootseq PCSF00532 'Quest Select'`, first quest): 30 fps on
+  the loading screen (loading state 2), then 60 fps again. In the field,
+  52–56 fps in the rain.
+* US regression: the same `ss-delta.exe` on the junction test folder
+  picks `PCSA00152`, and the US build's recompiled modules pass the
+  guest-memory check. Title menu at 60 fps.
+* Not checked: the other EU languages (the test used Vita3K's English
+  system language), and Ad Hoc Play between an EU and a US copy. The EU
+  game's add-on data passed `addon_data_present`, but the unlock itself
+  did not run: the imported US `system.bin` already recorded the add-ons
+  ("already recorded in the save"). **Hypothesis:** an EU `system.bin`
+  has the same layout, so the unlock works the same way.

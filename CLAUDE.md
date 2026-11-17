@@ -117,6 +117,9 @@ notes, kept in a private repo.
   (`archive_patch3` overrides `archive`). `tools/questmaps.py` turns
   `quest_param.csv` into the map list `tools/map-sweep.ps1` sweeps through
   Stage Select (screenshots under `build/`, never committed).
+- The EU version (PCSF00532 1.30) is the same build as US ([D19](docs/decisions.md)):
+  `ss-delta.exe` runs whichever title is installed (US first, `--title-id`
+  picks one), and the recompiled modules are the same for both.
 - `ss-delta.exe` hands the game a copy of `boot_config.ini` with
   `ResoDown 0` (`full_3d`, D13) plus any `[boot_config]` keys from the ini;
   the installed file stays untouched. Don't set `SSD_AOT` by hand for

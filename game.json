@@ -1,10 +1,12 @@
 {
-  "_comment": "Read by third_party/recomp/tools (install-game.py, make-dist.py; see gameproject.py). The modules are recompiled at their load addresses; adhoc_matching loads only in Ad Hoc Play and is recompiled for the address it takes there (D15).",
+  "_comment": "Read by third_party/recomp/tools (install-game.py, make-dist.py; see gameproject.py). PCSF00532 (EU) is the same build as PCSA00152 (US): identical code, the same recompiled modules (docs/01-research.md, EU version). The modules are recompiled at their load addresses; adhoc_matching loads only in Ad Hoc Play and is recompiled for the address it takes there (D15).",
   "id": "ss-delta",
   "name": "Soul Sacrifice Delta",
   "title_id": "PCSA00152",
+  "other_title_ids": ["PCSF00532"],
   "eboot_sha256": {
-    "a13a1bfed7f58aa743fc8c0e2db166438ac3af0f2d92b107c2e3f84b92e64fed": "1.30"
+    "a13a1bfed7f58aa743fc8c0e2db166438ac3af0f2d92b107c2e3f84b92e64fed": "1.30 (US)",
+    "a1055b12371c4fa7cb2f153d19729ccfae577de582d0cf9e731be83805d27197": "1.30 (EU)"
   },
   "modules": {
     "eboot": "eboot",
