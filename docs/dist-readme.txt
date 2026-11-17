@@ -22,6 +22,13 @@ button rear. The Black Rite icon (touch and hold) is also on F and the
 gamepad's left trigger ([touch] in ss-delta.ini). F12 saves a screenshot to
 ss-delta\screenshots.
 
+Language: the game has no language option of its own; it uses the console's
+language, which ss-delta.exe sets from Language on the menu's Game page
+([game] language in ss-delta.ini; takes effect at the next start). The US
+game has English, French, Spanish and Portuguese (Brazil), the EU game
+English, French, Spanish, German and Italian; a language the installed game
+lacks gives English.
+
 The add-ons (raiments, hoods, additional pacts) are unlocked: their content
 is in the game since update 1.30, and ss-delta.exe records them in your save
 once ([game] dlc in ss-delta.ini; a copy of the previous file goes to

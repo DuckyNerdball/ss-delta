@@ -161,11 +161,50 @@ addresses), against the US ones:
   and imports from the original game's four regions. Languages: EU has
   English, French, Spanish, German, Italian and English (UK) entries; US has
   English, French, Spanish and Portuguese. Saves go to
-  `savedata/PCSF00532`. How the game picks its language and region at run
-  time was not traced (**hypothesis**: the system language and the
-  content ID).
+  `savedata/PCSF00532`. How the game picks its language: see "Text
+  language" below.
 * The EU game boots in `ss-delta.exe` on the JIT and on native code (see
   02-baseline).
+
+### Text language [local, 2026-11-17; GitHub issue #3]
+
+There is no language option in the game: it follows the Vita's system
+language, filtered by the region in `boot_config.ini`. Read from the 1.30
+eboot (the generated C++'s disassembly comments) and checked in runs: the US
+title screen in French and Portuguese, the EU one in German (02-baseline,
+"Language setting").
+
+* Globals: the language index at `0x81c9a7c4` (getter `0x81805e1a`,
+  setter `0x81805e26`, which accepts 0–15) and the region at `0x81c9a7c8`
+  (getter `0x818079f0`, setter `0x818079fc`, which accepts 0–4).
+* Boot (`0x812ab1fc`..`0x812ab27c`): `boot_config.ini` is parsed, the
+  region is set from `DebugRegionType` (config +0x1c; strings `jp`, `us`,
+  `eu`, `as`; both shipped files say `us`), then `0x818cef94` works out
+  the language from the region and `sceAppUtilSystemParamGetInt(LANG)`:
+
+  | Region | System language → language index |
+  |---|---|
+  | 0 (`jp`) | always 0 (Japanese) |
+  | 1 (`us`) | French (2) → 5, Spanish (3) → 8, Portuguese-BR (17) → 0xb, anything else → 1 (English) |
+  | 2 (`eu`) | French → 5, Spanish → 8, German (4) → 7, Italian (5) → 6, anything else → 4 (English UK) |
+  | 4 | Korean (9) → 0xf, Chinese simplified (11) → 0xd, anything else → 0xe |
+  | other | the index is left as it was |
+
+* So the US game shows English, French, Spanish or Brazilian Portuguese,
+  matching its `param.sfo`. The US `archive` holds text folders `jp`, `us`,
+  `fr`, `sp`, `bp` and `it` (`resource/message/<lang>/`,
+  `resource/database/boss/message/<lang>/`, `resource/boot/<lang>/`, ...),
+  and `resource/data/icon/` has `us`, `fr`, `sp` and `bp` save icons.
+  Italian is in the archive but the US region never picks it.
+* `DebugLanguageType` (config +0x20) is not used in that path.
+* `0x818cf028` (a second `sceAppUtilSystemParamGetInt` caller, also run
+  briefly from `0x81275852`) and `0x818ccf34` turn the system language
+  into other codes (a bitmask, the `ja`/`en`/`fr`/`pt-br`/... strings of
+  `TitleUpdateCheckTask`); they don't choose the text.
+* Vita3K hands the game `cfg.sys_lang` (SceAppUtil). `ss-delta.exe` reads
+  neither `config.yml` nor the per-title `config/config_<title>.xml` into
+  it (the latter only fills `current_config.sys_lang`); up to v0.2.0 the
+  game always saw English (US). Since v0.2.1, `[game] language` sets it.
 
 ### The bundled modules
 

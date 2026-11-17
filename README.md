@@ -46,6 +46,9 @@ Compared with running the game in Vita3K:
   ([D14](docs/decisions.md)).
 * **An in-game settings menu** (F1, or Select held on a gamepad) over the
   paused game, and a commented `ss-delta.ini`.
+* **The game's languages:** English, French, Spanish and Portuguese (Brazil)
+  in the US game, English, French, Spanish, German and Italian in the EU
+  one (Language in the settings menu).
 * **Touch on keys and buttons:** the Black Rite icon on F and the left
   trigger; the mouse is the touchscreens.
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).

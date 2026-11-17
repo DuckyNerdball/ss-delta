@@ -1356,3 +1356,21 @@ modules), `frame_rate = 60`.
   did not run: the imported US `system.bin` already recorded the add-ons
   ("already recorded in the save"). **Hypothesis:** an EU `system.bin`
   has the same layout, so the unlock works the same way.
+
+## Language setting (2026-11-17, GitHub issue #3)
+
+`[game] language` in `ss-delta.ini` (Language on the settings menu's Game
+page) sets Vita3K's system language, which the game reads at boot
+(01-research, "Text language"). Fork commit "ss-delta: a language setting".
+Radeon 760M, native code, the junction test folder (US) and
+`dist/scratch-eu` (EU):
+
+* US, `french`: title screen "APPUYER SUR UNE TOUCHE"; `portuguese`:
+  "PRESSIONE QUALQUER BOTÃO".
+* EU, `german`: "BELIEBIGE TASTE DRÜCKEN".
+* Settings menu: the row shows the label ("Portuguese (US game)"), and a
+  change is written to the ini (`[game] language = english`), used at the
+  next start.
+* Not checked: Spanish and Italian, text past the title menu (the same
+  language index drives every text folder), and Ad Hoc Play between copies
+  set to different languages.
