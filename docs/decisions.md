@@ -724,3 +724,47 @@ the data different (01-research, "EU version").
 
 **Rejected:** a second executable or `game.json` per region. It would
 double the build, the release and the docs for a binary that is the same.
+
+
+## D20 — Linux: a native build of the same frontend; the setup compiles with zig (accepted, 2026-11-17)
+
+**Context:** Phase 11 (07-linux), the Steam Deck as the target. D18's
+setup compiles the recompiled modules on the player's machine; SteamOS has
+no compiler and a read-only root. The Windows build also runs under
+Proton (07-linux), but a native build avoids Wine in both the game and
+the setup's compile.
+
+**Decision:**
+
+* A native Linux build of the fork's single-game frontend,
+  `<id>.x86_64`, built in the Steam Runtime 3 (sniper) SDK with g++ 14,
+  libstdc++ and libgcc linked in, OpenSSL and curl built from their
+  pinned sources and linked in. It needs glibc 2.30, zlib and Vulkan:
+  it runs on SteamOS itself, without the Steam runtime container.
+* Recompiled modules are `ssd_aot_<module>.so`, loaded with `dlopen`.
+  The setup compiles them with **zig** (`toolchain-linux.json`, pinned by
+  SHA-256), a self-contained clang with libc++ and glibc's link stubs:
+  one 57 MB download, no sysroot, MIT and Apache licences (nothing for
+  the player to accept). Target `x86_64-linux-gnu.2.30`, baseline CPU;
+  each module exports only `armrecomp_aot_init` (a version script).
+* The Linux setup is a `.tar.gz`: `setup.sh`, python-build-standalone's
+  CPython 3.12 (with Tk, for the same setup window), the kit and the
+  front end. The playable folder gets a desktop entry, which Steam's "Add
+  a Non-Steam Game" lists, for Game Mode.
+* The release workflow builds both setups (Linux in the sniper SDK
+  container, pinned by tag) and drafts one release with both.
+
+**Consequences:** on the Steam Deck the setup takes 20 min from the dump
+to a playable folder, 14 of them compiling with 6 jobs (07-linux); the
+folder plays natively at 60 fps. The setup is an 84 MB `.tar.gz`.
+
+**Rejected:**
+
+* A portable LLVM release plus a glibc/libstdc++ sysroot: a much larger
+  download, and a sysroot to keep in step with the build.
+* Distrobox or a Flatpak SDK on the player's Deck: a whole distribution,
+  or a compiler meant for build time.
+* Proton only: the setup's compile under Wine, and a Windows build where
+  a native one works.
+* Requiring the Steam runtime container at run time: SteamOS lacks only
+  `libcurl-gnutls`, which a curl built in removes.

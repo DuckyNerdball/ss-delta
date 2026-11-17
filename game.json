@@ -25,7 +25,11 @@
   },
   "dump_seconds": 45,
   "dist_readme": "docs/dist-readme.txt",
+  "dist_readme_linux": "docs/dist-readme-linux.txt",
   "dist_files": {
     "run-player2.bat": "@start \"\" \"%~dp0ss-delta.exe\" --player 2\n"
+  },
+  "dist_files_linux": {
+    "run-player2.sh": "#!/bin/sh\ncd \"$(dirname \"$(readlink -f \"$0\")\")\" && exec ./ss-delta.x86_64 --player 2 \"$@\"\n"
   }
 }

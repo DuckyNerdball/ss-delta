@@ -74,55 +74,91 @@ from the start, so most of them already have a POSIX side.
 | Recompiler CMake | was MSVC flags only | `-O1 -w`, PIC, hidden visibility, no `lib` prefix, `--exclude-libs,ALL` (a static libstdc++ exported all of itself); the tests' library names per platform (done) |
 | `runtime/aot_dll.cpp` | was `__declspec(dllexport)` | `ARMRECOMP_EXPORT`, `visibility("default")` on Linux (done) |
 | Escapes (D7, D9) | a C++ exception thrown by the host through generated frames | works with g++'s defaults: 37,012 escapes in a native quest run on the Deck (2026-11-17) |
-| Kit: `build-vita3k.py` | vswhere, MSVC, Ninja Multi-Config | a Linux branch (clang, Ninja) |
-| Kit: `install-game.py`, `make-dist.py`, `build-recomp.py` | Python, but `<id>.exe` and `.dll` names | names per platform |
-| Kit: `make-setup.py`, `setup.py`, `setupgui.py` | Windows only (embeddable Python, `.bat`, `powershell.exe`, llvm-mingw + Microsoft's runtime and SDK) | a Linux setup (below) |
+| Kit: `build-vita3k.py` | was MSVC only | a Linux branch: games only, GCC (g++-14 when there), static libstdc++ (done) |
+| Kit: `install-game.py`, `make-dist.py`, `build-recomp.py` | were `<id>.exe` and `.dll` names | names per platform from `gameproject.py` (done) |
+| Kit: `make-setup.py`, `setup.py`, `setupgui.py` | were Windows only | the Linux setup (below; done) |
 | Kit: `v3kdrive.py` | `user32` (window lookup, `WM_CLOSE`) | a Linux backend: process, `SIGTERM`, the FIFO |
 
 The fork, the kit and the frontend are shared with utakata and the
 third game (D17), so this work ports all of them.
 
-## The setup on Linux (D18)
+## The setup on Linux (D18, D20)
 
-D18 forbids shipping recompiled game code, so the Deck has to compile the
-generated C++ itself: on Windows, a clean build of the four game modules
-with NEON takes 9.8 min with 4 jobs, 435 MB peak per job
-([05-recompiler](05-recompiler.md#build-130-eboot)).
-**Hypothesis**: 20–30 min on the Deck's Zen 2 cores, within its 16 GB.
+D18 forbids shipping recompiled game code, so the Deck compiles the
+generated C++ itself. SteamOS has no compiler and a read-only root; the
+setup brings its own ([D20](decisions.md)):
 
-SteamOS has no compiler and a read-only root, so the setup brings its own:
+* **zig** (`toolchain-linux.json` in the kit, 0.17.1, 57 MB, pinned by
+  SHA-256): clang with libc++ and glibc's link stubs, so no sysroot, under
+  MIT and LLVM's Apache licence (nothing for the player to accept). The
+  modules are compiled for `x86_64-linux-gnu.2.30` and the baseline CPU
+  (no FMA or AVX, as on Windows), `-O1`, and linked with a version script:
+  each `.so` exports only `armrecomp_aot_init`. zig builds libc++ on first
+  use; its cache, which also keeps a copy of every object (1.5 GB), is
+  deleted after the build.
+* Rejected: a portable LLVM release plus a sysroot (much larger, a sysroot
+  to keep in step), distrobox/podman (both are in SteamOS 3.9.5's
+  `/usr/bin`, but they pull a whole distribution), a Flatpak SDK extension.
+* The setup itself is a `.tar.gz` (84 MB, 535 MB unpacked): `setup.sh`,
+  python-build-standalone's CPython 3.12.16 (release 20261026, Tk included)
+  with capstone 5.0.7 and PyYAML 6.0.3 (manylinux wheels), the kit, and
+  `ss-delta.x86_64` stripped of its debug information. Downloads go to
+  `~/.cache/vita-recomps`. `--shortcut` (a checkbox in the window) writes
+  `ss-delta.desktop` into the applications menu and on the desktop, which
+  Steam's "Add a Non-Steam Game" lists for Game Mode.
+* The playable folder: `ss-delta.x86_64`, the ten `ssd_aot_*.so`, `fs/`,
+  `ss-delta.ini` (Linux example paths), `ss-delta.png`, `run-player2.sh`
+  and `README.txt` from `docs/dist-readme-linux.txt` (`game.json`'s
+  `dist_readme_linux` and `dist_files_linux`).
 
-* **A pinned portable LLVM** (clang + lld; LLVM's Apache-2.0 licence
-  allows redistribution, unlike the Windows setup's Microsoft runtime,
-  which the player has to accept) **plus a small sysroot** (glibc and
-  libstdc++ headers, the link stubs) matching the runtime the exe is built
-  against. Downloaded at setup time like the Windows toolchain, or carried
-  in the package. Recommended.
-* Distrobox/podman on the Deck (both in SteamOS 3.9.5's `/usr/bin`):
-  pulls a whole distribution, too much to ask of players.
-* A Flatpak with the freedesktop SDK's LLVM extension: the compiler is
-  meant for build time, not for apps; awkward.
+**Measured on the Deck (2026-11-17)**, console mode, from the US dump zip,
+6 jobs, firmware and zig already downloaded:
 
-The firmware's modules (D11) still come from a hidden run of the game with
-`--dump-elfs`, which needs Vulkan; it works in desktop mode
-(**hypothesis**).
+| Stage | Time |
+|---|---|
+| install firmware and game | 28 s |
+| the game's run that writes the modules (`--dump-elfs`, JIT) | 46 s |
+| recompile (the eboot 252 s) | 268 s |
+| compile the 204 files with zig | 847 s |
+| **total** | **1190 s (20 min)** |
+
+The folder then plays a quest from Stage Select natively: every loaded
+module matches guest memory, 0 native-to-JIT calls, 60.0 fps (worst frame
+23 ms). The window (`setup.sh` without arguments) opens on the Deck's
+desktop; the desktop entry passes `desktop-file-validate`.
+
+Two Linux-only faults the first run found, fixed:
+
+* the dump of `app0:eboot.bin` was named `..._app0:eboot.elf` (Linux reads
+  `app0:` as part of the file name; Windows as a root name), so the setup
+  didn't find it: the fork's `load_self.cpp` now cuts the device prefix;
+* dynarmic printed thousands of "Unhandled SIGSEGV" lines during the dump
+  run (JIT only; native runs print none): `install-game.py` leaves them
+  out of the setup's output.
+
+Not changed: `install-game.py` keeps `<out>-work` (3.5 GB: the generated
+C++ and the objects) after the setup, on Windows too.
 
 ## Packaging and runtime base
 
 * Build inside the **Steam Linux Runtime** SDK container (sniper, Debian
   11-based), so the exe runs on SteamOS and on other distributions with
-  an old enough glibc. Players add it as a non-Steam game; it can run with
-  the "Steam Linux Runtime" compatibility tool or with its libraries
-  bundled (Vita3K's AppImage does the latter). No Qt (`VITA3K_GAMES_ONLY`).
+  an old enough glibc. Everything else is linked in (libstdc++, SDL3,
+  OpenSSL, curl), so it runs on the host with no compatibility tool:
+  glibc 2.30, zlib and Vulkan are all it needs. Players add it as a
+  non-Steam game. No Qt (`VITA3K_GAMES_ONLY`).
 * The sniper SDK (3.0.20261021) has g++ 14.2, clang 11 (too old for
   Vita3K), CMake 3.25, glibc 2.31, Vulkan headers 1.4.309, PipeWire and
   PulseAudio. Its runtime's libstdc++ is gcc 10's, so a g++ 14 build links
   libstdc++ statically (`-static-libstdc++ -static-libgcc`). Steam Linux
   Runtime 4.0 is newer and also on the Deck; sniper is what most Steam
   games use.
-* The release workflow (`.github/workflows/release.yml`, `windows-2025`)
-  gains a Linux job. Nothing game-derived reaches CI (D2): the fork and the
-  kit only.
+* The release workflow (`.github/workflows/release.yml`) has a `linux`
+  job in the SDK container image
+  (`registry.gitlab.steamos.cloud/steamrt/sniper/sdk:3.0.20261021.266025`,
+  the tag pinned): Python 3.12 from the setup's own lock, `build-vita3k.py`,
+  `make-setup.py`. A `release` job drafts one release with both setups.
+  Nothing game-derived reaches CI (D2): the fork and the kit only.
 
 ## Deck-specific work
 
@@ -193,6 +229,10 @@ The firmware's modules (D11) still come from a hidden run of the game with
   `libcurl-gnutls`. SteamOS has no `libcurl-gnutls`; inside the sniper
   runtime (`SteamLinuxRuntime_sniper/run -- ./ss-delta.x86_64`) it
   starts. A no-op rebuild takes seconds, a clean one about 10 min.
+  Since 11d the games' build links curl in too (built from its pinned
+  source, HTTP only, no IDN, brotli, zstd, HTTP/2 or SSH), and the exe
+  needs only glibc and zlib: it runs a quest on SteamOS itself, outside
+  the Steam runtime (60.0 fps natively).
 
 ## Baselines on the Deck (2026-11-17)
 
