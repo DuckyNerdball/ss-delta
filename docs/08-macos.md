@@ -85,7 +85,7 @@ Deck.
 | Kit (`gameproject.py`, `build-vita3k.py`, `install-game.py`, `make-dist.py`, setup) | `WINDOWS = sys.platform == 'win32'`, everything else is treated as Linux | done (D21): `MACOS`, `.arm64`/`.dylib`, zig for `aarch64-macos`, the Apple-clang fork build, MoltenVK in the folder, `setup.command` and the app, `make-setup.py resolve-macos`/`build` |
 | Kit: `v3kdrive.py` | Windows backend. The Linux backend (11b) is still open | its POSIX backend covers macOS too (process, `SIGTERM`, FIFO) |
 | `games/ss-delta/` | portable (Linux build) | icon: `.icns` for a bundle |
-| Ad Hoc Play `local` mode (127.0.0.N) | Windows and Linux route the whole 127/8 | **macOS configures only 127.0.0.1 on `lo0`**. Players 2–4 need `ifconfig lo0 alias 127.0.0.N` (root) or another addressing scheme. The `lan` mode is unaffected |
+| Ad Hoc Play `local` mode (127.0.0.N) | Windows and Linux route the whole 127/8 | **macOS configures only 127.0.0.1 on `lo0`**. Players 2–4 need `ifconfig lo0 alias 127.0.0.N` (root) or another addressing scheme. The `lan` mode works: a Mac joined a Windows host with a Deck and played a quest, after macOS's Local Network prompt was allowed (*Ad Hoc Play across platforms*) |
 
 ### The memory mapping question
 
@@ -447,6 +447,40 @@ the seven maps run again). User idle (SSH), `caffeinate -i -s`.
   Windows.
 * MoltenVK's "Metal does not support disabling primitive restart"
   appears on every map. No geometry glitch in any of the 350 shots.
+
+## Ad Hoc Play across platforms (2026-11-17)
+
+`network = lan` on the PC (Windows, Wi-Fi; `adapter = 1`, as Hyper-V's
+adapter comes first), the Mac (`adapter = 0`, en0) and the Deck
+(`adapter = 0`, wlan0), each through a `ss-delta-player<N>.ini` override,
+with copies of the same story-complete save. **The PC hosted, the Mac and
+the Deck joined; all three showed the same lobby. The owner readied them,
+started the quest and played it to the results page (same clear time
+on all three, the return-to-lobby countdown on each), without issues.**
+
+* **macOS asks for Local Network access** ("find and connect to devices
+  on your local network") when the game starts. Until it is allowed,
+  broadcasts still go out and come in (the Mac listed every room), but
+  every unicast send fails with `EHOSTUNREACH` (`0x80410141`), so each
+  join ended in "Failed to join room". A copy started over SSH counts as
+  part of SSH: the owner's Allow did not cover it, even after a restart.
+  Started through an app (`open`, as a player starts the setup's app),
+  macOS asked at the start, and after Allow the Mac joined at once. The
+  player's README says so.
+* Found with a P2P trace: `VITA3K_NET_TRACE=1` logs every datagram the ad
+  hoc sockets send or receive, with address, port and result (no packet
+  capture needs root then). Ports seen: the Vita3K peer records, 80
+  bytes, are broadcast to 3658 + 33333; the game's room announcements,
+  516 bytes, go to 3659 and 3660; a join is a 105-byte unicast to the
+  host's 3659.
+* Seen once each, not chased: the PC failed to join the Deck's room
+  (before the Mac's cause was known; the Deck as host is unchecked); the
+  Mac's menus ignored input after a failed join, while still rendering;
+  the Deck reported "A network error has occurred" when searching right
+  after leaving a room it hosted (a restart cleared it). When a host
+  quits, a guest becomes the host ("You are now the host").
+* The save dialog (Vita3K's overlay) is not in `frame:` captures, and its
+  load prompt defaults to No: a script needs right, then confirm.
 
 ## Developing on the Mac
 

@@ -52,9 +52,11 @@ in ss-delta/save-backups. To copy a slot out:
 
 Ad Hoc Play (Librom, Network, Ad Hoc Play): on a Mac, use network = lan in
 ss-delta.ini ([multiplayer]): computers in one network, Windows, Linux or
-macOS, each running the game (not yet tested on a Mac). Several copies on
-one Mac (network = local, ./ss-delta.arm64 --player 2) don't work yet:
-macOS only has the address 127.0.0.1 for them.
+macOS, each running the game. macOS asks whether the game may "find and
+connect to devices on your local network": allow it, or no room can be
+joined (System Settings, Privacy & Security, Local Network changes it
+later). Several copies on one Mac (network = local, ./ss-delta.arm64
+--player 2) don't work yet: macOS only has the address 127.0.0.1 for them.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under
 the GNU GPL version 2. The ssd_aot_*.dylib files and the game files are
