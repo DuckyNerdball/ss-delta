@@ -79,7 +79,8 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Ad Hoc Play: Create Room, Search for Room, join | ✅ | scripted | two copies on one PC (`--player 2` and `3`, 2026-10-12, NativeCPU): the search lists the host's room, the client joins, both rooms show both sorcerers (plan Phase 10) |
 | Ad Hoc Play: a quest together | ✅ | user, scripted | the owner played a quest together and completed it without issues (2026-10-12). Scripted before: Ready, Start Quest and the fight run in step on both copies (same kills, same "targets remaining", same results page). A copy that lets the "Return to lobby" countdown run out leaves the room |
 | Ad Hoc Play: LAN between two PCs (`network = lan`) | ✅ | user | 2026-10-12 |
-| Ad Hoc Play: LAN across Windows, macOS and Linux | ✅ | user, scripted | 2026-11-17, Wi-Fi: the PC (Windows) hosts, the MacBook (M5) and the Steam Deck (the Linux setup's install) join; all three show the same lobby; the owner readied them and played a quest to the results page, without issues (08-macos, *Ad Hoc Play across platforms*). Not checked: a Mac or Deck as host (one PC join to a Deck room failed) |
+| Ad Hoc Play: LAN across Windows, macOS and Linux | ✅ | user, scripted | 2026-11-17, Wi-Fi: the PC (Windows) hosts, the MacBook (M5) and the Steam Deck (the Linux setup's install) join; all three show the same lobby; the owner readied them and played a quest to the results page, without issues (08-macos, *Ad Hoc Play across platforms*). A Deck or a Mac as host works since fork `c5654710` (their Wi-Fi power saving made every join time out before) |
+| Keyboard: diagonal movement (W+D) as fast as straight | ✅ | user | 2026-11-17, fork `232b9d16`: diagonals had run about 1.4 times as fast |
 | Ad Hoc Play: a gamepad per copy (`[multiplayer] gamepad`) | ❔ | | needs two gamepads |
 
 ## Quests

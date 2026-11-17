@@ -473,12 +473,35 @@ on all three, the return-to-lobby countdown on each), without issues.**
   bytes, are broadcast to 3658 + 33333; the game's room announcements,
   516 bytes, go to 3659 and 3660; a join is a 105-byte unicast to the
   host's 3659.
-* Seen once each, not chased: the PC failed to join the Deck's room
-  (before the Mac's cause was known; the Deck as host is unchecked); the
-  Mac's menus ignored input after a failed join, while still rendering;
-  the Deck reported "A network error has occurred" when searching right
-  after leaving a room it hosted (a restart cleared it). When a host
-  quits, a guest becomes the host ("You are now the host").
+* **A Deck or a Mac as host could not be joined** (the joiner showed
+  "Failed to join room", the host "Connecting..."). Both traces showed the
+  join handshake, then nothing: on a PC host the game sent its first
+  packet 4 ms after the joiner's acknowledgement. The cause is latency,
+  not the platform. The game creates its matching contexts
+  (`sceNetAdhocMatchingCreate`, eboot `0x818a2e48` and `0x818a3150`) with
+  an 8 ms retransmit interval and 3 retries, so a joiner gives up after
+  about 25 ms. Pinged from the PC, the Deck answered in 3 to 314 ms and
+  the Mac in 3 to 87 ms (Wi-Fi power saving); the PC answers in 2 ms. With
+  the Deck's power saving off (SteamOS's
+  `steamos-disable-wireless-power-management`), the PC and the Mac joined
+  it. **Fix (fork `c5654710`)**: when native code calls the firmware
+  module's `sceNetAdhocMatchingCreate`, the retransmit interval is raised
+  to at least 250 ms (log: "retransmit interval 8000 us raised to 250000
+  us"). Tested: the Mac hosting with power saving on, the PC and the Deck
+  joining. Dropping duplicate join requests on the host, tried first,
+  didn't help: the joiner had already given up.
+* **The Mac stopped responding after leaving a room** (menus ignored
+  input, rendering went on). `sample` showed the game's MainThread in
+  `sceKernelWaitThreadEnd` for its network thread, which sat in
+  `recvfrom()`. On POSIX hosts closing a socket doesn't wake a blocked
+  receive, and `shutdown()` of a UDP socket fails on macOS. Fix (fork
+  `e41caf0d`): an aborted or closed datagram socket sends itself an empty
+  datagram. Seen to work once (leaving a hosted room on the Mac).
+* Still open: the Deck and the Mac report "A network error has occurred"
+  when searching right after leaving a room they hosted (a restart clears
+  it), and the Deck ignored input once at the save's "Loading complete"
+  prompt. When a host quits, a guest becomes the host ("You are now the
+  host").
 * The save dialog (Vita3K's overlay) is not in `frame:` captures, and its
   load prompt defaults to No: a script needs right, then confirm.
 

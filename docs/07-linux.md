@@ -238,8 +238,9 @@ measured. The CPU ran at about 2.4 GHz throughout.
 * **Ad Hoc Play**: the `lan` mode between a Deck and a PC works with the
   PC as host: on 2026-11-17 the Deck joined a Windows host's room, with a
   Mac, and the three played a quest (08-macos, *Ad Hoc Play across
-  platforms*). The Deck as host is unchecked (one join from the PC
-  failed). The `local` mode
+  platforms*). As host, the Deck couldn't be joined until fork `c5654710`:
+  its Wi-Fi power saving (replies after 3 to 300 ms) outlasted the game's
+  25 ms join timeout. The `local` mode
   (127.0.0.N) works on Linux too: the whole 127/8 is loopback there.
 
 Left for a test on the Deck itself (someone holding it):
