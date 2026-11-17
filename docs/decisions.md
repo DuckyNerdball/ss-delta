@@ -770,3 +770,62 @@ folder plays natively at 60 fps. The setup is an 84 MB `.tar.gz`.
   a native one works.
 * Requiring the Steam runtime container at run time: SteamOS lacks only
   `libcurl-gnutls`, which a curl built in removes.
+
+## D21 — macOS: a native arm64 build; the setup compiles with zig and isn't notarized (accepted, 2026-11-17)
+
+**Context:** Phase 12 (08-macos), Apple Silicon only. D18's setup
+compiles the recompiled modules on the player's machine. A Mac has no
+compiler until the player installs Apple's Command Line Tools, and arm64
+macOS runs only signed code. Without a paid Developer ID, Gatekeeper
+blocks whatever a browser downloaded.
+
+**Decision:**
+
+* A native build of the fork's single-game frontend, `<id>.arm64`, with
+  Apple's clang, OpenSSL and Boost built from source, minimum macOS 13.3
+  (the fork's `CMAKE_OSX_DEPLOYMENT_TARGET`), next to MoltenVK's
+  `libMoltenVK.dylib`. Memory mapping `double-buffer`, as on Windows.
+* Recompiled modules are `ssd_aot_<module>.dylib`. The setup compiles them
+  with **zig**, as on Linux (D20): `toolchain-macos.json` pins
+  `zig-aarch64-macos-0.17.1` by SHA-256 (51 MB). Target
+  `aarch64-macos.13.3`, CPU `apple_m1`, `-ffp-contract=off`. zig's Mach-O
+  linker signs each module ad hoc, which is all a module needs to load.
+  It takes no export list: hidden visibility leaves the entry point and
+  libc++'s `operator new`/`delete` exported. With two-level namespaces
+  those bind nothing outside the module.
+* The macOS setup is a `.tar.gz` (Python's symbolic links and the modes
+  survive): `setup.command`, python-build-standalone's CPython 3.12 for
+  `aarch64-apple-darwin` (with Tk, for the same setup window), the kit and
+  the front end (debug map stripped, signed again ad hoc).
+* **No Developer ID, no notarization.** The player lets `setup.command`
+  through once (System Settings → Privacy & Security → Open Anyway, or
+  `sh setup.command` in Terminal). It clears the quarantine from its own
+  folder before it starts Python. Everything else the setup makes is
+  created on the player's Mac, so it is never quarantined.
+* The playable folder is a plain folder, as on Windows and Linux (config,
+  logs and saves beside the executable), plus a small `<name>.app` made by
+  the setup: a script that starts `<id>.arm64`, with the game's icon
+  (`sips` turns the PNG into `.icns`), for Finder, the Dock and Spotlight.
+  `--shortcut` copies it to `~/Applications`.
+* The release workflow builds the macOS setup on GitHub's `macos-15`
+  (arm64) runner, beside the Windows and Linux ones.
+
+**Consequences:** on the M5, the setup took 5.6 min from the dump to a
+playable folder, firmware and zig downloads included. zig compiles the
+ten modules in 2.8 min with 8 jobs, against 95 s with Apple clang. The
+first run builds libc++. The modules give the same code hash as on
+Windows and play ST03A natively at 60 fps. The setup is a 43 MB
+`.tar.gz`.
+
+**Rejected:**
+
+* Apple's Command Line Tools on the player's Mac: a download of about
+  1 GB through Software Update, Apple's licence to accept, and a
+  different compiler from Linux's for the same generated code.
+* A Developer ID and notarization for now: the owner's yearly fee, plus
+  the hardened runtime, which needs `allow-jit` and
+  `disable-library-validation` (modules signed on the player's Mac). It
+  can be added later without changing the layout.
+* The whole game inside an `.app` bundle: its config, logs, shader cache
+  and modules would have to move to `~/Library/Application Support`, and
+  the bundle could not be written into.

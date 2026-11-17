@@ -736,9 +736,18 @@ only: no Rosetta, no Intel Macs.
     threads (fork `09587ca1`) give 60.0 fps natively, p99 17 ms
     (2026-11-17, 08-macos).
   * ☐ A longer play session natively (audio included).
-* ☐ **12e A setup for macOS** (kit): zig or the Command Line Tools,
+* ◐ **12e A setup for macOS** (kit): zig or the Command Line Tools,
   measured on the M5; packaging (folder or `.app`), signing and
   quarantine; a release job. Record the choice in decisions.md.
+  * ☑ zig chosen (D21): ten modules in 2.8 min, signed ad hoc by its
+    linker, ST03A natively at 60 fps (2026-11-17, 08-macos).
+  * ☑ The kit's macOS branch (`setup-macos.json`, `toolchain-macos.json`,
+    `setup.command`, the app in the playable folder); the setup built on
+    the M5 and run end to end from a quarantined download: 5.6 min from
+    the dump to the title on native code (2026-11-17, 08-macos).
+  * ☐ The release workflow's `macos` job run on GitHub (written, not run
+    yet), and the setup window and Dock icon looked at on the Mac's
+    screen.
 * ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc
   Play's `local` mode (only 127.0.0.1 exists on `lo0`), thermals and
   battery.

@@ -82,7 +82,7 @@ Deck.
 | Escapes (D7, D9) | a C++ exception thrown through generated frames works: 23,420 escapes in a native ST03A run on the M5 |
 | Recompiler CMake | `-O1 -w`, PIC, hidden visibility. `--exclude-libs` already skipped on APPLE `-ffp-contract=off` added (also in the zig flags). `.dylib` names come from CMake. Only `armrecomp_aot_init` is exported (hidden visibility) |
 | Dynarmic tests (`run-tests`) | compare native code against dynarmic on the host 0 failing on the M5 (23,280 instruction and 684 function tests) |
-| Kit (`gameproject.py`, `build-vita3k.py`, `install-game.py`, `make-dist.py`, setup) | `WINDOWS = sys.platform == 'win32'`, everything else is treated as Linux | a macOS branch: names, toolchain, packaging |
+| Kit (`gameproject.py`, `build-vita3k.py`, `install-game.py`, `make-dist.py`, setup) | `WINDOWS = sys.platform == 'win32'`, everything else is treated as Linux | done (D21): `MACOS`, `.arm64`/`.dylib`, zig for `aarch64-macos`, the Apple-clang fork build, MoltenVK in the folder, `setup.command` and the app, `make-setup.py resolve-macos`/`build` |
 | Kit: `v3kdrive.py` | Windows backend. The Linux backend (11b) is still open | its POSIX backend covers macOS too (process, `SIGTERM`, FIFO) |
 | `games/ss-delta/` | portable (Linux build) | icon: `.icns` for a bundle |
 | Ad Hoc Play `local` mode (127.0.0.N) | Windows and Linux route the whole 127/8 | **macOS configures only 127.0.0.1 on `lo0`**. Players 2–4 need `ifconfig lo0 alias 127.0.0.N` (root) or another addressing scheme. The `lan` mode is unaffected |
@@ -134,21 +134,63 @@ generated C++ itself, as the Deck does. Options for the compiler:
 
 * **zig**, as on Linux (D20): one download that also targets
   `aarch64-macos`. It brings libc++ and the macOS libc headers and links
-  against `libSystem` stubs, with no Xcode. **Hypothesis**: zig's Mach-O
-  linker ad-hoc signs the `.dylib` files itself, which arm64 macOS
-  requires before it loads any code.
+  against `libSystem` stubs, with no Xcode.
 * **Apple's Command Line Tools** (`xcode-select --install`): Apple clang
   and the SDK, a download of about 1 GB through Software Update. The
   player accepts Apple's licence, and it is the best-tested toolchain on
-  the platform. The setup would check for it and ask the player to
-  install it.
-* Leaning towards zig, for the same setup on Linux and macOS and no
-  licence step. To decide after measuring both on the M5 (compile time,
-  and whether zig's Mach-O output loads).
+  the platform.
 
-The setup itself: python-build-standalone has `aarch64-apple-darwin`
-builds with Tk, so the same setup window works. capstone and PyYAML have
-macOS arm64 wheels (**hypothesis**: check the pinned versions).
+**Chosen: zig** ([D21](decisions.md)), measured on the M5 (2026-11-17):
+
+* `zig-aarch64-macos-0.17.1` (51 MB, SHA-256 as on ziglang.org's index).
+  Target `aarch64-macos.13.3`, `-mcpu=apple_m1`, the kit's flags
+  (`-O1 -ffp-contract=off` for generated code).
+* **zig's Mach-O linker signs ad hoc** (`flags=0x20002(adhoc,linker-signed)`),
+  so the modules load as they are. `minos 13.3`. It rejects
+  `-exported_symbol` and ignores `-exported_symbols_list`. With hidden
+  visibility a module exports `armrecomp_aot_init` and libc++'s
+  `operator new`/`delete`, harmless under two-level namespaces. A test
+  module threw and caught a C++ exception inside itself when loaded by an
+  Apple-clang host.
+* **Ten modules in 2.8 min with 8 jobs** (the first build of libc++
+  included), largest compiler process 806 MB. Apple clang: 95 s.
+  `ssd_aot_eboot.dylib` is 80 MB (Apple clang: 97 MB).
+* ST03A on the zig modules: every module matched guest memory, **60.0 fps**
+  (p99 17.0 ms), 0 native-to-JIT calls, 24,948 escapes (C++ exceptions
+  through zig-built frames), pictures as on Windows.
+
+The setup itself: python-build-standalone 20261026's CPython 3.12.16 for
+`aarch64-apple-darwin` (25 MB, Tk 9.0, OpenSSL 3.5), capstone 5.0.7's
+universal2 wheel and PyYAML 6.0.3's arm64 wheel (`setup-macos.json`,
+`make-setup.py resolve-macos`). The same setup window builds on macOS; the
+Steam checkbox is Linux-only, and the shortcut box puts the app in
+`~/Applications`.
+
+### The setup end to end on the M5 (2026-11-17)
+
+`make-setup.py build setup-macos.json` on the Mac, with the fork built
+there: a **43 MB `.tar.gz`** (180 MB unpacked). Then, as a download:
+
+1. The archive marked quarantined (`com.apple.quarantine`, as Safari sets
+   it) and unpacked with Archive Utility: all 1,846 files quarantined.
+   `spctl` rejects `setup.command` and `python3.12`.
+2. `sh setup.command` (the README's Terminal route; double-clicking it
+   needs Open Anyway once): it cleared the quarantine from the folder, 0
+   files left, and Python started.
+3. The console setup with the US dump, a new cache and a new playable
+   folder: firmware from Sony (182 MB) and zig downloaded, the game
+   installed, run for 45 s to write the modules, recompiled (the eboot's
+   code hash `f6f20671281686e3`, as on Windows and Linux), compiled with
+   6 jobs. **5.6 min in all**, largest process 3.5 GB. The playable folder
+   is 3.4 GB.
+4. `open "Soul Sacrifice Delta.app"` (as a double-click): the game started
+   on native code and reached the title, no errors. The ini's texts name
+   `ss-delta.arm64` and `.dylib`.
+
+Not checked over SSH: the setup window's look (no screen recording) and
+the Dock icon while the game runs. The app's script `exec`s the game, so
+LaunchServices lists the process without its bundle (**hypothesis**: the
+Dock shows the window icon SDL sets, or a generic one).
 
 ## Packaging, signing and Gatekeeper
 
@@ -168,14 +210,17 @@ macOS arm64 wheels (**hypothesis**: check the pinned versions).
   `com.apple.security.cs.disable-library-validation`, because the
   setup's ad-hoc signed `.dylib` files come from another signer. The owner
   decides whether to pay for one. Without it, the README documents the
-  quarantine step.
+  quarantine step. **Done that way** (D21): only `setup.command` goes
+  through Open Anyway, and it clears the quarantine from the rest of its
+  folder (tested above).
 * **Folder or bundle.** A plain folder (`ss-delta.arm64`, the
   `.dylib`s, `fs/`, `ss-delta.ini`) matches Windows and Linux and keeps
   config next to the executable. An `.app` bundle is what Mac users expect
   (Dock icon, double-click), but it must not be written into. Its config,
   log, shader cache and modules then go to
-  `~/Library/Application Support/<id>/`. **Hypothesis**: start with the
-  folder plus a small `.app` launcher for the Dock and the window icon.
+  `~/Library/Application Support/<id>/`. **Chosen** (D21): the folder,
+  plus a small `<name>.app` the setup makes there. The app is a script that
+  starts the executable, with the game's icon.
 * MoltenVK: upstream links it (`MoltenVK/mvk_vulkan.h`) and bundles
   `libMoltenVK.dylib`. KosmicKrisp (LunarG, Mesa) is a Vulkan 1.4
   conformant driver over Metal, shipped in the Vulkan SDK, with reported
@@ -244,6 +289,8 @@ fetched and built), **build 1 min 40 s**: `ss-delta.arm64` (63 MB), next to
   (below);
 * write tracking in whole host pages (below);
 * `VITA3K_FRAME_LOG` also written without memory mapping;
+* the ini's texts name `<id>.arm64`, `.dylib` and a macOS example path
+  (they had Linux's);
 * the frontend logs why a session ends ("Quit requested (quit event)" or
   "(window closed)", "The emulation stopped"). SDL turns `SIGTERM` into a
   quit event.
@@ -421,6 +468,8 @@ the seven maps run again). User idle (SSH), `caffeinate -i -s`.
 
 ## Next steps
 
-Phase 12 in [03-plan](03-plan.md). First: SSH to the Mac and record its
-configuration, then the upstream baseline, then the memory mapping
-question.
+Phase 12 in [03-plan](03-plan.md). Done: access and baseline, memory
+mapping, the fork and native code on the M5, frame pacing, the 50-map
+sweep, the setup (D21). Open: the release workflow's `macos` job on
+GitHub, a long play session with audio, `v3kdrive.py`'s POSIX backend,
+and the Mac polish of 12f.

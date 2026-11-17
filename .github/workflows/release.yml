@@ -1,6 +1,6 @@
-# The players' setups (docs/decisions.md D18, D20): Windows builds ss-delta.exe without Qt, Linux builds
-# ss-delta.x86_64 in the Steam Runtime (sniper) SDK, and vita-recomp-kit's make-setup.py lays out each
-# setup. A setup holds no game or firmware data: on the player's computer it downloads the firmware
+# The players' setups (docs/decisions.md D18, D20, D21): Windows builds ss-delta.exe without Qt, Linux
+# builds ss-delta.x86_64 in the Steam Runtime (sniper) SDK, macOS builds ss-delta.arm64 with Apple's
+# clang, and vita-recomp-kit's make-setup.py lays out each setup. A setup holds no game or firmware data: on the player's computer it downloads the firmware
 # from Sony and a compiler, and builds the port from the player's own dump.
 # A tag v* makes a draft release with both setups, their SHA-256 and build attestations; a manual run
 # only uploads them as workflow artifacts.
@@ -98,9 +98,48 @@ jobs:
             ${{ env.TGZ }}
             ${{ env.TGZ }}.sha256
 
+  macos:
+    # Apple Silicon; the build targets macOS 13.3 (the fork's CMAKE_OSX_DEPLOYMENT_TARGET)
+    runs-on: macos-15
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Ninja
+        run: brew install ninja
+
+      - name: Build ss-delta.arm64
+        run: python -I third_party/recomp/tools/build-vita3k.py --target ss-delta
+
+      - name: Lay out the setup
+        run: |
+          if [ "${{ github.ref_type }}" = tag ]; then name="ss-delta-setup-macos-${{ github.ref_name }}"; else name="ss-delta-setup-macos-$(echo ${{ github.sha }} | cut -c1-7)"; fi
+          python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-macos.json \
+            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out "build/release/$name" --zip
+          tgz="build/release/$name.tar.gz"
+          (cd build/release && shasum -a 256 "$name.tar.gz" > "$name.tar.gz.sha256")
+          echo "TGZ=$tgz" >> "$GITHUB_ENV"
+
+      - uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ env.TGZ }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: setup-macos
+          path: |
+            ${{ env.TGZ }}
+            ${{ env.TGZ }}.sha256
+
   release:
     if: github.ref_type == 'tag'
-    needs: [windows, linux]
+    needs: [windows, linux, macos]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v7
@@ -114,4 +153,4 @@ jobs:
         run: |
           gh release create '${{ github.ref_name }}' dist/* --repo '${{ github.repository }}' --draft \
             --title 'ss-delta ${{ github.ref_name }}' \
-            --notes "Windows: unzip ss-delta-setup-${{ github.ref_name }}.zip and run setup.bat. Linux and Steam Deck (desktop mode): unpack ss-delta-setup-linux-${{ github.ref_name }}.tar.gz and run setup.sh. Point it at your own dump of Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, update 1.30). See README.txt in the playable folder it makes. SHA-256 and the build attestations: see the files attached and 'gh attestation verify'."
+            --notes "Windows: unzip ss-delta-setup-${{ github.ref_name }}.zip and run setup.bat. Linux and Steam Deck (desktop mode): unpack ss-delta-setup-linux-${{ github.ref_name }}.tar.gz and run setup.sh. macOS 13.3 or newer on Apple Silicon: unpack ss-delta-setup-macos-${{ github.ref_name }}.tar.gz and open setup.command (macOS blocks it the first time: System Settings, Privacy & Security, Open Anyway; README.txt explains). Point it at your own dump of Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, update 1.30). See README.txt in the playable folder it makes. SHA-256 and the build attestations: see the files attached and 'gh attestation verify'."
