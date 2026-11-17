@@ -497,10 +497,20 @@ on all three, the return-to-lobby countdown on each), without issues.**
   receive, and `shutdown()` of a UDP socket fails on macOS. Fix (fork
   `e41caf0d`): an aborted or closed datagram socket sends itself an empty
   datagram. Seen to work once (leaving a hosted room on the Mac).
-* Still open: the Deck and the Mac report "A network error has occurred"
-  when searching right after leaving a room they hosted (a restart clears
-  it), and the Deck ignored input once at the save's "Loading complete"
-  prompt. When a host quits, a guest becomes the host ("You are now the
+* **"A network error has occurred" after leaving a hosted room** (Deck and
+  Mac, searching right after leaving). Leaving makes the matching module
+  abort, shut down and close its two sockets and open new ones. On POSIX,
+  `sceNetSocketAbort` called `shutdown()`, which fails with ENOTCONN on an
+  unconnected UDP socket; the module took the error as fatal, the ad hoc
+  connection dropped ("Adhoc thread: stopping network loop" when the room
+  was left) and the next search failed. Fixed by `e41caf0d` too: the abort
+  now wakes the receive itself and returns 0. Checked on the Deck: leave
+  as host (both a migrated and a freshly created room), search, no error,
+  the ad hoc loop keeps running. `sceNetShutdown` of the receive side
+  still returns ENOTCONN (`0x80410139`), as Winsock does; the module
+  ignores it.
+* Still open: the Deck ignored input once at the save's "Loading
+  complete" prompt. When a host quits, a guest becomes the host ("You are now the
   host").
 * The save dialog (Vita3K's overlay) is not in `frame:` captures, and its
   load prompt defaults to No: a script needs right, then confirm.
