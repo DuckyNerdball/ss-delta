@@ -666,7 +666,7 @@ The owner asked for it on 2026-11-17. Research:
     `.so`; a quest on NativeCPU on the Deck at 60 fps, 0 JIT calls
     (2026-11-17, 07-linux).
   * ☐ The dynarmic tests on Linux; a longer play session natively.
-* ◐ **11d A setup for Linux** (kit): a pinned portable LLVM and sysroot,
+* ☑ **11d A setup for Linux** (kit): a pinned portable LLVM and sysroot,
   the compile on the Deck (time, memory), a release job. Record the choice
   in decisions.md.
   * ☑ The compiler is zig, not LLVM plus a sysroot ([D20](decisions.md));
@@ -676,8 +676,12 @@ The owner asked for it on 2026-11-17. Research:
   * ☑ On the Deck (2026-11-17): from the dump to a playable folder in
     20 min (14 compiling, 6 jobs); the folder plays a quest natively at
     60 fps (07-linux).
-  * ☐ The release workflow's `linux` job, run once on GitHub.
-  * ☐ Peak memory of the compile on the Deck (not measured).
+  * ☑ The release workflow's `linux` job, run by hand on GitHub
+    (2026-11-17, run 44080546990): 25 min, an 87 MB artifact; its
+    `ss-delta.x86_64` plays a quest natively on the Deck at 60 fps.
+  * ☑ Peak memory on the Deck: 4.6 GB used against 2.0 GB idle, so about
+    2.6 GB for the setup with 6 jobs; second run 1165 s, with the menu
+    entry and icon, and zig's cache removed (466 MB left).
 * ☐ **11e Deck polish**: Game Mode, controls and touch, 16:10 screen,
   suspend/resume, 30/40/60 fps and battery.
 

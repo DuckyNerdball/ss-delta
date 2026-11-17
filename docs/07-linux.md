@@ -136,6 +136,19 @@ Two Linux-only faults the first run found, fixed:
   run (JIT only; native runs print none): `install-game.py` leaves them
   out of the setup's output.
 
+A second run with the setup as committed (kit `4ac02dc`, fork `b51c08d8`),
+`--shortcut` into a scratch home: 1165 s; `ss-delta.desktop` in the
+applications menu and on the desktop, `ss-delta.png` taken from the
+`.ico`, zig's cache gone (466 MB left: zig and its download). Memory: 4.6
+GB used at the peak against 2.0 GB idle, so about 2.6 GB for the setup with
+6 jobs.
+
+The release workflow's `linux` job (run by hand, 2026-11-17, run
+44080546990): 25 min in all, 22 of them building the fork from scratch in
+the SDK container; an 87 MB `.tar.gz`. Its `ss-delta.x86_64` needs only
+glibc and zlib and plays the quest natively on the Deck at 60.0 fps with
+the modules the Deck compiled.
+
 Not changed: `install-game.py` keeps `<out>-work` (3.5 GB: the generated
 C++ and the objects) after the setup, on Windows too.
 
