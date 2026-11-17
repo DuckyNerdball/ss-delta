@@ -17,7 +17,8 @@ story up to the final battle render correctly on AMD and NVIDIA GPUs, the
 add-ons are unlocked, and Ad Hoc Play works between copies on one PC and
 across a LAN ([compatibility](docs/06-compatibility.md)). The endings after
 the final battle have not been reached in testing yet. Windows only for
-now; Linux and macOS builds are planned.
+now; a Linux build for the Steam Deck is being researched
+([07-linux](docs/07-linux.md)).
 
 ## Features
 
@@ -145,6 +146,7 @@ own ([D17](docs/decisions.md)):
 | [04-inventory](docs/04-inventory.md) | the code inventory: functions, jump tables, indirect branches, exceptions, frame pacing and render-target sites |
 | [05-recompiler](docs/05-recompiler.md) | the recompiler and its runtime in the fork: generated code, coverage, tests, build, `SSD_AOT` and differential mode |
 | [06-compatibility](docs/06-compatibility.md) | what works in each part of the game, and how it was checked |
+| [07-linux](docs/07-linux.md) | Linux and the Steam Deck: what the code needs, the setup, packaging |
 | [decisions](docs/decisions.md) | decision log |
 | [hashes](docs/hashes.md) | input hashes |
 

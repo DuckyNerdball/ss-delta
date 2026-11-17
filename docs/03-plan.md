@@ -634,11 +634,51 @@ built without the JIT.
 
 **Exit:** an EU dump installs and plays like a US one.
 
+## Phase 11 — Linux, targeting the Steam Deck (L) ◐
+
+The owner asked for it on 2026-11-17. Research:
+[07-linux](07-linux.md). The Deck is the only Linux machine.
+
+* ☑ Survey of what the code needs (2026-11-17, 07-linux).
+* ◐ **11a Baselines on the Deck**: upstream Vita3K's Linux AppImage (the
+  reference) and our Windows release under Proton, setup included. Frame
+  rate at 1× and 2×, rendering on RADV against the 760M.
+  * ☑ Upstream AppImage (2026-11-17): hangs the GPU on Vulkan within
+    35 s in every configuration; OpenGL doesn't (07-linux).
+  * ◐ Our Windows build under Proton 11: runs natively, no GPU hang
+    (2026-11-17); its frame rate and the setup under Proton still to do.
+* ◐ **11b The fork on Linux, JIT only**: built in the Steam Linux Runtime
+  SDK (WSL2 or CI), run on the Deck on dynarmic. Our renderer patches on
+  RADV; `v3kdrive.py`'s Linux backend (FIFO input, `SIGTERM`).
+  * ☑ Built in WSL 2 with the sniper SDK (g++ 14), runs in the sniper
+    runtime on the Deck: a quest from Stage Select at 60 fps, rendered
+    correctly, no GPU hang (2026-11-17, 07-linux).
+  * ☑ The input pipe as a FIFO; driven from a shell script on the Deck.
+  * ☑ The fork and kit changes committed (fork `18bdae40`, kit `c5b23f5`);
+    `ss-delta.exe` checked unchanged on Windows.
+  * ☑ A 2× run: 59.9 fps in the first quest map.
+  * ☐ `v3kdrive.py` and `build-vita3k.py` on Linux; which patch avoids
+    upstream's hang.
+* ◐ **11c Native code on Linux**: the `dlopen` loader, the recompiler's
+  CMake for clang, `ssd_aot_*.so`, NativeCPU; the dynarmic tests
+  (`run-tests`) on Linux.
+  * ☑ The loader, the CMake (g++ 14 for now) and the ten modules as
+    `.so`; a quest on NativeCPU on the Deck at 60 fps, 0 JIT calls
+    (2026-11-17, 07-linux).
+  * ☐ The dynarmic tests on Linux; a longer play session natively.
+* ☐ **11d A setup for Linux** (kit): a pinned portable LLVM and sysroot,
+  the compile on the Deck (time, memory), a release job. Record the choice
+  in decisions.md.
+* ☐ **11e Deck polish**: Game Mode, controls and touch, 16:10 screen,
+  suspend/resume, 30/40/60 fps and battery.
+
+**Exit:** with a Deck and their own dump, a player gets from a release to
+a quest in Game Mode, on native code.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine
   already prefers loose files when `PackFileFirst false`).
-* Other platforms (Linux, Steam Deck).
 
 ## Unplanned
 
