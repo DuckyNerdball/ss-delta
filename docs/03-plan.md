@@ -682,8 +682,13 @@ The owner asked for it on 2026-11-17. Research:
   * ☑ Peak memory on the Deck: 4.6 GB used against 2.0 GB idle, so about
     2.6 GB for the setup with 6 jobs; second run 1165 s, with the menu
     entry and icon, and zig's cache removed (466 MB left).
-* ☐ **11e Deck polish**: Game Mode, controls and touch, 16:10 screen,
+* ◐ **11e Deck polish**: Game Mode, controls and touch, 16:10 screen,
   suspend/resume, 30/40/60 fps and battery.
+  * ☑ Measured over SSH (2026-11-17, 07-linux, `tools/deck-quest.sh`):
+    four maps at 60 fps, 4.3–4.8 W APU (30 fps: 3.9 W; 2×: 6.9 W);
+    nested gamescope; SIGTERM quits cleanly in 0.2 s; audio on PipeWire.
+  * ☐ On the Deck in hand (07-linux's list): Game Mode from Steam, the
+    touchscreen, suspend/resume, 40 Hz, battery unplugged.
 
 **Exit:** with a Deck and their own dump, a player gets from a release to
 a quest in Game Mode, on native code.

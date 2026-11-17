@@ -173,25 +173,72 @@ C++ and the objects) after the setup, on Windows too.
   `make-setup.py`. A `release` job drafts one release with both setups.
   Nothing game-derived reaches CI (D2): the fork and the kit only.
 
-## Deck-specific work
+## Deck-specific work (11e)
 
-* **Screen**: 1280×800 is 16:10, the game 16:9 at 960×544. At 1× the image
-  is scaled by 1.33 with bars top and bottom. Options: 2× (1920×1088)
-  downscaled if the GPU has room; Vita3K's FSR 1 upscaling.
-* **Controls**: Steam Input gives SDL an Xbox-style pad, which the
-  frontend already maps. The touchscreen → the Vita's front touch;
-  back touch → the back paddles or trackpads (to design).
-* **Game Mode**: gamescope, fullscreen, its own frame limiter. The 60 fps
-  option (D16) against 30 fps for battery life; 40 fps on a 40 Hz panel
-  setting is worth a look.
-* **Suspend and resume** in the middle of a quest: the Vulkan device and
-  the audio stream must survive.
+Measured over SSH on the test Deck (2026-11-17), from the setup's playable
+folder on native code, with `tools/deck-quest.sh`: Stage Select, a quest,
+a camera turn and a short walk, then 20 s standing; frame rate from
+`VITA3K_FRAME_LOG`, power from the GPU driver's `power1_average` (the
+whole APU, CPU and GPU, in watts; it reads on AC as well, unlike the
+battery's `power_now`). The Deck was on AC, battery full.
+
+| Map (Stage Select index) | Settings | fps, last 20 s | APU | GPU clock |
+|---|---|---|---|---|
+| ST16A (0) | 60 fps, 1× | 60.0 | 4.8 W | 620 MHz |
+| ST16A (0) | 30 fps, 1× | 29.9 | 3.9 W | 391 MHz |
+| ST16A (0) | 60 fps, 1.3333× (1279×725) | 60.0 | 5.7 W | 582 MHz |
+| ST16A (0) | 60 fps, 2× (1920×1088) | 60.0 | 6.9 W | 964 MHz |
+| ST03A (2) | 60 fps, 1× | 60.0 | 4.6 W | 480 MHz |
+| ST01B (5) | 60 fps, 1× | 60.0 | 4.3 W | 544 MHz |
+| ST22A (524), boss arena | 60 fps, 1× | 59.9 | 4.3 W | 505 MHz |
+
+The player stands still for those 20 s: fights cost more and were not
+measured. The CPU ran at about 2.4 GHz throughout.
+
+* **Frame rate and battery**: 60 fps costs about 1 W more than 30 on the
+  APU. **Hypothesis**: with the screen and the rest of the Deck (a few
+  watts more), about 8–10 W in all, 4–5 h on the LCD Deck's 40 Wh; to be
+  read from the battery's `power_now` unplugged. 40 fps: the game's own
+  pacing flips every Nth emulated 60 Hz vblank, so only 30 and 60 exist
+  (D16); a 40 Hz panel with Game Mode's frame limiter is the way to try
+  it. A nested `gamescope -r 40` in desktop mode does not limit the game
+  (the frame log stays at 60): Game Mode's limiter has to be tried there.
+* **Screen**: 1280×800 is 16:10, the game's 960×544 a little wider than
+  16:9; it fills 1280×725 with bars of 37 px. `scale` takes fractions:
+  1.3333 renders 1279×725 (the multiplier is truncated; 1.33334 gives
+  1280×725), and the ST16A frame at 1.3333 renders correctly. A
+  fractional scale was never swept over every map and effect (Phase 8
+  checked 1× and 2×), so the default stays 1; 2× holds 60 fps at 6.9 W.
+* **Game Mode**: the game runs under a nested gamescope (1280×800) in
+  desktop mode at 60 fps, 4.8 W, as without it. Steam's "Exit game"
+  sends SIGTERM: the game quits in about 0.2 s, exit code 0, its log
+  complete (SDL turns the signal into a quit).
+* **Audio**: PipeWire, through its PulseAudio side (a stereo 44.1 kHz
+  stream named `ss-delta.x86_64`).
+* **Controls**: outside Steam, SDL sees the "Steam Deck Controller"
+  itself; in Game Mode, Steam Input gives an Xbox-style pad. The default
+  `[gamepad]` and `[touch]` bindings need nothing else. The back buttons
+  (L4/R4/L5/R5) can't be bound in `ss-delta.ini` (the parser knows no
+  paddle names); Steam Input can map them to other buttons. The
+  touchscreen is the front touchscreen (SDL's finger events).
 * **Shaders**: Steam's shader pre-caching doesn't cover non-Steam games;
   the background compile (D12) and the shader cache (`vk16-*.spv`) do the
   job as on Windows.
 * **Ad Hoc Play**: the `lan` mode between a Deck and a PC
   (**hypothesis**: works as between two PCs). The `local` mode
   (127.0.0.N) works on Linux too: the whole 127/8 is loopback there.
+
+Left for a test on the Deck itself (someone holding it):
+
+1. Game Mode: add the menu entry with "Add a Non-Steam Game", start it
+   from Game Mode, play a quest; the picture fills the screen's width.
+2. The touchscreen on a menu that takes touch (the Librom's pages) and
+   the Black Rite icon; the left trigger for the Black Rite.
+3. Suspend (power button) in a quest and resume: picture, sound, input.
+4. Game Mode's performance overlay at 40 Hz (refresh rate 40, frame
+   limit 40): does the game run at its normal speed, and does it judder?
+5. Battery: half an hour of play unplugged, the percentage before and
+   after (or `power_now` over SSH).
 
 ## Developing without a Linux PC
 
