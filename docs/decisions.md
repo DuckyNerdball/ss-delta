@@ -749,8 +749,10 @@ the setup's compile.
   each module exports only `armrecomp_aot_init` (a version script).
 * The Linux setup is a `.tar.gz`: `setup.sh`, python-build-standalone's
   CPython 3.12 (with Tk, for the same setup window), the kit and the
-  front end. The playable folder gets a desktop entry, which Steam's "Add
-  a Non-Steam Game" lists, for Game Mode.
+  front end. The playable folder gets a desktop entry, and the setup adds
+  the game to the running Steam client as a non-Steam game
+  (`steam://addnonsteamgame/`, as SteamOS's "Add to Steam" does), for
+  Game Mode. Not `shortcuts.vdf` edited directly: that needs Steam closed.
 * The release workflow builds both setups (Linux in the sniper SDK
   container, pinned by tag) and drafts one release with both.
 

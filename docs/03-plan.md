@@ -687,6 +687,8 @@ The owner asked for it on 2026-11-17. Research:
   * ☑ Measured over SSH (2026-11-17, 07-linux, `tools/deck-quest.sh`):
     four maps at 60 fps, 4.3–4.8 W APU (30 fps: 3.9 W; 2×: 6.9 W);
     nested gamescope; SIGTERM quits cleanly in 0.2 s; audio on PipeWire.
+  * ☑ The setup adds the game to Steam (`--steam`, kit 706ea10); checked:
+    the shortcut, and a launch through Steam on native code.
   * ☐ On the Deck in hand (07-linux's list): Game Mode from Steam, the
     touchscreen, suspend/resume, 40 Hz, battery unplugged.
 

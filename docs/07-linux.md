@@ -213,6 +213,17 @@ measured. The CPU ran at about 2.4 GHz throughout.
   desktop mode at 60 fps, 4.8 W, as without it. Steam's "Exit game"
   sends SIGTERM: the game quits in about 0.2 s, exit code 0, its log
   complete (SDL turns the signal into a quit).
+* **Adding the game to Steam**: the setup's `--steam` (a checkbox in the
+  window, ticked by default) hands `ss-delta.desktop` to the running
+  Steam client with `steam://addnonsteamgame/<file>`, as SteamOS's "Add to
+  Steam" does (Steam takes the link only while `/tmp/addnonsteamgamefile`
+  exists). Projects that write `shortcuts.vdf` themselves need Steam
+  closed, or it overwrites the file; this needs it running. Checked on the
+  Deck (2026-11-17): the entry appears in `shortcuts.vdf` with name,
+  executable, start folder and icon; started with `steam://rungameid/`
+  (Game Mode's path) the game runs natively with Steam's overlay loaded.
+  Library artwork (the grid images) isn't set: that would mean writing
+  into Steam's `userdata/<id>/config/grid/` ourselves.
 * **Audio**: PipeWire, through its PulseAudio side (a stereo 44.1 kHz
   stream named `ss-delta.x86_64`).
 * **Controls**: outside Steam, SDL sees the "Steam Deck Controller"
@@ -230,8 +241,9 @@ measured. The CPU ran at about 2.4 GHz throughout.
 
 Left for a test on the Deck itself (someone holding it):
 
-1. Game Mode: add the menu entry with "Add a Non-Steam Game", start it
-   from Game Mode, play a quest; the picture fills the screen's width.
+1. Game Mode: start "Soul Sacrifice Delta" (the test install, added to
+   Steam on 2026-11-17) from Game Mode, play a quest; the picture fills
+   the screen's width.
 2. The touchscreen on a menu that takes touch (the Librom's pages) and
    the Black Rite icon; the left trigger for the Black Rite.
 3. Suspend (power button) in a quest and resume: picture, sound, input.

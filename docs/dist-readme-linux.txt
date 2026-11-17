@@ -8,10 +8,11 @@ US and EU games are the same build: either one runs. When both are installed,
 the US one does; ./ss-delta.x86_64 --title-id PCSF00532 starts the EU one. It
 needs Vulkan, glibc 2.30 or newer and nothing else from the system.
 
-Steam Deck: the setup's applications menu entry is what "Add a Non-Steam Game"
-(Steam, Games menu, in desktop mode) lists; once added, the game starts from
-Game Mode. No compatibility tool is needed: it is a Linux program, not a
-Windows one. The Deck's controls are a gamepad to the game; the touchscreen is
+Steam Deck: the setup adds the game to Steam as a non-Steam game (its "Add the
+game to Steam" box; Steam must be running), so it starts from Game Mode. If it
+didn't, add ss-delta.desktop from this folder with "Add a Non-Steam Game"
+(Steam, Games menu, in desktop mode). No compatibility tool is needed: it is a
+Linux program, not a Windows one. The Deck's controls are a gamepad to the game; the touchscreen is
 the Vita's front touchscreen.
 
 Settings: press F1, or hold Select (the View button) on a gamepad for a
