@@ -684,6 +684,52 @@ The owner asked for it on 2026-11-17. Research:
 **Exit:** with a Deck and their own dump, a player gets from a release to
 a quest in Game Mode, on native code.
 
+## Phase 12 — macOS on Apple Silicon (L) ◐
+
+The owner asked for it on 2026-11-17. Research:
+[08-macos](08-macos.md). The test machine is a MacBook Air (M5). arm64
+only: no Rosetta, no Intel Macs.
+
+* ☑ Survey of what the code needs (2026-11-17, 08-macos).
+* ☑ **12a Access and baseline** (2026-11-17): SSH to the Mac, its
+  configuration; upstream Vita3K's macOS arm64 build on the M5 with the
+  test file system runs title to quest at 26–29 fps, too bright, with
+  ST03A's water patch (08-macos).
+* ◐ **12b Memory mapping**: `double-buffer` works on MoltenVK without
+  upstream's `__APPLE__` override and is needed (`disabled` blows out the
+  snow, as in upstream) (2026-11-17, 08-macos).
+  * ☑ The override dropped (2026-11-17).
+  * ☑ Write tracking with 16 KiB host pages: tracked regions cover
+    whole host pages, and the merge loop's end fixed; 0 unhandled faults
+    on the M5, Windows unchanged (2026-11-17).
+  * ☐ A longer run on more maps (the map sweep on the Mac).
+* ◐ **12c The fork on macOS, JIT only**: the single-game executable on
+  APPLE (`<id>.arm64`, `.dylib` module scan), built on the Mac or in CI;
+  our renderer patches on MoltenVK; `v3kdrive.py`'s POSIX backend.
+  * ☑ Built on the Mac (configure 82 s, build 100 s); ST03A from Stage
+    Select at 59.4 fps on the JIT, rendered as on Windows, water patch
+    fixed (2026-11-17, 08-macos).
+  * ☑ The fork changes committed; `ss-delta.exe` on Windows checked
+    (ST03A natively, 60 fps, pictures as before).
+  * ☐ `v3kdrive.py`'s POSIX backend (a shell driver stands in for now).
+* ◐ **12d Native code on arm64**: the recompiler's CMake for Apple clang
+  (`-ffp-contract=off`, `.dylib`, exported symbols); the dynarmic tests on
+  an arm64 host; a quest on NativeCPU.
+  * ☑ The ten modules as `.dylib` in 95 s; ST03A natively, 0 native-to-JIT
+    calls, rendered as on Windows; 23,280 + 684 dynarmic tests, 0 failing
+    (2026-11-17, 08-macos).
+  * ☐ Native runs 54.8 fps against the JIT's 57.8: thread QoS
+    (efficiency cores, **hypothesis**); a longer play session natively.
+* ☐ **12e A setup for macOS** (kit): zig or the Command Line Tools,
+  measured on the M5; packaging (folder or `.app`), signing and
+  quarantine; a release job. Record the choice in decisions.md.
+* ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc
+  Play's `local` mode (only 127.0.0.1 exists on `lo0`), thermals and
+  battery.
+
+**Exit:** with an Apple Silicon Mac and their own dump, a player gets
+from a release to a quest on native code.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine

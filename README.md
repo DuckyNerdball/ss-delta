@@ -18,7 +18,8 @@ add-ons are unlocked, and Ad Hoc Play works between copies on one PC and
 across a LAN ([compatibility](docs/06-compatibility.md)). The endings after
 the final battle have not been reached in testing yet. Windows only for
 now; a Linux build for the Steam Deck is being researched
-([07-linux](docs/07-linux.md)).
+([07-linux](docs/07-linux.md)), and a macOS build for Apple Silicon
+([08-macos](docs/08-macos.md)).
 
 ## Features
 
@@ -150,6 +151,7 @@ own ([D17](docs/decisions.md)):
 | [05-recompiler](docs/05-recompiler.md) | the recompiler and its runtime in the fork: generated code, coverage, tests, build, `SSD_AOT` and differential mode |
 | [06-compatibility](docs/06-compatibility.md) | what works in each part of the game, and how it was checked |
 | [07-linux](docs/07-linux.md) | Linux and the Steam Deck: what the code needs, the setup, packaging |
+| [08-macos](docs/08-macos.md) | macOS on Apple Silicon: what the code needs, MoltenVK and memory mapping, signing |
 | [decisions](docs/decisions.md) | decision log |
 | [hashes](docs/hashes.md) | input hashes |
 
