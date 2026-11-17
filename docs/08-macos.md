@@ -75,7 +75,7 @@ Deck.
 | Module scan (`game-frontend/frontend.cpp`) | `.dll` on Windows, `.so` elsewhere | `.dylib` on macOS (done) |
 | Single-game executables (`vita3k/CMakeLists.txt`) | built on `WIN32` or Linux only. Named `<id>.<arch>` on Linux | built on APPLE too, `<id>.arm64` (done). Decide between a bare executable in a folder and an `.app` bundle (below) |
 | Config, logs, shader cache | next to the executable (`ctx.exe_dir / <id>`) | fine in a plain folder. **Inside a signed `.app` bundle this breaks the signature**: there, use `~/Library/Application Support/<id>` |
-| Test input pipe | a FIFO on Linux (11b) | **hypothesis**: the Linux FIFO code works as is (POSIX) |
+| Test input pipe | a FIFO on Linux (11b) | works on macOS. The reader reopened the FIFO at each end-of-file, a race that killed a shell driver now and then; fixed for both (fork `60cf6936`, *The map sweep* below) |
 | Recompiler runtime (`armrecomp.h`, `neon.h`) | plain C++20, no intrinsics, no `#ifdef` per host. NaN rules, default NaN, flush-to-zero, saturation and rounding are done in software (`process_nans`, `arm_nan`, `single_to_half`) | none expected for correctness. See *floating point* below |
 | Barriers | `dmb`/`dsb` → `std::atomic_thread_fence(seq_cst)` (`semantics.py`). `ldrex`/`strex` → CAS through `std::atomic_ref` | correct on a weakly ordered host. x86's TSO hid nothing here, because the fences were already real |
 | Guest loads and stores | `volatile` accesses at `g_guest_base + a` | arm64 allows unaligned plain accesses, as ARMv7 does. Exclusives must be aligned on both |
@@ -306,8 +306,10 @@ the lower half of the picture: none.
   check on a map with odd geometry.
 * One run ended early: the game shut down normally, half a second after
   a screenshot and 7 s before the script's `SIGTERM`. The owner did not
-  close the window. Not reproduced in four later runs. The new log line
-  names the reason next time.
+  close the window. **Hypothesis**, likely: the input pipe race found in
+  the map sweep (below) killed the driver at its next command, and the
+  script went straight on to its `SIGTERM`. The sweep's early ends looked
+  the same ("Quit requested (quit event)", shots missing).
 * dynarmic prints "Unhandled EXC_BAD_ACCESS at pc ..." (stdout, 5 with
   `disabled`, 1,007 with `double-buffer`): noise, the macOS form of the
   Linux "Unhandled SIGSEGV" lines (07-linux).
@@ -354,6 +356,50 @@ interleaved runs per configuration (`build/macos/perf.sh`).
   crackles in play.
 * Every measurement over SSH so far ran with the user idle (50% slack),
   a state a player never plays in. The fix makes that irrelevant.
+
+## The map sweep on the M5 (2026-11-17)
+
+`tools/map-sweep.ps1`'s 50 maps, driven the same way by a shell copy
+(`build/macos/sweep.sh` with `drive.sh`, not committed): Stage Select
+index per map, the quest started, six shots over 40 s with camera moves
+and the Mind's Eye view, and `VITA3K_FRAME_LOG`. Native code,
+`double-buffer`, real-time threads, fork `9b380165` (then `60cf6936` for
+the seven maps run again). User idle (SSH), `caffeinate -i -s`.
+
+* **Every map loads and plays at 60 fps.** Over each map's last 10 s:
+  60.0 fps on 47 maps, p99 at or under 17.2 ms on all 50. ST22A, ST22C and
+  ST23A show 59.8–59.9 fps with one 44–51 ms frame; in those three runs
+  the player died during the shots (**hypothesis**: the death transition).
+  On the Radeon 760M the sweep had dropped to 56 fps on ST16A
+  (GPU-bound); the M5 doesn't drop.
+* **0 native-to-JIT calls, 0 unhandled write faults, 0 critical log lines
+  on every map.**
+* **The pictures match Windows.** Each map's shots were laid out on
+  contact sheets against the Windows sweep (`build/maps-60`): same
+  lighting, fog, water, particles and effects on all 50. The differences
+  are gameplay timing (enemy positions, camera, the player dying in three
+  boss maps). The first in-quest shot, whose camera is the same in both,
+  has the same mean brightness within a few levels on most maps.
+* **ST16A's unhandled faults** (38–46 per run after the host-page fix
+  above) were a race, likelier with 16 KiB pages: two threads fault on
+  the same page, the first one's segment is unprotected and erased, and
+  the second, once it gets the lock, finds no segment. On macOS the handler
+  now checks the page's protection (`mach_vm_region`) and retries when
+  the access is allowed: 0. Two related fixes in the same commit
+  (`9b380165`): an allocation's `mprotect` of its whole host page no
+  longer unprotects tracked segments that share it, and unmapping an
+  external mapping now notifies and unprotects every segment it erases,
+  not just the mapping's own pages.
+* **The input pipe race.** Seven maps ended early, with 0–5 of their 7
+  shots: "Quit requested (quit event)" in the middle of the route. The
+  fork's FIFO reader closed and reopened the FIFO at each end-of-file. A
+  driver that opened it in that window got `SIGPIPE` at its write, and the
+  sweep then went straight to its `SIGTERM`. The reader now keeps the FIFO
+  open read-write (fork `60cf6936`, also Linux's code). The seven maps
+  run again: 7 shots each, driver exit 0, 60.0 fps, the same pictures as
+  Windows.
+* MoltenVK's "Metal does not support disabling primitive restart"
+  appears on every map. No geometry glitch in any of the 350 shots.
 
 ## Developing on the Mac
 

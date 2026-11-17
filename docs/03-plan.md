@@ -706,14 +706,17 @@ only: no Rosetta, no Intel Macs.
   configuration; upstream Vita3K's macOS arm64 build on the M5 with the
   test file system runs title to quest at 26–29 fps, too bright, with
   ST03A's water patch (08-macos).
-* ◐ **12b Memory mapping**: `double-buffer` works on MoltenVK without
+* ☑ **12b Memory mapping**: `double-buffer` works on MoltenVK without
   upstream's `__APPLE__` override and is needed (`disabled` blows out the
   snow, as in upstream) (2026-11-17, 08-macos).
   * ☑ The override dropped (2026-11-17).
   * ☑ Write tracking with 16 KiB host pages: tracked regions cover
     whole host pages, and the merge loop's end fixed; 0 unhandled faults
     on the M5, Windows unchanged (2026-11-17).
-  * ☐ A longer run on more maps (the map sweep on the Mac).
+  * ☑ The map sweep on the Mac: all 50 maps natively at 60 fps, 0
+    native-to-JIT calls, 0 unhandled faults, pictures as on Windows;
+    ST16A's fault race and the input pipe race fixed (fork `9b380165`,
+    `60cf6936`) (2026-11-17, 08-macos).
 * ◐ **12c The fork on macOS, JIT only**: the single-game executable on
   APPLE (`<id>.arm64`, `.dylib` module scan), built on the Mac or in CI;
   our renderer patches on MoltenVK; `v3kdrive.py`'s POSIX backend.
