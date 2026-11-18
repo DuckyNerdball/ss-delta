@@ -187,7 +187,18 @@ there: a **43 MB `.tar.gz`** (180 MB unpacked). Then, as a download:
    on native code and reached the title, no errors. The ini's texts name
    `ss-delta.arm64` and `.dylib`.
 
-Not checked over SSH: the setup window's look (no screen recording).
+**The owner's run** (2026-11-18): a setup built from the committed kit
+and fork (kit `60b1bf2`, fork `bc449f9a`), put in Downloads with
+Safari's quarantine flag; unpacked, `setup.command` through Open Anyway,
+the window with the US zip, the shortcut box on. The setup finished, the
+game runs, and the window looks right. The owner's suggestion: don't ask
+for parts the dump already holds. Since kit `2b39018` the setup reads
+the dump's `param.sfo` files (`dumpinfo.py`; zips, vpks, folders): for
+a NoNpDrm zip with `app/` (1.00, `sce_sys/package/work.bin`) and
+`patch/` (1.30) the Update row reads "in the game's dump (1.30)", and
+the Licence rows show only for a pkg or a dump without a licence inside.
+The console flow skips the update question the same way. Not
+macOS-specific.
 
 **The Dock icon** (the owner, 2026-11-18): the game's icon shows while it
 runs, but square and larger than the other apps'. macOS doesn't shape app

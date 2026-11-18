@@ -749,8 +749,11 @@ only: no Rosetta, no Intel Macs.
     the game's icon, but square and larger than other apps'; the setup
     now draws it in Apple's shape (kit `49a3a5b`) and the game no longer
     replaces it (fork `e0a324a8`, 08-macos).
+  * ☑ The setup run by the owner from a quarantined download, window and
+    all (2026-11-18, 08-macos); it no longer asks for an update or licence
+    the dump holds (kit `2b39018`).
   * ☐ The release workflow's `macos` job run on GitHub (written, not run
-    yet), and the setup window looked at on the Mac's screen.
+    yet).
 * ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc
   Play's `local` mode (only 127.0.0.1 exists on `lo0`), thermals and
   battery.
