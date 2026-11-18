@@ -1,7 +1,8 @@
 # ss-delta
 
-A native PC port of **Soul Sacrifice Delta** (PS Vita, US PCSA00152 or EU PCSF00532, v1.30)
-by static recompilation, built from the player's own dump. The game's code,
+A native port of **Soul Sacrifice Delta** (PS Vita, US PCSA00152 or EU PCSF00532, v1.30)
+to Windows, Linux (and the Steam Deck) and macOS on Apple Silicon, by
+static recompilation, built from the player's own dump. The game's code,
 and the firmware modules it loads, are recompiled ahead of time to C++ and
 run natively inside a fork of Vita3K, which supplies the rest of the
 console.
@@ -16,10 +17,18 @@ The whole game plays on native code, without a JIT: every quest map and the
 story up to the final battle render correctly on AMD and NVIDIA GPUs, the
 add-ons are unlocked, and Ad Hoc Play works between copies on one PC and
 across a LAN ([compatibility](docs/06-compatibility.md)). The endings after
-the final battle have not been reached in testing yet. Windows only for
-now; a Linux build for the Steam Deck is being researched
-([07-linux](docs/07-linux.md)), and a macOS build for Apple Silicon
-([08-macos](docs/08-macos.md)).
+the final battle have not been reached in testing yet.
+
+Since 0.3.0 it runs on three platforms, each natively at 60 fps:
+
+* **Windows** 10 or 11, x64;
+* **Linux** x64, the **Steam Deck** among them (desktop mode to set up,
+  then Game Mode to play; [07-linux](docs/07-linux.md));
+* **macOS** 13.3 or newer on **Apple Silicon** (M1 and later, tested on an
+  M5; [08-macos](docs/08-macos.md)).
+
+They play Ad Hoc Play together over a LAN: a Windows PC, a Steam Deck and
+a Mac have shared one room and played a quest, with any of them as host.
 
 ## Features
 
@@ -39,9 +48,9 @@ Compared with running the game in Vita3K:
 * **Rendering fixes** for bugs the game shows in Vita3K, among them the
   white floors on NVIDIA GPUs (in upstream Vita3K and Vita3K-Plus too) and
   a "ghost" of the bloom trailing moving objects.
-* **Ad Hoc Play on one PC.** Up to four copies of the game play together on
-  one PC, each with its own saves and gamepad, or across a LAN
-  ([D15](docs/decisions.md)).
+* **Ad Hoc Play without a Vita.** Up to four copies of the game play
+  together: on one PC, each with its own saves and gamepad, or across a LAN,
+  Windows, Linux and macOS mixed ([D15](docs/decisions.md)).
 * **The add-ons unlocked.** Their content is in the game since update
   1.30, and PSN, which recorded the purchases, is closed
   ([D14](docs/decisions.md)).
@@ -53,36 +62,64 @@ Compared with running the game in Vita3K:
 * **Touch on keys and buttons:** the Black Rite icon on F and the left
   trigger; the mouse is the touchscreens.
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).
-* **One executable**, `ss-delta.exe`, without Vita3K's interface and
-  offline, installed from your own dump with one command.
+* **One executable** per platform (`ss-delta.exe`, `ss-delta.x86_64`,
+  `ss-delta.arm64`), without Vita3K's interface and offline, installed from
+  your own dump by the setup.
 
 ## The setup (no building)
 
-Each release on GitHub has a setup, `ss-delta-setup-<version>.zip`, for
-players who don't want to build anything. Unzip it, run `setup.bat`, and
-in its window:
+Each release on GitHub has a setup per platform, for players who don't
+want to build anything:
 
-1. choose your dump (the parts described below);
-2. choose the folder to play from;
-3. accept Microsoft's licence.
+| Platform | Download | Start |
+|---|---|---|
+| Windows | `ss-delta-setup-<version>.zip` | unzip, run `setup.bat` |
+| Linux, Steam Deck (desktop mode) | `ss-delta-setup-linux-<version>.tar.gz` | unpack, run `setup.sh` |
+| macOS (Apple Silicon) | `ss-delta-setup-macos-<version>.tar.gz` | unpack, open `setup.command` |
 
-The setup downloads the PS Vita firmware from Sony and a compiler (about
-650 MB in all, kept in `%LOCALAPPDATA%\vita-recomps`). It then installs
-the game, translates its code and compiles it on your PC, which takes a
-few minutes. Play from the folder it made (by default `ss-delta`, next to
-the setup's folder) or from the desktop shortcut it offers; the setup's
-own folder can be deleted afterwards. Nothing of the game is in the setup
-or leaves your PC. The setup is not signed yet, so Windows may warn about
-it ("More info", "Run anyway"). Its SHA-256 and build attestation are on
-the release page.
+In its window, choose your dump (the parts described below) and the
+folder to play from; on Windows, also accept Microsoft's licence for the
+compiler. The setup looks into the dump: a decrypted dump that already
+holds the update and licence isn't asked for them again.
+
+The setup downloads the PS Vita firmware from Sony and a compiler: on
+Windows about 650 MB (Microsoft's compiler, kept in
+`%LOCALAPPDATA%\vita-recomps`), on Linux and macOS about 240 MB (zig,
+kept in `~/.cache/vita-recomps` or `~/Library/Caches/vita-recomps`). It
+then installs the game, translates its code and compiles it on your
+computer, which takes a few minutes. Play from the folder it made (by
+default `ss-delta`, next to the setup's folder), or from what it offers
+to add:
+* Windows: a desktop shortcut;
+* Linux: an applications-menu entry, and the game in Steam, so a Steam
+  Deck starts it from Game Mode;
+* macOS: the app in Applications, which runs in macOS's Game Mode when
+  fullscreen.
+
+The setup's own folder can be deleted afterwards. Nothing of the game is
+in the setup or leaves your computer.
+
+The setups are not signed with a publisher's certificate:
+* Windows may warn ("More info", "Run anyway");
+* macOS refuses `setup.command` the first time: System Settings, Privacy &
+  Security, "Open Anyway" (the setup's `README.txt` explains), and later
+  asks to let the game find devices on the local network (for Ad Hoc
+  Play).
+
+The SHA-256 and build attestation of each setup are on the release page.
 
 ## What you need
 
-* Windows 10 or 11, x64, a GPU with Vulkan.
+* A computer with a Vulkan GPU:
+  * Windows 10 or 11, x64;
+  * Linux, x64, glibc 2.31 or newer (any current distribution; SteamOS);
+  * macOS 13.3 or newer on Apple Silicon (Metal, through MoltenVK).
 * Your own copy of the game, US (PCSA00152) or EU (PCSF00532) version, at
-  **update 1.30**: a
-  decrypted dump (folder, `.zip` or `.vpk`, with the 1.30 patch merged),
-  or the PSN `.pkg` with its licence `work.bin` plus the 1.30 patch pkg.
+  **update 1.30**:
+  * a decrypted dump (folder, `.zip` or `.vpk`) with the 1.30 patch, merged
+    or beside the game as NoNpDrm dumps keep it;
+  * or the PSN `.pkg` with its licence `work.bin`, plus the 1.30 patch pkg.
+
   The add-ons' content is part of 1.30.
 * The PS Vita firmware update files `PSVUPDAT.PUP` and `PSP2UPDAT.PUP` (as
   for Vita3K; Sony publishes them, and the setup downloads them).
@@ -104,6 +141,12 @@ The script finds MSVC (vswhere) and Qt (`Qt6_ROOT`, `--qt <dir>`, or the
 newest `C:\Qt\<version>\msvc20*_64`). The first build takes about ten
 minutes and puts `ss-delta.exe` in `build/vita3k/bin/RelWithDebInfo/`.
 
+On Linux and macOS the same command builds `ss-delta.x86_64` or
+`ss-delta.arm64` (GCC or Clang, CMake and Ninja; macOS: Apple's Command
+Line Tools); the release workflow (`.github/workflows/release.yml`) shows
+each platform's build, and [07-linux](docs/07-linux.md) and
+[08-macos](docs/08-macos.md) the details.
+
 ## Installing your game
 
 ```
@@ -123,10 +166,12 @@ copy: don't share it.
 
 ## Playing
 
-Run `dist/ss-delta/ss-delta.exe`; `README.txt` in that folder explains the
-settings (`ss-delta.ini`: resolution, frame rate, window, bindings), the
-Black Rite binding, save import and export, and Ad Hoc Play
-(`run-player2.bat`).
+Run `dist/ss-delta/ss-delta.exe` (Linux: `ss-delta.x86_64`; macOS: the
+app the setup makes, or `ss-delta.arm64`); `README.txt` in that folder
+explains the settings (`ss-delta.ini`: resolution, frame rate, window,
+bindings), the Black Rite binding, save import and export, and Ad Hoc
+Play (`run-player2.bat`; `network = lan` for play across computers, the
+default on Linux and macOS).
 
 ## Toolchain
 
