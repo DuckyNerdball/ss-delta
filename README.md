@@ -64,49 +64,53 @@ Compared with running the game in Vita3K:
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).
 * **One executable** per platform (`ss-delta.exe`, `ss-delta.x86_64`,
   `ss-delta.arm64`), without Vita3K's interface and offline, installed from
-  your own dump by the setup.
+  your own dump by its importer on the first start.
 
-## The setup (no building)
+## Playing from a release (no building)
 
-Each release on GitHub has a setup per platform, for players who don't
-want to build anything:
+Each release on GitHub has one archive per platform, for players who
+don't want to build anything. It unpacks to the game's folder, `ss-delta`,
+with one program to start:
 
 | Platform | Download | Start |
 |---|---|---|
-| Windows | `ss-delta-setup-<version>.zip` | unzip, run `setup.bat` |
-| Linux, Steam Deck (desktop mode) | `ss-delta-setup-linux-<version>.tar.gz` | unpack, run `setup.sh` |
-| macOS (Apple Silicon) | `ss-delta-setup-macos-<version>.tar.gz` | unpack, open `setup.command` |
+| Windows | `ss-delta-<version>-windows.zip` | `ss-delta.exe` |
+| Linux, Steam Deck (desktop mode the first time) | `ss-delta-<version>-linux.tar.gz` | `ss-delta.x86_64` |
+| macOS (Apple Silicon) | `ss-delta-<version>-macos.tar.gz` | `Soul Sacrifice Delta.app` |
 
-In its window, choose your dump (the parts described below) and the
-folder to play from; on Windows, also accept Microsoft's licence for the
-compiler. The setup looks into the dump: a decrypted dump that already
-holds the update and licence isn't asked for them again.
+The first start builds the game. Its importer window asks for your dump
+(the parts described below; a decrypted dump that already holds the update
+and licence isn't asked for them again); on Windows, accept Microsoft's
+licence for the compiler too. It downloads the PS Vita firmware from Sony
+and a compiler (on Windows about 650 MB, Microsoft's compiler; on Linux
+and macOS about 240 MB, zig), installs the game, translates its code and
+compiles it on your computer, which takes a few minutes. Play then starts
+the game, and from then on the program goes straight to it.
 
-The setup downloads the PS Vita firmware from Sony and a compiler: on
-Windows about 650 MB (Microsoft's compiler, kept in
-`%LOCALAPPDATA%\vita-recomps`), on Linux and macOS about 240 MB (zig,
-kept in `~/.cache/vita-recomps` or `~/Library/Caches/vita-recomps`). It
-then installs the game, translates its code and compiles it on your
-computer, which takes a few minutes. Play from the folder it made (by
-default `ss-delta`, next to the setup's folder), or from what it offers
-to add:
+Everything stays in that folder (D22): the game, its compiled code,
+settings, saves, logs and shader cache; the downloads are deleted once the
+game is built. Delete the folder and the game is gone. Nothing of the game
+is in the release or leaves your computer. The importer offers, if wanted:
 * Windows: a desktop shortcut;
 * Linux: an applications-menu entry, and the game in Steam, so a Steam
   Deck starts it from Game Mode;
-* macOS: the app in Applications, which runs in macOS's Game Mode when
+* macOS: the app in Applications too; it runs in macOS's Game Mode when
   fullscreen.
 
-The setup's own folder can be deleted afterwards. Nothing of the game is
-in the setup or leaves your computer.
+The command line covers everything the window does (`--help` lists it):
+`--dump <file>` builds without the window, `--install` opens the importer
+again, `--game <folder>` plays the game in another folder,
+`--add-to-steam`, `--fullscreen`/`--windowed`, and `--set
+section.key=value` for any setting of `ss-delta.ini`.
 
-The setups are not signed with a publisher's certificate:
+The releases are not signed with a publisher's certificate:
 * Windows may warn ("More info", "Run anyway");
-* macOS refuses `setup.command` the first time: System Settings, Privacy &
-  Security, "Open Anyway" (the setup's `README.txt` explains), and later
+* macOS refuses the app the first time: System Settings, Privacy &
+  Security, "Open Anyway" (the folder's `README.txt` explains), and later
   asks to let the game find devices on the local network (for Ad Hoc
   Play).
 
-The SHA-256 and build attestation of each setup are on the release page.
+The SHA-256 and build attestation of each archive are on the release page.
 
 ## What you need
 
@@ -122,8 +126,8 @@ The SHA-256 and build attestation of each setup are on the release page.
 
   The add-ons' content is part of 1.30.
 * The PS Vita firmware update files `PSVUPDAT.PUP` and `PSP2UPDAT.PUP` (as
-  for Vita3K; Sony publishes them, and the setup downloads them).
-* To build (not needed with the setup): Git, Python 3.12 (`pip install capstone pyyaml`), Visual Studio
+  for Vita3K; Sony publishes them, and a release's importer downloads them).
+* To build (not needed with a release): Git, Python 3.12 (`pip install capstone pyyaml`), Visual Studio
   2022 or its Build Tools with "Desktop development with C++" (MSVC x64,
   the Windows SDK, CMake and Ninja), Qt 6.11 for MSVC x64 (Vita3K's own
   interface is built too; e.g. with `aqtinstall` into `C:\Qt`), and the
@@ -167,7 +171,7 @@ copy: don't share it.
 ## Playing
 
 Run `dist/ss-delta/ss-delta.exe` (Linux: `ss-delta.x86_64`; macOS: the
-app the setup makes, or `ss-delta.arm64`); `README.txt` in that folder
+the app a release has, or `ss-delta.arm64` in a build); `README.txt` in that folder
 explains the settings (`ss-delta.ini`: resolution, frame rate, window,
 bindings), the Black Rite binding, save import and export, and Ad Hoc
 Play (`run-player2.bat`; `network = lan` for play across computers, the

@@ -1,16 +1,34 @@
 ss-delta: Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, 1.30) on macOS
 (13.3 or newer, Apple Silicon).
 
-"Soul Sacrifice Delta.app" in this folder starts the game: double-click it,
-or keep it in the Dock. It starts ss-delta.arm64, which runs the game
-installed in a Vita file system ([paths] vita_fs in ss-delta.ini; default:
-the fs folder next to this file), with the game's code recompiled to native
-code (ssd_aot_*.dylib, built on this Mac from your own dump). The US and EU
-games are the same build: either one runs. When both are installed, the US
-one does; ./ss-delta.arm64 --title-id PCSF00532 (in Terminal, in this folder)
-starts the EU one. Graphics go through MoltenVK (Vulkan over Metal,
-libMoltenVK.dylib here). Keep the app, ss-delta.arm64 and the files next to
-it together: moving the folder needs the setup run again (or a new app).
+"Soul Sacrifice Delta.app" in this folder is the game: double-click it, or
+keep it in the Dock. macOS refuses it the first time, as it does anything
+downloaded that isn't signed by a registered Apple developer: click Done, open
+System Settings > Privacy & Security, scroll down to "Soul Sacrifice Delta was
+blocked" and click Open Anyway (once).
+
+The first time, it builds the game from your own dump: a window asks for it (a
+folder, .zip or .vpk of the game with its 1.30 update, or the PSN .pkg files
+with their licence), downloads the PS Vita firmware from Sony and a compiler
+(zig, about 240 MB in all), installs the game and compiles its code on this
+Mac, which takes a few minutes. Play then starts the game, and from then on
+the app goes straight to it.
+
+Everything stays in this folder: the game (fs), its code compiled for this Mac
+(ssd_aot_*.dylib), settings (ss-delta.ini), saves, logs and the shader cache.
+The downloads are deleted once the game is built; delete the folder and the
+game is gone (apart from the copy in Applications, if you let the importer
+make one). Keep the app and the files next to it together; the folder itself
+can move. Graphics go through MoltenVK (Vulkan over Metal, inside the app).
+
+Command line (in Terminal: "Soul Sacrifice Delta.app/Contents/MacOS/ss-delta"
+--help lists it all): --install opens the importer again (another dump, an
+update); --dump <file> builds without the window; --fullscreen or --windowed;
+--set section.key=value sets any setting of ss-delta.ini for one run; --game
+<folder> plays the game in another folder.
+
+The US and EU games are the same build: either one runs. When both are
+installed, the US one does; --title-id PCSF00532 starts the EU one.
 
 Settings: press F1, or hold Select (the View button) on a gamepad for a
 second, to open the settings menu over the paused game (Up/Down choose,
@@ -34,14 +52,14 @@ controller icon in the menu bar): background work waits, and Bluetooth
 controllers answer faster.
 
 Language: the game has no language option of its own; it uses the console's
-language, which ss-delta.arm64 sets from Language on the menu's Game page
+language, which the game sets from Language on the menu's Game page
 ([game] language in ss-delta.ini; takes effect at the next start). The US
 game has English, French, Spanish and Portuguese (Brazil), the EU game
 English, French, Spanish, German and Italian; a language the installed game
 lacks gives English.
 
 The add-ons (raiments, hoods, additional pacts) are unlocked: their content
-is in the game since update 1.30, and ss-delta.arm64 records them in your
+is in the game since update 1.30, and the game records them in your
 save once ([game] dlc in ss-delta.ini; a copy of the previous file goes to
 ss-delta/save-backups).
 
@@ -49,18 +67,17 @@ Saves are in the Vita file system (ux0/user/00/savedata/PCSA00152, or
 PCSF00532 for the EU game). To use a save from a Vita (decrypted, e.g. with
 VitaShell or Apollo), or from the Windows or Linux port, run in Terminal, in
 this folder:
-  ./ss-delta.arm64 --import-save <folder or .zip> [--slot 2]
+  "Soul Sacrifice Delta.app/Contents/MacOS/ss-delta" --import-save <folder or .zip> [--slot 2]
 The game has three save slots (default 1); the save folder as it was is kept
 in ss-delta/save-backups. To copy a slot out:
-  ./ss-delta.arm64 --export-save <folder> [--slot 2]
+  "Soul Sacrifice Delta.app/Contents/MacOS/ss-delta" --export-save <folder> [--slot 2]
 
 Ad Hoc Play (Librom, Network, Ad Hoc Play): ss-delta.ini has network = lan
 ([multiplayer]): computers in one network, Windows, Linux or macOS, each
 running the game. macOS asks whether the game may "find and
 connect to devices on your local network": allow it, or no room can be
 joined (System Settings, Privacy & Security, Local Network changes it
-later). Several copies on one Mac (network = local, ./ss-delta.arm64
---player 2) don't work yet: macOS only has the address 127.0.0.1 for them.
+later). Several copies on one Mac (network = local, --player 2) don't work yet: macOS only has the address 127.0.0.1 for them.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under
 the GNU GPL version 2. The ssd_aot_*.dylib files and the game files are

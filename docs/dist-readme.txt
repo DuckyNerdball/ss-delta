@@ -1,10 +1,27 @@
 ss-delta: Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, 1.30) on PC.
 
-ss-delta.exe runs the game installed in a Vita file system ([paths] vita_fs in
-ss-delta.ini; default: the fs folder next to this file), with the game's code
-recompiled to native code (ssd_aot_*.dll, built from your own dump). The US
-and EU games are the same build: either one runs. When both are installed,
-the US one does; ss-delta.exe --title-id PCSF00532 starts the EU one.
+Start ss-delta.exe. The first time, it builds the game from your own dump: a
+window asks for it (a folder, .zip or .vpk of the game with its 1.30 update, or
+the PSN .pkg files with their licence), downloads the PS Vita firmware from
+Sony and a compiler (about 650 MB; accept Microsoft's licence for the C++
+runtime and Windows SDK it uses), installs the game and compiles its code on
+this PC, which takes a few minutes. Play then starts the game, and from then on
+ss-delta.exe goes straight to it. Windows may warn the first time ("More info",
+"Run anyway"): ss-delta.exe isn't signed.
+
+Everything stays in this folder: the game (fs), its code compiled for this PC
+(ssd_aot_*.dll), settings (ss-delta.ini), saves, logs and the shader cache.
+The downloads are deleted once the game is built; delete the folder and the
+game is gone. Nothing of the game leaves your PC.
+
+Command line (ss-delta.exe --help lists it all): --install opens the importer
+again (another dump, an update); --dump <file> builds without the window (add
+--accept-microsoft-license); --fullscreen or --windowed; --set section.key=value
+sets any setting of ss-delta.ini for one run; --game <folder> plays the game in
+another folder.
+
+The US and EU games are the same build: either one runs. When both are
+installed, the US one does; ss-delta.exe --title-id PCSF00532 starts the EU one.
 
 Settings: press F1, or hold Select (Back/View) on a gamepad for a second, to
 open the settings menu over the paused game (Up/Down choose, Left/Right or

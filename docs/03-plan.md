@@ -764,6 +764,47 @@ only: no Rosetta, no Intel Macs.
 **Exit:** with an Apple Silicon Mac and their own dump, a player gets
 from a release to a quest on native code.
 
+## Phase 13 — Launcher standards: one program, a portable folder (M) ◐
+
+An open letter from RecompLauncher's lead asks recomp ports for one
+executable, everything in its folder, a tarball, and a flag for
+everything ([D22](decisions.md)). 0.3.0 waits for it (its first draft,
+2026-11-18, was held back).
+
+* ☑ The front end: every path from the game's folder (no
+  `init_paths`, no `SDL_GetPrefPath`); the importer in `setup/` started
+  when the game isn't built, waited for, then the game boots; macOS
+  translocation handled; `--game`, `--install`, `--dump`,
+  `--add-to-steam`, `--set`, `--fullscreen`/`--windowed`, `--help`
+  (with every setting), the importer's options passed on.
+* ☑ The kit: `setup.py` builds in its own folder and deletes its
+  downloads and work files; the window's Play hands back to the game;
+  `make-setup.py` lays out the release as the game's folder (Windows: the
+  VC++ runtime beside the exe; macOS: the app bundle); `curl.exe` when
+  Python can't check a certificate on Windows.
+* ☑ Unattended runs from a release folder (2026-11-18), the US dump, the
+  downloads inside the folder:
+  * Windows: `ss-delta.exe --dump <zip> --accept-microsoft-license`
+    built the game and booted it in the same process, natively at 59 fps;
+    a second start went straight to it; `--set` with a bad key and an
+    out-of-range value were reported and ignored;
+  * the Deck: `--dump --build-only` (exit 0, 3.7 GB);
+  * the M5: `--dump --build-only` (exit 0, 3.5 GB).
+
+  On all three, `setup/` kept only `kit` and `python` afterwards, and
+  nothing was written outside the folder: `%APPDATA%\Vita3K`,
+  `~/.cache/Vita3K`, `~/.local/share/Vita3K`, `~/Library/Application
+  Support/Vita3K` and the old shared download caches were not touched.
+  Found on the way: Windows' Python couldn't check llvm-mingw's
+  certificate (now `curl.exe`), and Vita3K's patch folder must exist.
+* ☐ The window flow on the Mac from a quarantined download (Open Anyway,
+  translocation, Build, Play), the Deck in Game Mode.
+* ☐ The release workflow's three jobs; 0.3.0 tagged again.
+
+**Exit:** each platform's archive, unpacked, is the game: started once
+with the player's dump it builds itself, and nothing lands outside its
+folder.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine

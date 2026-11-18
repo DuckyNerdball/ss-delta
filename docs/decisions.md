@@ -830,3 +830,87 @@ Windows and play ST03A natively at 60 fps. The setup is a 43 MB
 * The whole game inside an `.app` bundle: its config, logs, shader cache
   and modules would have to move to `~/Library/Application Support`, and
   the bundle could not be written into.
+
+## D22 — One program per platform, a portable folder, a command line for everything (accepted, 2026-11-18)
+
+**Context:** an open letter from the lead of RecompLauncher (a launcher
+for recomp and decomp ports) asks such projects to ship one executable,
+keep everything in its folder, ship a tarball, and have a command-line
+flag for everything. Before this, a release was a setup (`setup.bat`,
+`setup.sh`, `setup.command` and Python) that built a separate playable
+folder. Linux and macOS also wrote outside it:
+* the shader cache went to `~/.cache/Vita3K` or `~/Library/Application
+  Support/Vita3K` (Vita3K's `init_paths`, which also made an empty
+  profile folder through `SDL_GetPrefPath` on every start);
+* the setup left `<out>-work` (2.3 GB on the M5) beside the folder;
+* about 650 MB of downloads stayed in a per-user cache.
+
+LostOdysseyRecomp, the letter's example, ships its recompiled code in
+its executable; this project never ships game-derived code (D2), so the
+compiler stays (D18).
+
+**Decision:**
+
+* **The release is the game's folder.** The executable is the one thing
+  the player starts: `<id>.exe`, `<id>.x86_64`, or `<Name>.app` on macOS,
+  whose bundle runs the executable itself (Game Mode). The rest is
+  Vita3K's data, the README, and the setup in `setup/`: its Python and
+  the kit. Not built yet, the executable starts the setup, now the
+  game's *importer*. That is its window, or `--dump <file>` for the
+  console flow. It waits, then boots the game in the same process: Play
+  in the window, or exit code 0. `--install` opens the importer again.
+  The archives are `ss-delta-<version>-{windows.zip, linux.tar.gz,
+  macos.tar.gz}`, each unpacking to a folder `ss-delta`.
+* **Everything stays in that folder.** The front end sets every path
+  (assets, config, log, cache, patch) from the game's folder and never
+  calls `init_paths` or `SDL_GetPrefPath`. The folder is `--game`, else
+  `VITA_RECOMPS_GAME_DIR` (the `~/Applications` copy on macOS, through
+  `LSEnvironment`), else the executable's. On macOS that is the one
+  holding the app (`SDL_FILESYSTEM_BASE_DIR_TYPE = parent`). The
+  importer downloads into `setup/downloads`, works in `setup/work`, and
+  deletes both, plus the modules' dumps, after a successful build.
+  `--cache DIR` keeps the downloads elsewhere for the next time. The
+  setup's own files stay, so the importer can reopen. Shortcuts, the
+  menu entry, Steam and the `~/Applications` copy remain opt-in.
+* **Microsoft's VC++ runtime ships beside `ss-delta.exe`.** This amends
+  D18, which shipped no Microsoft files: the executable has to start
+  before its importer has downloaded anything. The DLLs come from the
+  build machine's Visual Studio (`VC/Redist/MSVC/<version>/x64`), which
+  Microsoft's licence lets a program carry. The recompiled modules still
+  use the runtime the importer downloads.
+* **macOS:** `make-setup.py` builds and signs the app bundle (ad hoc).
+  Gatekeeper's App Translocation runs a downloaded app from a read-only
+  copy that holds only the app. The executable notices
+  (`SecTranslocateIsTranslocatedURL`), clears the quarantine from its
+  folder, and starts again from there.
+* **The command line:**
+  * `--game <folder>`, `--install`, `--dump <file>` (with
+    `--license`/`--zrif`) and `--add-to-steam`: LostOdysseyRecomp's
+    names, which launchers know;
+  * `--set section.key=value` for any setting, and `--fullscreen` /
+    `--windowed`;
+  * the importer's own options passed on (`--accept-microsoft-license`,
+    `--shortcut`, `--steam`, `--cache`, `--jobs`);
+  * `--help`, which also lists every setting. On Windows it writes to the
+    caller's console, or to the pipe a launcher reads.
+
+  The importer's internal `--install <dump>` is now `--install-content`.
+
+**Consequences:**
+* One download per platform to start; nothing outside the folder unless
+  the player asks for it.
+* A rebuild downloads the firmware and the compiler again, unless
+  `--cache` is given.
+* The folder keeps the setup's Python and kit: about 40 MB on Windows,
+  180 MB on macOS, 500 MB on Linux.
+* utakata shares the kit and the front end and follows when it updates
+  its submodules.
+
+**Rejected:**
+
+* Linking the C++ runtime statically into the executable: the owner
+  chose shipping Microsoft's DLLs.
+* Keeping the shared per-user download cache as the default: not
+  portable.
+* Deleting `setup/` after a build: reopening the importer would need the
+  release downloaded again.

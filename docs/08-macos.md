@@ -275,7 +275,18 @@ more than the old script; each copy does.
   log, shader cache and modules then go to
   `~/Library/Application Support/<id>/`. **Chosen** (D21): the folder,
   plus a small `<name>.app` the setup makes there. The app is a script that
-  starts the executable, with the game's icon.
+  starts the executable, with the game's icon. **Since D22** (2026-11-18)
+  the release *is* that folder, with the app already in it: the bundle runs
+  the executable itself (`Contents/MacOS/ss-delta`, MoltenVK beside it),
+  and the folder holding it is the game's (`SDL_FILESYSTEM_BASE_DIR_TYPE =
+  parent`). The player lets the app through Open Anyway instead of
+  `setup.command`. A quarantined app is then run from a read-only,
+  translocated copy that holds only the app (App Translocation). The
+  front end asks Security.framework (`SecTranslocateIsTranslocatedURL`,
+  `SecTranslocateCreateOriginalPathForURL`, by `dlsym`) for the original
+  path. It clears `com.apple.quarantine` from the folder (also before it
+  starts the importer's Python), and starts itself again from there with
+  `open -n`.
 * MoltenVK: upstream links it (`MoltenVK/mvk_vulkan.h`) and bundles
   `libMoltenVK.dylib`. KosmicKrisp (LunarG, Mesa) is a Vulkan 1.4
   conformant driver over Metal, shipped in the Vulkan SDK, with reported
