@@ -547,7 +547,8 @@ no third-party save is shipped or needed.
 * `ss-delta.exe --player N` is copy N (2-4): Vita user N-1, saves copied
   from player 1's once, its own config and log, the shader cache read
   only.
-* `[multiplayer] network = local` (default) gives copy N the address
+* `[multiplayer] network = local` (the default on Windows; Linux and macOS
+  default to `lan` since 2026-11-18, see 08-macos) gives copy N the address
   127.0.0.N: P2P sockets bound to any address bind it, and a broadcast
   goes to each 127.0.0.1-4 but its own. `lan` is Vita3K's way, for PCs in
   one network.

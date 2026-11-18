@@ -50,9 +50,9 @@ The game has three save slots (default 1); the save folder as it was is kept
 in ss-delta/save-backups. To copy a slot out:
   ./ss-delta.arm64 --export-save <folder> [--slot 2]
 
-Ad Hoc Play (Librom, Network, Ad Hoc Play): on a Mac, use network = lan in
-ss-delta.ini ([multiplayer]): computers in one network, Windows, Linux or
-macOS, each running the game. macOS asks whether the game may "find and
+Ad Hoc Play (Librom, Network, Ad Hoc Play): ss-delta.ini has network = lan
+([multiplayer]): computers in one network, Windows, Linux or macOS, each
+running the game. macOS asks whether the game may "find and
 connect to devices on your local network": allow it, or no room can be
 joined (System Settings, Privacy & Security, Local Network changes it
 later). Several copies on one Mac (network = local, ./ss-delta.arm64

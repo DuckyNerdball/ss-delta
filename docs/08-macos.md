@@ -509,6 +509,25 @@ on all three, the return-to-lobby countdown on each), without issues.**
   the ad hoc loop keeps running. `sceNetShutdown` of the receive side
   still returns ENOTCONN (`0x80410139`), as Winsock does; the module
   ignores it.
+* **A Deck started from Game Mode hosted a room nobody saw** (2026-11-18,
+  the owner). Game Mode starts player 1, which reads `ss-delta.ini`, and
+  that still had the default `network = local`: every ad hoc socket was
+  bound to 127.0.0.1 (`ss -uanp`). The tests above had used
+  `ss-delta-player<N>.ini` overrides. Fix (fork `6cdbf678`,
+  `games/ss-delta/main.cpp`): `lan` is the default on Linux and macOS,
+  `local` stays the default on Windows (no firewall prompt at the first
+  start). Checked: the Mac build's `--write-ini` writes `network = lan`.
+  Existing installs keep the `network = local` their setup wrote. With
+  `lan` set, the owner hosted from the Deck in Game Mode, with power
+  saving on, and the PC found and joined the room.
+* **Colours, Deck against PC** (the owner saw a slight blue tint on the
+  Deck): a gamescope capture (`gamescopectl screenshot`) against a capture
+  of the PC's window, both standing at the same spot in a quest. The
+  compass (fixed HUD) matches within 1 of 255 per channel, and blue
+  against red differs from region to region in both directions (camera
+  angle). The game renders the same picture; the tint comes from the
+  Deck's panel (**hypothesis**: its colder white point and smaller gamut,
+  not checked against a colorimeter).
 * Still open: the Deck ignored input once at the save's "Loading
   complete" prompt. When a host quits, a guest becomes the host ("You are now the
   host").

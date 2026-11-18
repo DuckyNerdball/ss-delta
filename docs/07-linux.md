@@ -240,7 +240,8 @@ measured. The CPU ran at about 2.4 GHz throughout.
   Mac, and the three played a quest (08-macos, *Ad Hoc Play across
   platforms*). As host, the Deck couldn't be joined until fork `c5654710`:
   its Wi-Fi power saving (replies after 3 to 300 ms) outlasted the game's
-  25 ms join timeout. The `local` mode
+  25 ms join timeout. `lan` is the default on Linux since 2026-11-18 (a
+  Deck in Game Mode, player 1, had hosted on 127.0.0.1). The `local` mode
   (127.0.0.N) works on Linux too: the whole 127/8 is loopback there.
 
 Left for a test on the Deck itself (someone holding it):

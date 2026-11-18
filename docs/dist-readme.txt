@@ -49,7 +49,8 @@ for Room. Each player has its own saves (ux0\user\0<N-1>, copied from player
 1's on its first start), log and config (ss-delta\player<N>);
 ss-delta-player<N>.ini next to ss-delta.ini overrides settings for player N.
 [multiplayer] in ss-delta.ini: network = local (copies on this PC) or lan
-(PCs in one network: each runs ss-delta.exe; allow it through the firewall),
+(computers in one network, Windows, Linux or macOS, each running the game;
+allow ss-delta.exe through the firewall),
 and gamepad = 1-4 to give each copy its own gamepad.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under
