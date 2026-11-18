@@ -205,6 +205,37 @@ window icons). Since fork `e0a324a8` the front end skips it on macOS.
 Checked by the owner on the M5: the rounded icon stays in the Dock while
 the game runs.
 
+**Game Mode** (2026-11-18): in fullscreen macOS gives a game the CPU and
+GPU first, keeps background work on the efficiency cores, and doubles
+the Bluetooth rate for controllers. A game needs `LSSupportsGameMode`
+(macOS 26) or `GCSupportsGameMode` (14 and 15) in its Info.plist, a
+games category, and macOS's own fullscreen. SDL's fullscreen (F11,
+Option+Return, the green button) is that: the window list showed the
+window covering the display below the notch, with the hidden title bar
+above. With the keys set, Game Mode still didn't start. The app's
+script `exec`ed the binary in the playable folder: LaunchServices tied
+the process to the bundle (`lsappinfo`: the bundle ID and path), but
+`gamepolicyd` looks the bundle up from the process
+(`bundleRecordForAuditToken:`), and that executable isn't in one. A test
+bundle with the binary itself in `Contents/MacOS` got Game Mode at once
+(the menu bar's controller icon; the owner). The setup builds the app
+that way since kit `60b1bf2`:
+
+* `Contents/MacOS` holds a copy of the game's binary and of
+  `libMoltenVK.dylib` (found through the rpath `@executable_path`);
+* `LSEnvironment` sets `VITA_RECOMPS_GAME_DIR` to the playable folder,
+  which the front end uses as its own folder (fork `bc449f9a`), so the
+  copy in `~/Applications` uses the same settings and saves.
+  `SDL_FILESYSTEM_BASE_DIR_TYPE = parent` (the folder holding the app)
+  covers a missing variable;
+* the bundle is signed ad hoc as a whole (`codesign -s -`), so the
+  signature includes its Info.plist.
+
+Checked on the M5: the `~/Applications` copy started from Spotlight
+logged to the playable folder, loaded its native modules and saves, and
+showed Game Mode in fullscreen (the owner). The app holds about 70 MB
+more than the old script; each copy does.
+
 ## Packaging, signing and Gatekeeper
 
 * Everything must be signed on arm64 macOS. An ad-hoc signature

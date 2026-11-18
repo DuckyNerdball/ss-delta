@@ -29,6 +29,10 @@ click for the front, right-click (two fingers) for the rear. The Black Rite
 icon (touch and hold) is also on F and the gamepad's left trigger ([touch] in
 ss-delta.ini). F12 saves a screenshot to ss-delta/screenshots.
 
+In fullscreen, started from its app, the game runs in macOS's Game Mode (the
+controller icon in the menu bar): background work waits, and Bluetooth
+controllers answer faster.
+
 Language: the game has no language option of its own; it uses the console's
 language, which ss-delta.arm64 sets from Language on the menu's Game page
 ([game] language in ss-delta.ini; takes effect at the next start). The US

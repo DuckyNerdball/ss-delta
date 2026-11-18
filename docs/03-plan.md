@@ -754,6 +754,9 @@ only: no Rosetta, no Intel Macs.
 * ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc
   Play's `local` mode (only 127.0.0.1 exists on `lo0`), thermals and
   battery.
+  * ☑ Game Mode in fullscreen: the app runs the game's binary from
+    inside its bundle (kit `60b1bf2`, fork `bc449f9a`, 2026-11-18,
+    08-macos).
 
 **Exit:** with an Apple Silicon Mac and their own dump, a player gets
 from a release to a quest on native code.
