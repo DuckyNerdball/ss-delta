@@ -34,9 +34,10 @@ loads, are recompiled ahead of time to C++ and run natively inside a fork of
 Vita3K, which supplies the rest of the console.
 
 > This repository and its releases contain *no* game data, *no* firmware and
-> *no* code derived from the game. You bring your own dump; everything
+> *no* code derived from the game, apart from the README's
+> [screenshots](#screenshots). You bring your own dump; everything
 > game-derived is generated on your computer from it. See
-> [D2](docs/decisions.md).
+> [D2](docs/decisions.md) and [D23](docs/decisions.md).
 
 ## Status
 
@@ -139,3 +140,19 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 MIT ([LICENSE](LICENSE)), except `patches/vita3k/`, which are changes to
 Vita3K and, like it, under the GNU GPL version 2 or later. The Vita3K fork
 (`third_party/vita3k`) is GPL-2.0-or-later.
+
+## Screenshots
+
+Taken from the port at 2× resolution (1920×1088, scaled down here), on
+native code.
+
+| | |
+|---|---|
+| ![The title screen](docs/assets/screenshots/title.jpg) | ![Librom's menu](docs/assets/screenshots/librom.jpg) |
+| The title screen | Librom, the talking book |
+| ![A page of Librom's journal](docs/assets/screenshots/journal.jpg) | ![A fight in the desert ruins](docs/assets/screenshots/quest-desert.jpg) |
+| A page of the journal | A fight in the desert ruins |
+| ![A moonlit field of blue crystals](docs/assets/screenshots/quest-moon.jpg) | ![A spell among ice and chains](docs/assets/screenshots/quest-ice.jpg) |
+| A moonlit field of blue crystals | A spell among ice and chains |
+| ![The dragon Dionaea lands](docs/assets/screenshots/boss-dragon.jpg) | ![Save or sacrifice a defeated monster](docs/assets/screenshots/save-or-sacrifice.jpg) |
+| The dragon Dionaea lands | Save or sacrifice |

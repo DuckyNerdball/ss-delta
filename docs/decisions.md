@@ -44,7 +44,8 @@ exactly what the dynarmic fallback is for.
 * licences (RIF/work.bin);
 * firmware.
 
-Hashes, addresses, names and notes are fine.
+Hashes, addresses, names and notes are fine. Amended by D23: a few
+screenshots for the README, in `docs/assets/screenshots/`.
 
 **Consequences:**
 
@@ -914,3 +915,31 @@ compiler stays (D18).
   portable.
 * Deleting `setup/` after a build: reopening the importer would need the
   release downloaded again.
+
+
+## D23 — Screenshots of the game in the README (accepted, 2026-11-18)
+
+**Context:** the owner asked for screenshots in the README, as utakata's
+has (its D12): the title and menus, and a few from quests. D2 kept every
+screenshot of the game out of git.
+
+**Decision:**
+
+* Eight screenshots for the README are committed, in
+  `docs/assets/screenshots/`: JPEGs at 1280×725, taken from the port
+  (`ss-delta.exe` at scale 2, native code). The owner's own, with F12:
+  the title, Librom's menu, a journal page, the save-or-sacrifice choice.
+  With `v3kdrive.py`'s `frame:`, in a test folder: quests ST09B, ST14A,
+  ST03A and ST17C (the dragon Dionaea), started through Stage Select (as
+  `tools/map-sweep.ps1` does).
+* The pre-push leak scan blocks images as game data; this clone lets
+  these through with `git config leakscan.allow 'docs/assets/screenshots/*.jpg
+  docs/assets/screenshots/*.png'` (vita-recomp-kit `fb2a5cb`; a clone's
+  setting, never pushed).
+* Everything else D2 lists stays out, including any other screenshot
+  (map sweeps, test captures: `build/`).
+* The README's note says the repository holds no game data *apart from
+  these screenshots*; the releases still hold none.
+
+**Rejected:** hosting the pictures outside the repository (release assets):
+the owner chose committing them, as for utakata.

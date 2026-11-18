@@ -12,7 +12,9 @@ notes, kept in a private repo.
 - Never commit anything derived from the dump or the firmware: extracted or
   decrypted files, ELFs, generated C++, Ghidra databases, screenshots, logs,
   licences (`.rif`/`work.bin`), PUPs. Check `git status` before every commit.
-  Hashes, addresses and notes are fine.
+  Hashes, addresses and notes are fine. The one exception (D23): the
+  README's screenshots in `docs/assets/screenshots/`, added only on the
+  owner's request.
 - Never commit anything local either: no absolute paths, host names, user
   or machine names, tokens. Those go in the private notes.
 - Treat `rom/` as read-only. Write to `extracted/`, `generated/` or `build/`.
