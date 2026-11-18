@@ -945,7 +945,7 @@ screenshot of the game out of git.
 the owner chose committing them, as for utakata.
 
 
-## D24 — RecompLauncher support: recomplauncher.json in every release (proposed, 2026-11-18)
+## D24 — RecompLauncher support: recomplauncher.json in every release (accepted, 2026-11-18)
 
 **Context:** [RecompLauncher](https://recomplauncher.com) installs recomps
 from their GitHub releases. A `recomplauncher.json` at the top of a release
