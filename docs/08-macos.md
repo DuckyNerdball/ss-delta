@@ -519,7 +519,9 @@ on all three, the return-to-lobby countdown on each), without issues.**
   start). Checked: the Mac build's `--write-ini` writes `network = lan`.
   Existing installs keep the `network = local` their setup wrote. With
   `lan` set, the owner hosted from the Deck in Game Mode, with power
-  saving on, and the PC found and joined the room.
+  saving on, and the PC found and joined the room. Then the Mac hosted,
+  started from the setup's app (with the fixed binary and `network =
+  lan`): no problems either (the owner).
 * **Colours, Deck against PC** (the owner saw a slight blue tint on the
   Deck): a gamescope capture (`gamescopectl screenshot`) against a capture
   of the PC's window, both standing at the same spot in a quest. The
