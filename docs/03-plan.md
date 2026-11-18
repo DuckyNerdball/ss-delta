@@ -745,9 +745,11 @@ only: no Rosetta, no Intel Macs.
     `setup.command`, the app in the playable folder); the setup built on
     the M5 and run end to end from a quarantined download: 5.6 min from
     the dump to the title on native code (2026-11-17, 08-macos).
+  * ☑ The Dock icon looked at on the Mac's screen (the owner, 2026-11-18):
+    the game's icon, but square and larger than other apps'; the setup
+    now draws it in Apple's shape (kit `49a3a5b`, 08-macos).
   * ☐ The release workflow's `macos` job run on GitHub (written, not run
-    yet), and the setup window and Dock icon looked at on the Mac's
-    screen.
+    yet), and the setup window looked at on the Mac's screen.
 * ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc
   Play's `local` mode (only 127.0.0.1 exists on `lo0`), thermals and
   battery.

@@ -187,10 +187,19 @@ there: a **43 MB `.tar.gz`** (180 MB unpacked). Then, as a download:
    on native code and reached the title, no errors. The ini's texts name
    `ss-delta.arm64` and `.dylib`.
 
-Not checked over SSH: the setup window's look (no screen recording) and
-the Dock icon while the game runs. The app's script `exec`s the game, so
-LaunchServices lists the process without its bundle (**hypothesis**: the
-Dock shows the window icon SDL sets, or a generic one).
+Not checked over SSH: the setup window's look (no screen recording).
+
+**The Dock icon** (the owner, 2026-11-18): the game's icon shows while it
+runs, but square and larger than the other apps'. macOS doesn't shape app
+icons; the artwork must be Apple's grid, an 824-point rounded square
+(corner radius about 185) in a 1024-point canvas. The game's `.ico` is a
+256-pixel square with only an 8-pixel margin. Since kit `49a3a5b` the setup
+crops the picture to its opaque part, draws it into that shape with a
+slight shadow (AppKit through `osascript -l JavaScript`, so nothing beyond
+macOS's own python3), and builds the `.icns` with `iconutil` from an
+iconset of 16 to 1024 pixels (`sips` alone writes `.icns` only up to 512
+and failed on the 1024 picture). Checked on the M5: the `.icns` holds all
+ten sizes; the rebuilt test app is waiting for the owner's look.
 
 ## Packaging, signing and Gatekeeper
 
