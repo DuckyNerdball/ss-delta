@@ -135,7 +135,14 @@ ss-delta.exe --dump "<your dump>" --accept-microsoft-license      (Windows)
 ./ss-delta.x86_64 --dump "<your dump>"                            (Linux)
 ```
 
-`--build-only` builds and quits instead of playing.
+`--build-only` builds and quits instead of playing, and `--progress` adds
+`progress <0-1> <text>` lines for a launcher's progress bar.
+
+**RecompLauncher:** each release carries a `recomplauncher.json`, so
+[RecompLauncher](https://recomplauncher.com) can install the game, build
+it from the dump you pick (the same importer, without its window), show
+the main settings of `ss-delta.ini` on the game's page, and back up the
+saves. After an update it builds the game again from the same dump.
 
 ## Playing
 
@@ -224,6 +231,7 @@ game: don't share it.
 | `--accept-microsoft-license` | Windows, with `--dump`: accept Microsoft's licence for the compiler's runtime and SDK |
 | `--shortcut`, `--steam` | with `--dump`: a desktop shortcut, menu entry or Applications copy; add the game to Steam (Linux) |
 | `--cache <folder>`, `--jobs <n>` | with `--dump`: keep the downloads there for next time; compile with n jobs |
+| `--progress` | with `--dump`: also `progress <0-1> <text>` lines, for a launcher (RecompLauncher) |
 | `--add-to-steam` | Linux, Steam Deck: add the game to Steam (Steam running), then quit |
 | `--set <section.key=value>` | a setting of `ss-delta.ini` for this run only |
 | `--fullscreen`, `--windowed` | the same as `--set display.fullscreen=true` / `false` |

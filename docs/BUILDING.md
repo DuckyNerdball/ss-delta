@@ -95,6 +95,13 @@ with Python 3.12). Pushing a tag `v*` runs `.github/workflows/release.yml`,
 which builds all three archives on GitHub, with their SHA-256 and build
 attestations, into a draft release.
 
+Each archive carries `recomplauncher.json` at its top (`game.json`'s
+`release_files`), for [RecompLauncher](https://recomplauncher.com)
+([D24](decisions.md)). The workflow stamps the tag into its
+`prepare.version` (`tools/stamp-recomplauncher.py`), so the launcher builds
+the game again after each update. Keep its `settings` in step with
+`ss-delta.ini` when a key is added or renamed.
+
 ## Toolchain
 
 The Vita3K fork and the recompiler are git submodules, repositories of their

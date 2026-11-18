@@ -943,3 +943,38 @@ screenshot of the game out of git.
 
 **Rejected:** hosting the pictures outside the repository (release assets):
 the owner chose committing them, as for utakata.
+
+
+## D24 — RecompLauncher support: recomplauncher.json in every release (proposed, 2026-11-18)
+
+**Context:** [RecompLauncher](https://recomplauncher.com) installs recomps
+from their GitHub releases. A `recomplauncher.json` at the top of a release
+tells it how to set the game up from the player's copy, start it and show
+its settings (its SDK, levels 1-3). D22 already made the release one
+folder with a command line for everything.
+
+**Decision:**
+
+* `recomplauncher.json` (repository root) ships at the top of every
+  release archive: `game.json`'s new `release_files`, which the kit's
+  `make-setup.py` copies.
+* Setup: one input, the player's dump (folder, `.zip`, `.vpk`, or `.pkg`
+  with its licence beside it). The launcher's setup step runs the
+  existing windowless build, `ss-delta.exe --dump <dump> --build-only`,
+  plus a new opt-in `--progress` (front end and the kit's `setup.py`) for
+  `progress <0-1> <text>` lines. Microsoft's licence for the Windows
+  compiler is a tick the player must accept (`--accept-microsoft-license`).
+  Without the new option nothing changes.
+* The release workflow stamps the tag into `prepare.version`, so the
+  launcher builds again after every update (a release's front end and kit
+  need modules recompiled by it).
+* Settings: the main keys of `ss-delta.ini` (display, volume, language,
+  add-ons, Ad Hoc Play network), edited by the launcher line by line.
+  Saves: `fs/ux0/user/<00-03>/savedata` and `ss-delta.ini`.
+* No `game.dumps`: there is no Redump or No-Intro entry to check a Vita
+  dump's container against; the importer checks the eboot's SHA-256.
+
+**Rejected:** shipping the file with an unchanging `prepare.version`
+(players would keep modules the updated front end may refuse); key
+bindings in the launcher (its key names are not known to match the
+`[keyboard]` and `[gamepad]` names).

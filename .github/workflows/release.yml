@@ -6,6 +6,9 @@
 # player's own dump, in its folder.
 # A tag v* makes a draft release with the three archives, their SHA-256 and build attestations; a
 # manual run only uploads them as workflow artifacts.
+# Each archive carries recomplauncher.json (game.json release_files), with the version stamped into
+# its prepare.version: RecompLauncher builds the game again from the player's dump after every update,
+# as docs/INSTALLING.md asks of a player updating by hand.
 name: Setup release
 
 on:
@@ -40,6 +43,7 @@ jobs:
         run: |
           $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ github.sha }}'.Substring(0, 7) }
           $name = "ss-delta-$version-windows"
+          python -I tools/stamp-recomplauncher.py recomplauncher.json $version
           python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-windows.json `
             --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --zip --archive "build/release/$name"
           $zip = "build/release/$name.zip"
@@ -85,6 +89,7 @@ jobs:
         run: |
           if [ "${{ github.ref_type }}" = tag ]; then version="${{ github.ref_name }}"; else version="$(echo ${{ github.sha }} | cut -c1-7)"; fi
           name="ss-delta-$version-linux"
+          $PY -I tools/stamp-recomplauncher.py recomplauncher.json "$version"
           $PY -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-linux.json \
             --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --zip --archive "build/release/$name"
           tgz="build/release/$name.tar.gz"
@@ -125,6 +130,7 @@ jobs:
         run: |
           if [ "${{ github.ref_type }}" = tag ]; then version="${{ github.ref_name }}"; else version="$(echo ${{ github.sha }} | cut -c1-7)"; fi
           name="ss-delta-$version-macos"
+          python -I tools/stamp-recomplauncher.py recomplauncher.json "$version"
           python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-macos.json \
             --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --zip --archive "build/release/$name"
           tgz="build/release/$name.tar.gz"

@@ -30,6 +30,7 @@
   "dist_files": {
     "run-player2.bat": "@start \"\" \"%~dp0ss-delta.exe\" --player 2\n"
   },
+  "release_files": ["recomplauncher.json"],
   "dist_files_linux": {
     "run-player2.sh": "#!/bin/sh\ncd \"$(dirname \"$(readlink -f \"$0\")\")\" && exec ./ss-delta.x86_64 --player 2 \"$@\"\n"
   }
