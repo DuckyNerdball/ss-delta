@@ -1,15 +1,42 @@
-# ss-delta
+<div align="center">
 
-A native port of **Soul Sacrifice Delta** (PS Vita, US PCSA00152 or EU PCSF00532, v1.30)
-to Windows, Linux (and the Steam Deck) and macOS on Apple Silicon, by
-static recompilation, built from the player's own dump. The game's code,
-and the firmware modules it loads, are recompiled ahead of time to C++ and
-run natively inside a fork of Vita3K, which supplies the rest of the
-console.
+<img src="docs/assets/banner.svg" alt="ss-delta: Soul Sacrifice Delta, recompiled to native code" width="100%">
 
-> This repository contains *no* game data, *no* firmware and *no* code
-> derived from the game. You bring your own dump; everything game-derived is
-> generated locally from it. See [D2](docs/decisions.md).
+**A native port of Soul Sacrifice Delta (PS Vita) to Windows, Linux and the Steam Deck, and macOS, by static recompilation.**
+
+[![Release](https://img.shields.io/github/v/release/vita-recomps/ss-delta?style=flat-square&label=release)](https://github.com/vita-recomps/ss-delta/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/vita-recomps/ss-delta/total?style=flat-square)](https://github.com/vita-recomps/ss-delta/releases)
+[![Stars](https://img.shields.io/github/stars/vita-recomps/ss-delta?style=flat-square)](https://github.com/vita-recomps/ss-delta/stargazers)
+[![Licence](https://img.shields.io/badge/licence-MIT%20%C2%B7%20Vita3K%20fork%20GPL--2.0-blue?style=flat-square)](#licence)
+[![Last commit](https://img.shields.io/github/last-commit/vita-recomps/ss-delta/main?style=flat-square)](https://github.com/vita-recomps/ss-delta/commits/main)
+[![Issues](https://img.shields.io/github/issues/vita-recomps/ss-delta?style=flat-square)](https://github.com/vita-recomps/ss-delta/issues)
+
+![Windows x64](https://img.shields.io/badge/Windows-x64-0078D6?style=flat-square&logo=windows&logoColor=white)
+![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?style=flat-square&logo=linux&logoColor=black)
+![Steam Deck](https://img.shields.io/badge/Steam%20Deck-Game%20Mode-1A9FFF?style=flat-square&logo=steamdeck&logoColor=white)
+![macOS Apple Silicon](https://img.shields.io/badge/macOS-Apple%20Silicon-000000?style=flat-square&logo=apple&logoColor=white)
+![Vulkan](https://img.shields.io/badge/Vulkan-AC162C?style=flat-square&logo=vulkan&logoColor=white)
+![Metal](https://img.shields.io/badge/Metal-MoltenVK-444444?style=flat-square&logo=apple&logoColor=white)
+
+**[Download the latest release](https://github.com/vita-recomps/ss-delta/releases/latest)** ·
+[Installation guide](docs/INSTALLING.md) ·
+[Build from source](docs/BUILDING.md) ·
+[Compatibility](docs/06-compatibility.md) ·
+[Report an issue](https://github.com/vita-recomps/ss-delta/issues)
+
+</div>
+
+## About
+
+ss-delta runs **Soul Sacrifice Delta** (PS Vita, US PCSA00152 or EU
+PCSF00532, v1.30) natively. The game's code, and the firmware modules it
+loads, are recompiled ahead of time to C++ and run natively inside a fork of
+Vita3K, which supplies the rest of the console.
+
+> This repository and its releases contain *no* game data, *no* firmware and
+> *no* code derived from the game. You bring your own dump; everything
+> game-derived is generated on your computer from it. See
+> [D2](docs/decisions.md).
 
 ## Status
 
@@ -62,137 +89,40 @@ Compared with running the game in Vita3K:
 * **Touch on keys and buttons:** the Black Rite icon on F and the left
   trigger; the mouse is the touchscreens.
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).
-* **One executable** per platform (`ss-delta.exe`, `ss-delta.x86_64`,
-  `ss-delta.arm64`), without Vita3K's interface and offline, installed from
-  your own dump by its importer on the first start.
+* **One program** per platform (`ss-delta.exe`, `ss-delta.x86_64`, the
+  macOS app), without Vita3K's interface and offline, which builds itself
+  from your own dump on its first start, in its own folder.
 
-## Playing from a release (no building)
+## Download and play
 
-Each release on GitHub has one archive per platform, for players who
-don't want to build anything. It unpacks to the game's folder, `ss-delta`,
-with one program to start:
+Download the archive for your system from the
+**[latest release](https://github.com/vita-recomps/ss-delta/releases/latest)**.
+It unpacks to the game's folder, `ss-delta`, with one program to start:
 
-| Platform | Download | Start |
+| System | Download | Start |
 |---|---|---|
-| Windows | `ss-delta-<version>-windows.zip` | `ss-delta.exe` |
-| Linux, Steam Deck (desktop mode the first time) | `ss-delta-<version>-linux.tar.gz` | `ss-delta.x86_64` |
-| macOS (Apple Silicon) | `ss-delta-<version>-macos.tar.gz` | `Soul Sacrifice Delta.app` |
+| Windows 10/11, x64 | `ss-delta-<version>-windows.zip` | `ss-delta.exe` |
+| Linux x64, Steam Deck | `ss-delta-<version>-linux.tar.gz` | `ss-delta.x86_64` |
+| macOS 13.3+, Apple Silicon | `ss-delta-<version>-macos.tar.gz` | `Soul Sacrifice Delta.app` |
 
-The first start builds the game. Its importer window asks for your dump
-(the parts described below; a decrypted dump that already holds the update
-and licence isn't asked for them again); on Windows, accept Microsoft's
-licence for the compiler too. It downloads the PS Vita firmware from Sony
-and a compiler (on Windows about 650 MB, Microsoft's compiler; on Linux
-and macOS about 240 MB, zig), installs the game, translates its code and
-compiles it on your computer, which takes a few minutes. Play then starts
-the game, and from then on the program goes straight to it.
+The first start builds the game from your own dump of it (at update 1.30):
+its importer asks for the dump, downloads the PS Vita firmware from Sony and
+a compiler, and compiles the game's code on your computer, in a few
+minutes. From then on the program goes straight to the game. Everything
+stays in that folder ([D22](docs/decisions.md)), and the command line covers
+everything (`--help`).
 
-Everything stays in that folder (D22): the game, its compiled code,
-settings, saves, logs and shader cache; the downloads are deleted once the
-game is built. Delete the folder and the game is gone. Nothing of the game
-is in the release or leaves your computer. The importer offers, if wanted:
-* Windows: a desktop shortcut;
-* Linux: an applications-menu entry, and the game in Steam, so a Steam
-  Deck starts it from Game Mode;
-* macOS: the app in Applications too; it runs in macOS's Game Mode when
-  fullscreen.
-
-The command line covers everything the window does (`--help` lists it):
-`--dump <file>` builds without the window, `--install` opens the importer
-again, `--game <folder>` plays the game in another folder,
-`--add-to-steam`, `--fullscreen`/`--windowed`, and `--set
-section.key=value` for any setting of `ss-delta.ini`.
-
-The releases are not signed with a publisher's certificate:
-* Windows may warn ("More info", "Run anyway");
-* macOS refuses the app the first time: System Settings, Privacy &
-  Security, "Open Anyway" (the folder's `README.txt` explains), and later
-  asks to let the game find devices on the local network (for Ad Hoc
-  Play).
-
-The SHA-256 and build attestation of each archive are on the release page.
-
-## What you need
-
-* A computer with a Vulkan GPU:
-  * Windows 10 or 11, x64;
-  * Linux, x64, glibc 2.31 or newer (any current distribution; SteamOS);
-  * macOS 13.3 or newer on Apple Silicon (Metal, through MoltenVK).
-* Your own copy of the game, US (PCSA00152) or EU (PCSF00532) version, at
-  **update 1.30**:
-  * a decrypted dump (folder, `.zip` or `.vpk`) with the 1.30 patch, merged
-    or beside the game as NoNpDrm dumps keep it;
-  * or the PSN `.pkg` with its licence `work.bin`, plus the 1.30 patch pkg.
-
-  The add-ons' content is part of 1.30.
-* The PS Vita firmware update files `PSVUPDAT.PUP` and `PSP2UPDAT.PUP` (as
-  for Vita3K; Sony publishes them, and a release's importer downloads them).
-* To build (not needed with a release): Git, Python 3.12 (`pip install capstone pyyaml`), Visual Studio
-  2022 or its Build Tools with "Desktop development with C++" (MSVC x64,
-  the Windows SDK, CMake and Ninja), Qt 6.11 for MSVC x64 (Vita3K's own
-  interface is built too; e.g. with `aqtinstall` into `C:\Qt`), and the
-  Vulkan SDK. These are Vita3K's build requirements.
-
-## Building from a fresh clone
-
-```
-git clone --recurse-submodules <this repository's URL> ss-delta
-cd ss-delta
-python -I third_party/recomp/tools/build-vita3k.py --target ss-delta
-```
-
-The script finds MSVC (vswhere) and Qt (`Qt6_ROOT`, `--qt <dir>`, or the
-newest `C:\Qt\<version>\msvc20*_64`). The first build takes about ten
-minutes and puts `ss-delta.exe` in `build/vita3k/bin/RelWithDebInfo/`.
-
-On Linux and macOS the same command builds `ss-delta.x86_64` or
-`ss-delta.arm64` (GCC or Clang, CMake and Ninja; macOS: Apple's Command
-Line Tools); the release workflow (`.github/workflows/release.yml`) shows
-each platform's build, and [07-linux](docs/07-linux.md) and
-[08-macos](docs/08-macos.md) the details.
-
-## Installing your game
-
-```
-python -I third_party/recomp/tools/install-game.py --name ss-delta ^
-    --firmware PSVUPDAT.PUP PSP2UPDAT.PUP ^
-    --install "<your dump: folder, .zip or .vpk>"
-```
-
-(For a pkg: `--install "<game>.pkg" --license "<work.bin>" --install
-"<1.30 patch>.pkg"`.) The script installs the firmware and the game into a
-Vita file system, checks that `eboot.bin` is 1.30, runs the game briefly to
-write its modules out, recompiles them and the firmware modules to C++ and
-compiles them (this takes a while), then lays out `dist/ss-delta/`:
-`ss-delta.exe`, the recompiled `ssd_aot_*.dll`, a commented `ss-delta.ini`
-and the Vita file system in `fs/`. Everything in it is derived from your
-copy: don't share it.
-
-## Playing
-
-Run `dist/ss-delta/ss-delta.exe` (Linux: `ss-delta.x86_64`; macOS: the
-the app a release has, or `ss-delta.arm64` in a build); `README.txt` in that folder
-explains the settings (`ss-delta.ini`: resolution, frame rate, window,
-bindings), the Black Rite binding, save import and export, and Ad Hoc
-Play (`run-player2.bat`; `network = lan` for play across computers, the
-default on Linux and macOS).
-
-## Toolchain
-
-The Vita3K fork and the recompiler are git submodules, repositories of their
-own ([D17](docs/decisions.md)):
-
-* `third_party/vita3k`: our Vita3K fork, branch `games` (the single-game
-  frontend `vita3k/game-frontend/` and one executable per game,
-  `vita3k/games/ss-delta/` for `ss-delta.exe`);
-* `third_party/recomp`: vita-recomp-kit, the recompiler (`recomp/`), the
-  generic tools and the build, install and packaging scripts. `game.json`
-  describes this game to those scripts.
+The **[installation guide](docs/INSTALLING.md)** has the details for each
+system: what dumps work, the Steam Deck's Game Mode, macOS's Gatekeeper,
+saves, Ad Hoc Play, files, command-line options and updating. To build it
+yourself, see **[BUILDING](docs/BUILDING.md)**.
 
 ## Documentation
 
 | Doc | Contents |
 |---|---|
+| [INSTALLING](docs/INSTALLING.md) | for players: requirements, each system, the first start, saves, Ad Hoc Play, files, command line |
+| [BUILDING](docs/BUILDING.md) | building from source, installing a game into a build, making a release, the toolchain and tools |
 | [01-research](docs/01-research.md) | prior work, the dump's structure, measurements of the 1.30 eboot, Vita3K as donor, approach options |
 | [02-baseline](docs/02-baseline.md) | how the game behaves in Vita3K today, and how to re-run the baseline |
 | [03-plan](docs/03-plan.md) | phases, exit criteria, risks |
@@ -203,37 +133,6 @@ own ([D17](docs/decisions.md)):
 | [08-macos](docs/08-macos.md) | macOS on Apple Silicon: what the code needs, MoltenVK and memory mapping, signing |
 | [decisions](docs/decisions.md) | decision log |
 | [hashes](docs/hashes.md) | input hashes |
-
-## Tools
-
-| Script | What |
-|---|---|
-| `tools/lspk.py` | list and extract the game's LSPK archives (`.pkh`/`.pk`/`.pfs`) |
-| `tools/questmaps.py` | the quest map list from `quest_param.csv` |
-| `tools/map-sweep.ps1` | screenshot every quest map through Stage Select (`-Frames`: at render resolution) |
-| `tools/devshell.ps1` | dot-source to load MSVC x64 and point CMake at Qt 6.11.0 (a fresh configure of the fork, `recomp/run-tests.ps1`) |
-| `tools/package4090.ps1` | build `dist/ss-delta-vita3k-test` (both Vita3K builds, the installed game, `run-matrix.bat`/`play.bat` from `tools/pkg4090/`) for testing on another PC |
-| `game.json` | this game for the shared scripts: title, supported eboot, modules to recompile, packaged README (`docs/dist-readme.txt`) |
-
-From the shared toolchain (`third_party/recomp/`, each script's docstring
-has its options):
-
-| Script | What |
-|---|---|
-| `tools/build-vita3k.py` | configure and build our Vita3K fork (`third_party/vita3k`) into `build/vita3k` (MSVC found with vswhere, Qt in its default folder; `--no-jit`: `build/vita3k-nojit`) |
-| `tools/install-game.py`, `tools/make-dist.py` | a playable folder in `dist/` from the player's dump and firmware, as `game.json` describes it |
-| `tools/velf.py` | Vita SCE ELF: segments, module_info, NID-named imports/exports, exidx |
-| `tools/vitaelf.py` | library: Vita ELF segments, module_info, imports/exports, exidx, EHABI exception scopes |
-| `tools/inventory.py` | per-module code inventory into `generated/inventory/<module>/` (see docs/04-inventory) |
-| `tools/imix.py` | Capstone instruction-mix sweep over every exidx function |
-| `tools/sfo.py` | print `param.sfo` fields |
-| `tools/v3kdrive.py` | drive Vita3K or `ss-delta.exe` without focus: launch, `BootSequence`, buttons, touches, FPS sampling, screenshots |
-| `tools/stackdump.py` | every thread's call stack of a running process, with PDB symbols (hangs) |
-| `recomp/recompile.py` | recompile a module to C++ in `generated/<module>/` (see docs/05-recompiler) |
-| `recomp/run-tests.ps1` | regenerate, build and run the dynarmic comparison tests for each module (`-Root .`) |
-
-Python dependencies: `pyyaml`, `capstone`, `pycryptodome` (for SELF
-decryption).
 
 ## Licence
 

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320">
+  <defs>
+    <radialGradient id="bg" cx="18%" cy="50%" r="95%">
+      <stop offset="0" stop-color="#43101a"/><stop offset="0.5" stop-color="#16080b"/><stop offset="1" stop-color="#070506"/>
+    </radialGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8343c"/><stop offset="1" stop-color="#8c0f17"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+  <path d="M210 48.30 L338 270 L82 270 Z M210 116.30 L279.11 236.00 L140.89 236.00 Z" fill="url(#red)" fill-rule="evenodd" filter="url(#glow)"/>
+  <text x="410" y="148" textLength="621" lengthAdjust="spacingAndGlyphs" font-family="Georgia, 'Times New Roman', serif" font-size="70" fill="#f0e7d8" letter-spacing="1">Soul Sacrifice Delta</text>
+  <text x="413" y="198" textLength="755" lengthAdjust="spacingAndGlyphs" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="27" fill="#cbb9a5">A native port by static recompilation, built from your own dump</text>
+  <text x="414" y="252" textLength="568" lengthAdjust="spacingAndGlyphs" font-family="Consolas, Menlo, monospace" font-size="21" fill="#e8343c" letter-spacing="4">WINDOWS · LINUX · STEAM DECK · macOS</text>
+</svg>
