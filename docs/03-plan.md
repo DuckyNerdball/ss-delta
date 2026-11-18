@@ -797,8 +797,12 @@ everything ([D22](decisions.md)). 0.3.0 waits for it (its first draft,
   Support/Vita3K` and the old shared download caches were not touched.
   Found on the way: Windows' Python couldn't check llvm-mingw's
   certificate (now `curl.exe`), and Vita3K's patch folder must exist.
-* ☐ The window flow on the Mac from a quarantined download (Open Anyway,
-  translocation, Build, Play), the Deck in Game Mode.
+* ☑ The window flow on the Mac (the owner, 2026-11-18): the test release
+  as a quarantined download, the app through Open Anyway, the importer's
+  window, Build, Play; later starts go straight to the game; Game Mode in
+  fullscreen.
+* ☐ The window flow on Windows and the Deck in Game Mode (optional:
+  both run the same code as the tested paths).
 * ☐ The release workflow's three jobs; 0.3.0 tagged again.
 
 **Exit:** each platform's archive, unpacked, is the game: started once
