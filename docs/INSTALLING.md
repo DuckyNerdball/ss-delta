@@ -149,6 +149,9 @@ saves. After an update it builds the game again from the same dump.
 * **Settings:** F1, or Select (Back/View) held for a second on a gamepad,
   opens the settings menu over the paused game. Everything is also in
   `ss-delta.ini`, which can be edited by hand (key bindings only there).
+* **Exit:** the settings menu's last page, Exit: Cross (X on the keyboard)
+  twice on Exit the game. Closing the window does the same. Progress since
+  the game last saved is lost.
 * **Fullscreen:** F11 or Alt+Enter (Option+Return on a Mac). On a Mac
   keyboard the F keys need fn held, unless they are set as standard function
   keys.
