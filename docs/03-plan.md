@@ -747,7 +747,8 @@ only: no Rosetta, no Intel Macs.
     the dump to the title on native code (2026-11-17, 08-macos).
   * ☑ The Dock icon looked at on the Mac's screen (the owner, 2026-11-18):
     the game's icon, but square and larger than other apps'; the setup
-    now draws it in Apple's shape (kit `49a3a5b`, 08-macos).
+    now draws it in Apple's shape (kit `49a3a5b`) and the game no longer
+    replaces it (fork `e0a324a8`, 08-macos).
   * ☐ The release workflow's `macos` job run on GitHub (written, not run
     yet), and the setup window looked at on the Mac's screen.
 * ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc

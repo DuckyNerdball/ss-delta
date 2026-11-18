@@ -198,8 +198,12 @@ crops the picture to its opaque part, draws it into that shape with a
 slight shadow (AppKit through `osascript -l JavaScript`, so nothing beyond
 macOS's own python3), and builds the `.icns` with `iconutil` from an
 iconset of 16 to 1024 pixels (`sips` alone writes `.icns` only up to 512
-and failed on the 1024 picture). Checked on the M5: the `.icns` holds all
-ten sizes; the rebuilt test app is waiting for the owner's look.
+and failed on the 1024 picture). The shaped icon then showed only at
+launch: once the window opened, the game's square `icon0.png` replaced it,
+because on macOS `SDL_SetWindowIcon` sets the Dock icon (there are no
+window icons). Since fork `e0a324a8` the front end skips it on macOS.
+Checked by the owner on the M5: the rounded icon stays in the Dock while
+the game runs.
 
 ## Packaging, signing and Gatekeeper
 
