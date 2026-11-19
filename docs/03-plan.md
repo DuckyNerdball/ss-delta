@@ -896,6 +896,36 @@ a PC builds the native modules first; an on-device build may come later.
 **Exit:** with a Thor, a PC and their own dump, a player gets from a
 release to a quest on native code.
 
+## Phase 15 — iOS and iPadOS, targeting an M4 iPad Pro (L) ☐
+
+The owner asked on 2026-11-19: an IPA for sideloading, no App Store.
+Research: [10-ios](10-ios.md). The test device is an M4 iPad Pro. The
+owner's choice: as much as possible on the Mac (Xcode, the Simulator,
+`devicectl`), so development needs no sideloader. Possible because the
+port needs no JIT (D11, `VITA3K_DYNARMIC=OFF`).
+
+* ☑ Survey of what the code needs (2026-11-19, 10-ios).
+* ☐ **15a Before the iPad**: the game's resident memory measured on the
+  Mac; a zig `aarch64-ios` module against a stub `libSystem.tbd`.
+* ☐ **15b Xcode and the address space**: Xcode and a free team on the
+  Mac; a test app that reserves 4 GiB as `mem.cpp` does, on the iPad,
+  with and without `increased-memory-limit`. Decides whether a free
+  Apple ID is enough.
+* ☐ **15c The fork on the Simulator**: the CMake `iOS` branch, SDL3's
+  UIKit entry point, dependencies, MoltenVK, no dynarmic; title, then a
+  quest on native code.
+* ☐ **15d On the iPad**: ST03A on native code; the map sweep against
+  Windows' pictures; memory and frame rate.
+* ☐ **15e The IPA for players** (kit): the base IPA in CI, the setup
+  putting the modules into it, AltStore, SideStore and Sideloadly
+  checked; the game data through Finder or Files. Record the choices in
+  decisions.md.
+* ☐ **15f iPad polish**: touch and on-screen controls, gamepads, the
+  lifecycle (no GPU in the background), 120 Hz pacing, thermals.
+
+**Exit:** with an iPad or iPhone, a PC or Mac and their own dump, a
+player sideloads their own IPA and gets to a quest on native code.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine
