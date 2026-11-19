@@ -845,15 +845,25 @@ a PC builds the native modules first; an on-device build may come later.
     libraries packed beside the game's; T23 and T30 load and have
     raster-order access (Qualcomm's driver: neither that nor interlock).
     ST03A at about 57 fps on all three, rendered alike.
-  * ☐ The fork changes committed (the Windows build compiles; a Windows
-    run still to check); the swapchain following a resized surface;
-    `v3kdrive.py`'s adb backend (the session's shell helpers stand in).
+  * ☑ The fork changes committed (fork `89d9b84b`); `ss-delta.exe` on
+    Windows checked (ST03A natively, 59–60 fps, interlock as before).
+  * ☐ The swapchain following a resized surface; `v3kdrive.py`'s adb
+    backend (the session's shell helpers stand in).
 * ☐ **14c Our renderer on the Adreno**: `double-buffer` mapping, depth
   clamp, programmable blending without shader interlock; then the 50-map
   sweep against Windows' pictures.
-* ☐ **14d Native code on Android**: the modules built with the NDK's clang
+* ◐ **14d Native code on Android**: the modules built with the NDK's clang
   for `aarch64-linux-android`, loaded from internal storage; a quest on
   NativeCPU with 0 JIT calls; the dynarmic tests on the Thor under adb.
+  * ☑ The ten modules with the NDK on the test PC (6.8 min, 106 MB
+    stripped); the frontend copies them into internal storage
+    (2026-11-19, 09-android).
+  * ☑ ST03A on NativeCPU, 0 native-to-JIT calls: 60.0 fps at 1× and 2× on
+    Qualcomm's driver, 60.0 / 58.1 fps on Turnip T23.
+  * ☑ The dynarmic tests on the Thor: 23,280 + 684 over the ten modules,
+    0 failing (built in WSL with the NDK, run under adb with a time limit
+    and an RSS watchdog).
+  * ☐ A longer play session natively (audio included).
 * ☐ **14e A PC setup for Android** (kit): the modules for Android built by
   the existing setup on Windows, Linux or macOS (zig against a stub libc,
   or the NDK), the folder laid out and pushed or copied. Record the

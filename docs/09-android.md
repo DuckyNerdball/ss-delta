@@ -396,6 +396,59 @@ and made group-writable.
   `4304-8b815f2f-;mnt;c;ss-delta;third_party/HEAD` (the branch name taken
   from the clone's `/mnt/c` origin). Cosmetic.
 
+## Native code on Android (14d, 2026-11-19)
+
+**Building the modules.** The recompiler's CMake (`third_party/recomp/recomp`)
+works unchanged with the NDK's toolchain file on the Windows test PC (NDK
+r29, Ninja, `ANDROID_ABI=arm64-v8a`, `ANDROID_PLATFORM=28`, Release, 8
+jobs). The generated C++ stays on Windows; nothing game-derived goes to
+WSL. All ten modules (eboot, libc, libfios2, libult, and the six firmware
+modules) take **6.8 min**. Each needs only `libc`, `libm` and `libdl` and
+exports only `armrecomp_aot_init`. The NDK's toolchain adds `-g`, so
+`ssd_aot_eboot.so` is 1.17 GB as built; with `llvm-strip --strip-debug`
+all ten are **106 MB** (eboot 101 MB).
+
+**Loading them.** On Android, the frontend's module scan
+(`select_recompiled_modules`) copies `ssd_aot_*.so` from `[paths]
+recompiled` (by default the app's external folder, where a PC puts them)
+into the app's internal storage (`files/recompiled/`) when size or time
+differ, removes copies whose module is gone, and loads them from there:
+shared storage is `noexec`. The fork's `dlopen` loader is unchanged.
+
+**On the Thor** (2026-11-19): NativeCPU, every module verified against
+guest memory and placed where its code expects it (the same load
+addresses as on the PC), **0 native-to-JIT calls**; 40,563 escapes in
+the first minute (C++ exceptions thrown by the host through the modules'
+frames: the NDK's unwinder finds the modules' unwind tables). ST03A from
+Stage Select:
+
+| Driver | 1× (960×544) | 2× (1920×1088) |
+|---|---|---|
+| Qualcomm's | **60.0 fps**, longest frame 16.7 ms | 59.9–60.0 fps, 16.7 ms |
+| Turnip T23 | 59.9–60.0 fps, 16.7 ms | 58.1 fps, 33.4 ms |
+
+(On the JIT the same map ran at about 57 fps.) No errors in the logs; the
+pictures as on Windows.
+
+**Dynarmic tests on arm64 Android.** `recomp_tests` built per module in
+WSL with the Linux NDK against the Android games build's dynarmic
+(`VITA3K_CONFIG` empty for its single-config layout), pushed to
+`/data/local/tmp/recomp-tests/`, run as the shell user under a time limit
+and an RSS watchdog (`guarded-test.sh`), with `run-tests.ps1`'s iterations
+(256 per form, 64 per function). The filter argument `*` must be quoted
+for the device's shell, or it globs the folder's file names and nothing
+runs.
+
+* eboot: **9,145 instruction tests and 325 function tests, 0 failing**
+  (42 never returned within the tick budget, 4,032 of 20,800 runs
+  skipped, as on the other hosts), 4 min 14 s, 63 MB peak.
+* The other nine in 4.8 min, peak RSS at most 91 MB: libc 3,000 + 121,
+  libfios2 2,176 + 47, libult 869 + 3, sysmodule 351 + 0, libSceFt2
+  3,537 + 131, libpvf 1,468 + 23, libsceavplayer 895 + 9, libscemp4
+  1,385 + 20, adhoc_matching 454 + 5.
+* In all: **23,280 instruction and 684 function tests, 0 failing**, the
+  same count as on the M5.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below. Candidates: the Vita's
