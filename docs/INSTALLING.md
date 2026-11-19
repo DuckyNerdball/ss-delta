@@ -145,7 +145,7 @@ ss-delta.exe --dump "<your dump>" --accept-microsoft-license      (Windows)
 `progress <0-1> <text>` lines for a launcher's progress bar.
 
 **RecompLauncher:** each release carries a `recomplauncher.json`, so
-[RecompLauncher](https://recomplauncher.com) can install the game, build
+[RecompLauncher](https://recomplauncher.com/game/ss-delta) can install the game, build
 it from the dump you pick (the same importer, without its window), show
 the main settings of `ss-delta.ini` on the game's page, and back up the
 saves. After an update it builds the game again from the same dump.

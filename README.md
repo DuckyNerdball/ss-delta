@@ -18,7 +18,7 @@
 ![Vulkan](https://img.shields.io/badge/Vulkan-AC162C?style=flat-square&logo=vulkan&logoColor=white)
 ![Metal](https://img.shields.io/badge/Metal-MoltenVK-444444?style=flat-square&logo=apple&logoColor=white)
 
-<a href="https://recomplauncher.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://recomplauncher.com/assets/press/launcher/badge-light.svg"><img alt="Get it on RecompLauncher" src="https://recomplauncher.com/assets/press/launcher/badge-dark.svg" height="48"></picture></a>
+<a href="https://recomplauncher.com/game/ss-delta"><picture><source media="(prefers-color-scheme: dark)" srcset="https://recomplauncher.com/assets/press/launcher/badge-light.svg"><img alt="Get it on RecompLauncher" src="https://recomplauncher.com/assets/press/launcher/badge-dark.svg" height="48"></picture></a>
 
 **[Download the latest release](https://github.com/vita-recomps/ss-delta/releases/latest)** ·
 [Installation guide](docs/INSTALLING.md) ·
