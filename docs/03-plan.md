@@ -852,7 +852,7 @@ a PC builds the native modules first; an on-device build may come later.
 * ☐ **14c Our renderer on the Adreno**: `double-buffer` mapping, depth
   clamp, programmable blending without shader interlock; then the 50-map
   sweep against Windows' pictures.
-* ◐ **14d Native code on Android**: the modules built with the NDK's clang
+* ☑ **14d Native code on Android**: the modules built with the NDK's clang
   for `aarch64-linux-android`, loaded from internal storage; a quest on
   NativeCPU with 0 JIT calls; the dynarmic tests on the Thor under adb.
   * ☑ The ten modules with the NDK on the test PC (6.8 min, 106 MB
@@ -863,17 +863,27 @@ a PC builds the native modules first; an on-device build may come later.
   * ☑ The dynarmic tests on the Thor: 23,280 + 684 over the ten modules,
     0 failing (built in WSL with the NDK, run under adb with a time limit
     and an RSS watchdog).
-  * ◐ A longer play session natively (audio included). The owner
+  * ☑ A longer play session natively (audio included). The owner
     (2026-11-19): the first story quest on Qualcomm's driver showed
     black rectangles in the fog (non-coherent framebuffer reads within
-    a draw, 09-android); on Turnip T23, two quests without issues.
-    Found on the way and fixed: a false critical log line on a
-    write-tracking race (`mem.cpp`), and the log's end lost when the
-    app is swiped away (flushed on pause). Audio not yet asked about.
-* ☐ **14e A PC setup for Android** (kit): the modules for Android built by
+    a draw, 09-android); on Turnip T23, two quests without issues,
+    audio fine. Found on the way and fixed: a false critical log line
+    on a write-tracking race (`mem.cpp`), and the log's end lost when
+    the app is swiped away (flushed on pause).
+* ◐ **14e A PC setup for Android** (kit): the modules for Android built by
   the existing setup on Windows, Linux or macOS (zig against a stub libc,
   or the NDK), the folder laid out and pushed or copied. Record the
   choice in decisions.md.
+  * ☑ zig, not the NDK ([D25](decisions.md)): musl headers, no C library
+    linked, stubs for bionic's; `aot_android.cpp`; the ten in 5.1 min,
+    89 MB; ST03A natively at 60 fps (2026-11-19, 09-android).
+  * ☑ `build-recomp.py --android`, `install-game.py --android`,
+    `android.py push` (APK, fs, modules, driver; saves kept); the
+    frontend unpacks driver packages from `drivers/`.
+  * ☑ End to end from the owner's dump to a separate test app: 19 min on
+    the PC, 4.6 min of copying, ST03A natively on T23 at 60 fps.
+  * ☐ `setup.py` and its window (a release folder, not the project); the
+    APK in the release workflow.
 * ☐ **14f Thor polish**: the gamepad and the analog triggers, the
   touchscreen, the second screen (rear touch?), 120 Hz pacing, AYN's
   performance modes and battery, pausing in the background.

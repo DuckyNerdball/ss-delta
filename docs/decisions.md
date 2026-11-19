@@ -978,3 +978,58 @@ folder with a command line for everything.
 (players would keep modules the updated front end may refuse); key
 bindings in the launcher (its key names are not known to match the
 `[keyboard]` and `[gamepad]` names).
+
+## D25 — Android: the game's APK, its modules built on a PC with zig, Turnip on Adreno (accepted, 2026-11-19)
+
+**Context:** Phase 14 (09-android), the AYN Thor (Snapdragon 8 Gen 2) as
+the test device. The recompiled modules must be built from the player's
+own dump (D2), and an Android device has no compiler, no Python and no
+shell for the player. The owner chose (2026-11-19): a PC builds the
+modules first; an on-device build may come later.
+
+**Decision:**
+
+* The game is an **APK of the fork's single-game frontend**: `lib<id>.so`
+  (SDL3 inside) behind SDL's activity, with two small Java classes of our
+  own (`io.github.vitarecomps.frontend`), one Gradle project for every
+  game (`game-frontend/android/`). The native library is built with the
+  NDK (r29) on Linux (WSL in development), with Boost, OpenSSL and curl
+  from source as for Linux, not vcpkg. The APK holds no game data.
+* The game's files live in the app's shared folder,
+  `Android/data/<package>/files/` (no storage permission), the Vita file
+  system in `fs/`. The frontend copies the modules and Vulkan driver
+  packages a PC puts there into the app's internal storage (shared storage
+  is `noexec`) and loads them from there.
+* **The modules are built on the player's PC with zig**, the compiler the
+  Linux and macOS setups already download (D20, D21), on Windows too
+  (`toolchain-android-windows.json`, 96 MB): `aarch64-linux-musl` headers,
+  generic ARMv8 with inline atomics, unwind tables, linked without a C
+  library against `libc.so`/`libm.so` stubs, so a module binds to bionic
+  when the APK loads it; `recomp/runtime/aot_android.cpp` supplies the
+  thread-safe static-local guards and `__dso_handle`. A module then imports
+  only `abort` and `sched_yield`. `install-game.py --android` builds them
+  with the PC's own modules; `android.py push` puts the folder on the
+  device over adb, keeping the saves and settings already there.
+* **Turnip is the driver to play on with Adreno.** Qualcomm's driver has
+  neither shader interlock nor raster-order attachment access, and draws
+  ST03A's fog with black rectangles (09-android); Turnip (Mesa) reads the
+  framebuffer coherently. A libadrenotools package goes into the app's
+  `drivers/`, and `[debug] gpu_driver` names it (`android.py push --driver`).
+  The frontend falls back to the system driver when one fails to load.
+
+**Consequences:** from the owner's dump on the test PC to a playable test
+app: 19 min (install, ELF dump, recompiling, the PC's modules with MSVC and
+Android's with zig, 5.1 min of it), then 4.6 min of copying over Wi-Fi.
+ST03A natively on the Thor at 60 fps on Turnip T23, 0 native-to-JIT calls.
+The ten zig modules are 89 MB (the NDK's, stripped, 106 MB). The dynarmic
+tests (built with the NDK) pass on the Thor: 23,280 + 684, 0 failing.
+
+**Rejected:**
+
+* The NDK on the player's PC: 1-2 GB, Google's SDK licence to accept, and a
+  second compiler beside the one the other setups use.
+* zig's `aarch64-linux-android` target: zig has no bionic headers or stubs.
+* Linking zig's libc++ (or musl) into the modules: a second C library inside
+  an Android process.
+* The modules or a driver through `run-as`: only a debuggable APK allows it.
+* Vita3K's own Android app with our patches, as the product (D10's reasons).

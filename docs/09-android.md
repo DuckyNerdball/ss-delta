@@ -506,6 +506,73 @@ low on memory: an SDL event watch (`android.cpp`), because SDL blocks the
 game's event loop while the app is paused. Checked: Home pressed 25 s in,
 the log's last line two seconds before.
 
+## The PC setup for Android (14e, D25, 2026-11-19)
+
+**The compiler.** What a module needs from the C and C++ runtime, found by
+linking one without libc++ (`-nostdlib++`): the thread-safe static-local
+guards (`__cxa_guard_*`, libc++abi's), `__cxa_atexit`/`__cxa_finalize`,
+`abort`, `strncmp`, and the NDK compiler-rt's outline-atomics probe
+(`getauxval`, `__system_property_get`). No `__gxx_personality_v0`: the
+generated code has no cleanups, so escapes only need unwind tables. zig
+(already the Linux and macOS setups' compiler) builds such a module:
+
+* zig's `aarch64-linux-android` target has no libc headers;
+  `aarch64-linux-musl` compiles (the functions used have the same ABI in
+  bionic);
+* `-mcpu=generic -mno-outline-atomics` (LL/SC inline, any ARMv8, no
+  compiler-rt), `-funwind-tables`, `-fno-stack-protector`;
+* `recomp/runtime/aot_android.cpp`: `__cxa_guard_acquire/release/abort`
+  (atomics and `sched_yield`, so no musl type crosses into bionic) and
+  `__dso_handle`;
+* linked `-shared -nostdlib` against stub `libc.so`/`libm.so` made by zig
+  (`--no-as-needed`, so the `DT_NEEDED` entries stay), with
+  `--eh-frame-hdr` (without `PT_GNU_EH_FRAME` the host's unwinder can't
+  walk the module's frames: the first try lacked it),
+  `-z max-page-size=16384`, the export list, `--gc-sections`.
+
+A module then imports only `abort` and `sched_yield` and exports only
+`armrecomp_aot_init`. The ten build in **5.1 min** with 10 jobs on the
+test PC (zig 0.17.1 for Windows), 89 MB. On the Thor: every module
+verified, NativeCPU, 0 native-to-JIT calls, over 60,000 escapes,
+ST03A at 59.9 fps on Turnip.
+
+**The kit** (`third_party/recomp`):
+
+* `toolchain.py`: the Android branch of the zig build;
+  `toolchain-android-windows.json` pins zig for Windows (96 MB, SHA-256);
+  fetch unpacks zips too. Linux and macOS use their own lock file's zig.
+* `build-recomp.py --android --toolchain <dir>` → `build/recomp-android-zig`.
+* `install-game.py --android <dir>`: after the PC's modules, Android's, into
+  `<out>/android/`.
+* `android.py push <folder>`: installs the APK (`--apk`), starts the app
+  once if it never ran (its folder and settings file), copies `fs/` through
+  `/data/local/tmp` (adbd's `secure_mkdirs`) and makes it writable for the
+  app, keeps any save files already on the device and the settings file,
+  replaces the modules, and with `--driver <zip>` puts a driver package
+  into `drivers/` and sets `[debug] gpu_driver`. The first version took
+  an existing `ux0/user` folder for saves, but the app's first start makes
+  empty user folders: it now looks for files.
+* `gameproject.py`: `android_package` (default
+  `io.github.vitarecomps.<id>`).
+
+**The frontend** unpacks `drivers/<name>.adpkg.zip` from the shared
+folder into internal `files/driver/<name>/` when the zip is new or
+changed (size and time in a marker file), refusing unsafe paths, so a
+release APK gets Turnip without `run-as`. Checked: T30 from `drivers/`
+loaded; the second start reused it.
+
+**End to end** (2026-11-19), from the owner's US dump with a separate
+test package (`io.github.vitarecomps.ssdelta.kittest`, so the owner's
+app and saves were untouched): `install-game.py --name scratch-android
+--android build/android-toolchain` took **19 min** (both sets of
+modules); `android.py push --apk ... --driver turnip_mrpurple_T23...`
+took **4.6 min** (3.2 GB at about 12 MB/s over Wi-Fi). The app started
+on native code with T23 from `drivers/`: ST03A at 60.0 fps, no critical
+log lines.
+
+Open for 14e: the setup's window and `setup.py` (a player with a release
+folder rather than the project), the APK in the release workflow.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below. Candidates: the Vita's
