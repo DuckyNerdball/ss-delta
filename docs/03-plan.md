@@ -863,7 +863,13 @@ a PC builds the native modules first; an on-device build may come later.
   * ☑ The dynarmic tests on the Thor: 23,280 + 684 over the ten modules,
     0 failing (built in WSL with the NDK, run under adb with a time limit
     and an RSS watchdog).
-  * ☐ A longer play session natively (audio included).
+  * ◐ A longer play session natively (audio included). The owner
+    (2026-11-19): the first story quest on Qualcomm's driver showed
+    black rectangles in the fog (non-coherent framebuffer reads within
+    a draw, 09-android); on Turnip T23, two quests without issues.
+    Found on the way and fixed: a false critical log line on a
+    write-tracking race (`mem.cpp`), and the log's end lost when the
+    app is swiped away (flushed on pause). Audio not yet asked about.
 * ☐ **14e A PC setup for Android** (kit): the modules for Android built by
   the existing setup on Windows, Linux or macOS (zig against a stub libc,
   or the NDK), the folder laid out and pushed or copied. Record the
