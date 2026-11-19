@@ -809,6 +809,64 @@ everything ([D22](decisions.md)). 0.3.0 waits for it (its first draft,
 with the player's dump it builds itself, and nothing lands outside its
 folder.
 
+## Phase 14 — Android, targeting the AYN Thor (L) ◐
+
+The owner asked for it on 2026-11-19. Research:
+[09-android](09-android.md). The test device is an AYN Thor Max
+(Snapdragon 8 Gen 2, Adreno 740, 16 GB, Android 13). The owner's choice:
+a PC builds the native modules first; an on-device build may come later.
+
+* ☑ Survey of what the code needs (2026-11-19, 09-android). The Android
+  SDK, NDK r29 and adb installed on the test PC.
+* ◐ **14a Access and baseline**: wireless adb to the Thor; the device read
+  (`getprop`, CPU, page size, both Vulkan drivers' extensions);
+  upstream Vita3K's release APK with the test file system, title to quest:
+  frame rate at 1× and 2×, rendering on Qualcomm's driver and on Turnip.
+  * ☑ Wireless adb; the device read (2026-11-19, 09-android): QCS8550,
+    4 KiB pages, 15.6 GB, Qualcomm's Vulkan driver of 2023-12 without
+    shader interlock or raster-order access (the subpass input path).
+  * ☑ Upstream's APK on Qualcomm's driver, 1×: title 29.5 fps, ST03A
+    from Stage Select at 29.9 fps on the JIT, no crash; brighter, hazier
+    snow than Windows, as upstream on the Mac. Driven entirely over
+    adb (gamepad events written to the built-in controls' device).
+  * ☐ Turnip (Mr. Purple T23, T30) in upstream's app; 2×.
+* ◐ **14b The single-game APK, JIT only**: `add_game` as a shared library
+  on `ANDROID`, an `SDLActivity` for the game, the frontend's paths in the
+  app's folders, no importer; built on the test PC with Gradle and the
+  NDK; `v3kdrive.py`'s adb backend (FIFO, `am start`, `frame:`).
+  * ☑ The library in WSL with the NDK, without vcpkg (Boost, OpenSSL,
+    curl from source, the NDK's zlib); the APK with Gradle on Windows
+    (`game-frontend/android/`); the frontend's Android glue (2026-11-19,
+    09-android).
+  * ☑ On the Thor, Qualcomm's driver, on the JIT: the title at 45–49
+    fps, ST03A from Stage Select at 58.5–59 fps, rendered as on Windows;
+    the built-in controls work as a gamepad.
+  * ☑ Turnip in the APK: `[debug] gpu_driver`, libadrenotools' hook
+    libraries packed beside the game's; T23 and T30 load and have
+    raster-order access (Qualcomm's driver: neither that nor interlock).
+    ST03A at about 57 fps on all three, rendered alike.
+  * ☐ The fork changes committed (the Windows build compiles; a Windows
+    run still to check); the swapchain following a resized surface;
+    `v3kdrive.py`'s adb backend (the session's shell helpers stand in).
+* ☐ **14c Our renderer on the Adreno**: `double-buffer` mapping, depth
+  clamp, programmable blending without shader interlock; then the 50-map
+  sweep against Windows' pictures.
+* ☐ **14d Native code on Android**: the modules built with the NDK's clang
+  for `aarch64-linux-android`, loaded from internal storage; a quest on
+  NativeCPU with 0 JIT calls; the dynarmic tests on the Thor under adb.
+* ☐ **14e A PC setup for Android** (kit): the modules for Android built by
+  the existing setup on Windows, Linux or macOS (zig against a stub libc,
+  or the NDK), the folder laid out and pushed or copied. Record the
+  choice in decisions.md.
+* ☐ **14f Thor polish**: the gamepad and the analog triggers, the
+  touchscreen, the second screen (rear touch?), 120 Hz pacing, AYN's
+  performance modes and battery, pausing in the background.
+* ☐ **14g (later) The setup on the device**: Python, capstone and a
+  compiler in or beside the APK.
+
+**Exit:** with a Thor, a PC and their own dump, a player gets from a
+release to a quest on native code.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine
