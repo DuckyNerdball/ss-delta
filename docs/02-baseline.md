@@ -1374,3 +1374,28 @@ Radeon 760M, native code, the junction test folder (US) and
 * Not checked: Spanish and Italian, text past the title menu (the same
   language index drives every text folder), and Ad Hoc Play between copies
   set to different languages.
+
+## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
+
+Reported on a Ryzen 7 7840HS (Radeon 780M) + RTX 4070 Laptop GPU with
+v0.3.0: the importer stopped while it ran the game unseen to dump the
+modules (`install-game.py` step 3), with the AMD driver's message box
+"LoadLibrary failed with error 87: The parameter is incorrect". The log
+ended right after `Present mode: Mailbox`, with Vulkan already on the RTX
+4070. The message isn't ours: AMD's OpenGL driver shows it on AMD iGPU +
+NVIDIA laptops.
+
+* Cause on our side: `ss-delta.exe` had no exports at all.
+  `NvOptimusEnablement` and `AmdPowerXpressRequestHighPerformance`
+  (`vita3k/performance.cpp`) were in the `game-frontend` static library,
+  and the linker drops an object nothing references (`Vita3K.exe`, which
+  compiles the file itself, had both). Fork `8b815f2f` compiles it into
+  each game's executable; both names are now in the export tables of
+  `ss-delta.exe` and `shinobido2.exe`. Boot on the Radeon 760M unchanged
+  (title screen, recompiled modules native).
+* Workaround, confirmed by the reporter: Windows Settings → Display →
+  Graphics, `ss-delta.exe` set to High performance; setup then finished
+  and the game runs.
+* Not checked: the fixed build on such a laptop without the setting.
+  **Hypothesis:** the export has the same effect as the setting, so builds
+  from `8b815f2f` on need no workaround.

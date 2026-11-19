@@ -68,6 +68,12 @@ as `C:\Program Files`).
 
 The importer can put a shortcut on the desktop.
 
+**Laptops with two GPUs** (an AMD Radeon built in and an NVIDIA card):
+releases up to v0.3.0 can stop near the end of the build with "LoadLibrary
+failed with error 87". Open Windows Settings → System → Display →
+Graphics, add `ss-delta.exe`, set it to High performance, and build again.
+Later releases ask for the NVIDIA GPU themselves.
+
 ## Linux and the Steam Deck
 
 1. Download `ss-delta-<version>-linux.tar.gz` and unpack it (on a Steam
