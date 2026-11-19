@@ -871,6 +871,9 @@ a PC builds the native modules first; an on-device build may come later.
 * ☐ **14f Thor polish**: the gamepad and the analog triggers, the
   touchscreen, the second screen (rear touch?), 120 Hz pacing, AYN's
   performance modes and battery, pausing in the background.
+  * ☐ Turnip as the driver on Adreno: Qualcomm's draws the fog wrong
+    (09-android). Recommend or download a pinned Turnip in the APK (as
+    LostOdysseyRecomp does); until then the PC setup installs one.
 * ☐ **14g (later) The setup on the device**: Python, capstone and a
   compiler in or beside the APK.
 

@@ -449,6 +449,63 @@ runs.
 * In all: **23,280 instruction and 684 function tests, 0 failing**, the
   same count as on the M5.
 
+## The owner's first sessions on the Thor (2026-11-19)
+
+**Qualcomm's driver: black rectangles in the fog.** The owner started the
+APK from the launcher (native code, Qualcomm's driver, defaults) and
+played the first story quest on ST03A. Now and then, black pixelated
+rectangles appeared all over the screen, with the fog clouds that drift
+across the map, more often in combat. The log had nothing at those times.
+
+The cause: the fog is programmable blending (the shader reads the
+framebuffer). Qualcomm's driver has neither shader interlock nor
+raster-order access, so Vita3K reads the framebuffer through
+non-coherent subpass input. A barrier before each such draw orders draws
+against each other (`scene.cpp`), but not the overlapping sprites
+**within** one draw, which a fog cloud is. On the Adreno's tiled renderer
+that comes out as tile-shaped garbage. The earlier research had it from
+the other side: loktar00's "blocky fog/particle artifacts" on Vulkan went
+away with `high-accuracy: true`, which on the PC means interlock.
+
+**Turnip fixes it.** The same quest with `[debug] gpu_driver =
+turnip-T23` (Turnip has raster-order access, so reads within a draw are
+ordered): **two quests played without the glitch** (owner). Turnip
+T23 stays set on the test device.
+
+Consequences:
+
+* On Adreno, Turnip is the driver to play on, not just an option. The
+  APK should recommend or fetch it, as LostOdysseyRecomp does, and the
+  PC setup can push a pinned package meanwhile (14e, 14f).
+* Qualcomm's driver stays wrong for this effect. Fixing it without
+  coherent reads would mean splitting overlapping primitives into
+  separate draws: slow, not planned.
+
+**Write tracking: a false critical line.** The log of the Turnip session
+had 38 "Unhandled write protected region was valid" lines, every address
+exactly twice, in bursts a few milliseconds apart. That is the race the
+handler already describes: several threads fault on one page, the first
+handles it (unprotects the page, removes the segment), and the ones that
+waited find no segment. macOS checks the page's protection there
+(`page_accessible`); elsewhere it returned "unknown", so the race was
+logged as critical before the "keep going" path unprotected the page
+again, which was the right outcome. Now (`mem.cpp`), on hosts other than
+macOS, a page that no tracked segment overlaps is treated as that race:
+retried without the log line. Tracked regions cover whole host pages
+since the macOS work, so on 4 KiB hosts that bookkeeping is exact. A
+fault on a page that still has a segment keeps the critical line.
+Checked: ST03A natively on the Thor (Turnip) and on Windows, 0 critical
+lines, 60 fps. An idle quest didn't show the race before either, so the
+next play session is the real check.
+
+**The log lost its end.** That session's log stopped five minutes in:
+the log is written on a thread of its own, and an app swiped away from
+the recent apps is killed without notice. The frontend now flushes every
+log sink when Android sends the app to the background, ends it, or runs
+low on memory: an SDL event watch (`android.cpp`), because SDL blocks the
+game's event loop while the app is paused. Checked: Home pressed 25 s in,
+the log's last line two seconds before.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below. Candidates: the Vita's
