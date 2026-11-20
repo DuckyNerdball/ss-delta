@@ -849,9 +849,17 @@ a PC builds the native modules first; an on-device build may come later.
     Windows checked (ST03A natively, 59–60 fps, interlock as before).
   * ☐ The swapchain following a resized surface; `v3kdrive.py`'s adb
     backend (the session's shell helpers stand in).
-* ☐ **14c Our renderer on the Adreno**: `double-buffer` mapping, depth
+* ☑ **14c Our renderer on the Adreno**: `double-buffer` mapping, depth
   clamp, programmable blending without shader interlock; then the 50-map
   sweep against Windows' pictures.
+  * ☑ The sweep over adb on Turnip T23 (2026-11-20, 09-android): every
+    Stage Select screenshot checked against Windows' (all 50 right the
+    first time); 48 maps at 60 fps and rendered as on Windows; ST06A and
+    ST20A hung in libult (`Queue.h:797 packet != NULL`).
+  * ☑ The hang: `strex` as a value-only compare-and-swap let libult's
+    queue lose a packet (ABA) when a host thread stalled; the kit's
+    exclusive monitor now breaks other reservations as dynarmic's does.
+    The sweep twice over with it: 100 quest loads, no hang.
 * ☑ **14d Native code on Android**: the modules built with the NDK's clang
   for `aarch64-linux-android`, loaded from internal storage; a quest on
   NativeCPU with 0 JIT calls; the dynarmic tests on the Thor under adb.
@@ -884,12 +892,23 @@ a PC builds the native modules first; an on-device build may come later.
     the PC, 4.6 min of copying, ST03A natively on T23 at 60 fps.
   * ☐ `setup.py` and its window (a release folder, not the project); the
     APK in the release workflow.
-* ☐ **14f Thor polish**: the gamepad and the analog triggers, the
+* ◐ **14f Thor polish**: the gamepad and the analog triggers, the
   touchscreen, the second screen (rear touch?), 120 Hz pacing, AYN's
   performance modes and battery, pausing in the background.
-  * ☐ Turnip as the driver on Adreno: Qualcomm's draws the fog wrong
-    (09-android). Recommend or download a pinned Turnip in the APK (as
-    LostOdysseyRecomp does); until then the PC setup installs one.
+  * ☑ Turnip as the driver on Adreno: Qualcomm's draws the fog wrong
+    (09-android). The APK's first screen offers Mr. Purple's T23 on
+    Adreno 7xx (pinned size and SHA-256); `[debug] gpu_driver = auto`
+    takes it (2026-11-20, checked in a test package).
+  * ☑ Home and back to the game (same process, 60 fps); Back doesn't
+    quit; holding Select opens the settings menu.
+  * ◐ Touch: the touchscreen reaches the game; the `[touch]` bindings
+    (Black Rite on the left trigger) didn't on Android and are fixed in
+    `touch.cpp` (**hypothesis** until seen in play: no Black Rite icon
+    showed in the quests tried, so neither a finger nor the trigger could
+    be checked there).
+  * ◐ 60 Hz: the surface asks for it; unmeasured, the test Thor's
+    setting caps the screen at 60 Hz already.
+  * ☐ The second screen; AYN's performance modes and battery.
 * ☐ **14g (later) The setup on the device**: Python, capstone and a
   compiler in or beside the APK.
 

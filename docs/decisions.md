@@ -247,7 +247,11 @@ isn't recompiled (NEON, ARM mode, the LLE libraries, indirect jumps).
   calls become host calls.
 * `strex` is a host compare-and-swap against the value `ldrex` read, as
   Vita3K's dynarmic does it, so native and JIT threads share one exclusive
-  protocol.
+  protocol. *Update 2026-11-20:* it also fails once another exclusive
+  store to its granule has succeeded since the `ldrex` (a version table,
+  as dynarmic's monitor breaks other reservations): the value check alone
+  allowed an ABA in libult's queue on Android (09-android). JIT threads
+  don't take part in the versions.
 
 **Consequences:**
 

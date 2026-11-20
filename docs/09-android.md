@@ -573,6 +573,114 @@ log lines.
 Open for 14e: the setup's window and `setup.py` (a player with a release
 folder rather than the project), the APK in the release workflow.
 
+## The map sweep on Turnip (14c, 2026-11-20)
+
+The Phase 7 sweep over adb (`build/android/thor-map-sweep.py`, not
+committed): each map's first quest from Stage Select, screenshots after
+loading, with Mind's Eye, after camera turns and after a walk, and the
+frame rate from SurfaceFlinger (`dumpsys SurfaceFlinger --latency` on
+the game's `SurfaceView` layer). The first try stepped through the quest
+list wrongly: a 300 ms R+right press reaches the game's key repeat on
+the Thor and moves 20 quests. With a 120 ms press, and each Stage Select
+screenshot compared with the Windows sweep's (the text on the left,
+thresholded: below 0.6 for the same quest, above 2 for another; a retry
+above 1.2), **all 50 maps matched on the first attempt**.
+
+On Turnip T23, natively, 1×: **48 of 50 at 59.9–60.0 fps**, longest
+frame 16.7 ms (ST22C 57.2 fps once while loading). Side by side with
+Windows' pictures, every map shows the same scene, effects and HUD; the
+rows that differ differ in timing only (enemies, a quest that ends early
+or never leaves Stage Select, which Windows' does too; ST08B's dark shots
+are its boss's darkness attack).
+
+The other two (ST06A, ST20A) **hung**: 2.0 fps, frames 517 ms apart,
+which is the renderer re-presenting the last frame every 500 ms when the
+game submits nothing. Both logs end the same way:
+`Queue.h:797:[ult] Assertion Failed: packet != NULL`, then
+`NativeCPU: no native code for the guest code at 0x8045D7BC`: libult
+asserted (`bkpt`, which has no native code), and its thread,
+`MDL_DRAW_ULT_KERNEL`, stopped. About 6 hangs in some 130 quest loads on
+the Thor so far, none in hundreds on Windows, none in 57 on the Mac
+(arm64 too, but 57 loads at that rate miss it one time in ten).
+
+## The libult hang: the exclusive monitor (2026-11-20)
+
+libult's `Queue` (dequeue `f_8045ac4c`, enqueue `f_8045a920`) is a
+Michael–Scott queue of 64-bit links (pointer and flag in the high word),
+updated with `ldrexd`/`strexd`. Dequeue moves the packet into the old
+dummy node, resets that node's `next` to (0, 0) with a plain `stm`
+(`8045ade8`) and returns it. Enqueue reads the tail, `ldrexd`s its
+`next`, checks the tail again and `strexd`s its node there if `next` was
+(0, 0) (`8045a978` … `8045aab0`).
+
+The recompiler made `strex` a host compare-and-swap against the value
+`ldrex` read (D7, as dynarmic's value check). A real `strexd` also fails
+if anything else stored to the address in between, and after any
+exception. So, on the host only: a producer reads tail X's `next` as
+(0, 0) and stalls; another producer links Y there, the tail moves on, a
+consumer pops X and resets its `next` to (0, 0); the first producer's
+CAS still matches and links its node onto X, which has left the queue.
+The packet is lost while the count says it is there, and the next
+dequeue finds none. A long stall between the two instructions is what
+makes it likely: a host thread preempted there (the Thor's eight cores,
+three of them small, run more threads than cores) keeps a value-checked
+reservation; the Vita's monitor wouldn't survive it.
+
+The barriers were not the problem: `dmb` is a sequentially consistent
+fence, the device's libult has all 446 of them, and the guest uses no
+`isb` or dependency tricks a compiler could drop.
+
+**The fix** (kit `recomp/runtime/armrecomp.h`, generated code calls
+`excl_reserve`/`excl_store`): as in dynarmic's exclusive monitor, a
+successful exclusive store also breaks every other reservation of its
+granule. A table of 4096 versions, one per hashed 8-byte granule;
+`ldrex` records its granule's version (in `excl_valid`, bit 0 set, so
+`GuestContext` and the fork's ABI stay as they were), and `strex`
+succeeds only if the version is unchanged and memory still holds the
+value, then bumps it (bit 0 of an entry locks it during the store).
+Plain stores still don't break reservations, as in dynarmic. One table
+per module. The dynarmic comparison tests pass (libult, libc), but have
+no exclusives (single-threaded); Windows' ST03A is unchanged (59 fps,
+0 critical lines).
+
+**On the Thor**, the same sweep twice over with the fixed modules, in a
+copy of the app (the test package with a copy of the game and saves):
+**100 of 100 quest loads without a hang**, 0 critical log lines, every
+Stage Select screenshot matching Windows'. At the old rate (about 1 in
+22) a hundred clean loads happen by chance less than once in a hundred.
+
+## Thor polish (14f, 2026-11-20)
+
+* **Turnip on first start**: the APK's launcher is `SetupActivity`. On an
+  Adreno 7xx (from `GL_RENDERER`) without a driver package and without
+  an answer yet, it offers Mr. Purple's T23 (3.5 MB from GitHub, size
+  and SHA-256 checked, written through a `.part` file into `drivers/`);
+  *Not now* asks again next time, *Don't ask again* doesn't. `[debug]
+  gpu_driver = auto` (the new default) takes the package unpacked last,
+  else the system's driver. Checked in the test package: the offer,
+  Download with the built-in A button, the zip's hash, the game started
+  with `Vulkan driver: turnip_mrpurple_T23-toasted ([debug] gpu_driver =
+  auto)`.
+* **Home and back**: Home, then the launcher's icon: the same process,
+  the title screen goes on at 59.9 fps. Android's Back doesn't close the
+  game.
+* **60 Hz**: the surface asks for 60 Hz (`setFrameRate`, fixed source).
+  This Thor's own setting already caps the screen at 60 Hz
+  (`peak_refresh_rate`), so the request's effect is unmeasured here.
+* **Settings menu**: holding Select (Back/View) for a second opens it on
+  the Thor, as on PCs.
+* **Touchscreen**: the front touchscreen works (a 300 ms press in the
+  save dialog; `input tap` presses too briefly for the game's sampling).
+  But the touch module takes only fingers on Android (SDL turns the
+  touchscreen into a mouse too), and only its mouse path added the
+  frontend's held points: the `[touch]` bindings (the Black Rite on the
+  left trigger) never reached the game on Android. They are now added in
+  both paths (`touch.cpp`). That this makes the Black Rite work is a
+  **hypothesis**: the quests tried showed no Black Rite icon, so neither a
+  finger nor the trigger could be checked on it.
+* **No game yet**: on Android the message says to set the game up on a
+  PC and copy it over (`android.py push`), not to edit the ini.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below. Candidates: the Vita's
@@ -588,14 +696,16 @@ folder rather than the project), the APK in the release workflow.
   tile `controllerStyle` switches it): A/B/X/Y, bumpers, a D-pad hat,
   sticks at ±32767, and **analog triggers** (`ABS_GAS`, `ABS_BRAKE`).
   Upstream's app takes it as a gamepad. The Black Rite binding (left
-  trigger) needs a threshold.
+  trigger) fires past half travel (input.cpp); on Android it needed the
+  touch fix above (14f).
 * **Performance modes and fan**: AYN's quick settings (Standard,
   Performance, Max, and fan curves). Measure 60 fps at 1× and 2× in each,
   with power read from `/sys/class/power_supply` over adb.
 * **Lifecycle**: Android pauses an app when it loses focus and may kill it
   in the background. The Vita's own suspend has no counterpart in the
   emulator. At minimum, pause emulation and audio on `onPause` and keep
-  the Vulkan surface valid when it comes back.
+  the Vulkan surface valid when it comes back. Home and back again works
+  (14f).
 
 ## Developing for Android
 

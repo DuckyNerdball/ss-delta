@@ -101,7 +101,15 @@ Every guest function becomes `void f_<address>(GuestContext *ctx)`.
 * **Exclusives:** `strex` is a host compare-and-swap. It succeeds when the
   monitor is armed for its address and memory still holds the value `ldrex`
   read. This is the same value-based protocol Vita3K's dynarmic uses, so
-  native and JIT threads interoperate.
+  native and JIT threads interoperate. Since 2026-11-20 it also fails when
+  another exclusive store to the same granule succeeded after the `ldrex`
+  (`excl_reserve`/`excl_store` in `runtime/armrecomp.h`: a table of
+  versions per hashed 8-byte granule, recorded by `ldrex`, checked and
+  bumped by `strex`), as dynarmic's monitor does. The value check alone let
+  libult's queue link a node onto one that had left the queue (ABA) when a
+  host thread stalled between the two instructions (09-android, "The libult
+  hang"). Plain stores still don't break a reservation, and each module has
+  its own table.
 * **Counting:** every basic block starts with `RECOMP_COUNT(n)`. Builds
   with `RECOMP_COUNT_INSNS` (the default) add `n` to `ctx->insns` for the
   fork's counters.
