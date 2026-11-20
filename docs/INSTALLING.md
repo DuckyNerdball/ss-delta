@@ -43,7 +43,10 @@ Any of these forms works:
 
 * a decrypted dump (a folder, a `.zip` or a `.vpk`) with the 1.30 update,
   merged into the game or beside it as NoNpDrm dumps keep it (`app/` and
-  `patch/`);
+  `patch/`). For a NoNpDrm dump, give the `.zip` or the folder that holds
+  both `app` and `patch`, not `patch/PCSA00152` alone (that is only the
+  update), and don't unpack the update into the game's folder: its files
+  replace the game's, and the game can't be installed from what is left;
 * the PSN `.pkg` of the game with its licence (`work.bin` or a `.rif`, or a
   zRIF), plus the 1.30 update's `.pkg`.
 
