@@ -537,6 +537,25 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     installed game's data has them (1.30's pacts and raiments). Same bytes
     as the file Vita owners swap in; the new outfits appear.
 
+* ◐ **Xbox button labels** (2026-11-20; research in
+  [01-research](01-research.md#button-prompts-local-2026-11-20)).
+  * ☑ `[game] button_labels` (`playstation`, `xbox`), live in the settings
+    menu as Button prompts. The fork's texture cache takes a
+    `TextureOverride` from the front end (`game-frontend/button_labels.*`):
+    the game's `com_001_*` atlases are decoded as they are uploaded, each
+    □ ○ × △ / L / R painted over in its ink blot with the letters of the
+    gamepad button `[gamepad]` binds to it, drawn at the internal
+    resolution, and uploaded like an imported texture. Switching re-uploads
+    every texture.
+  * ☑ The atlases are found by an FNV-1a hash of their data: 33 language
+    copies, table from `tools/button-atlases.py` (the symbols sit at the
+    same place in every copy; only the words move).
+  * ☐ The D-pad, sticks (LS/RS), START/SELECT (Menu/View) and TOUCH icons.
+  * ☐ The tutorial pictures with buttons drawn in (`game_027_*`,
+    `menu_eu_tutorial_*`, `menu_034_002/003`).
+  * ☐ The few button characters in text (△ in three strings, "%lc").
+  * ☐ A playtest on a gamepad, and `auto` (from the connected pad's type).
+
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a
 controller at scale 2: combat, the Black Rite on the left trigger, a

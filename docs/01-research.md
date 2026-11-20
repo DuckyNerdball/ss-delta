@@ -206,6 +206,56 @@ title screen in French and Portuguese, the EU one in German (02-baseline,
   it (the latter only fills `current_config.sys_lang`); up to v0.2.0 the
   game always saw English (US). Since v0.2.1, `[game] language` sets it.
 
+### Button prompts [local, 2026-11-20]
+
+Where the PlayStation button art comes from, read from the 1.30 `archive`
+(textures decoded offline; the swizzle is Vita3K's
+`resolve_z_order_compressed_image`):
+
+* **Icon atlases.** The HUD and menu prompts are sprites in a few
+  128×128 BC3 atlases, `resource/data/texture/com_001_*.gxt`:
+  * `com_001_000`: □ ○ × △ in ink blots, L and R, "L HOLD" and "R HOLD";
+  * `com_001_002`, `com_001_005`: the same four with HOLD, L/R HOLD, the
+    left/right stick and START (`_005` adds SELECT and TOUCH);
+  * `com_001_003`: the D-pad directions, each with HOLD, □/○/△ RELEASE;
+  * `com_001_001`, `com_001_006`: a small and a large D-pad;
+  * `com_001_007`: the word HOLD; `com_001_008`: big "L HOLD"/"R HOLD";
+    `com_001_009` (32×64): the right stick with R.
+
+  About 40 sprites in all. The layouts (`resource/data/d2anime/*.d2b`, which
+  name their textures by the artists' `D:\project_elder\D2Anime\tga\*.dds`
+  paths) use these atlases in 30-odd screens; `com_001_005_jp` alone in
+  14 (`com_000_000`, `game_010_000`, `game_039_001`, `menu_009_300`, ...).
+* **Regional copies.** The `_jp`, `_us`, `_ue`, `_fr`, `_ge`, `_it`, `_sp`,
+  `_bp`, `_cn`, `_kr`, `_tw` copies differ only in the words drawn
+  (HOLD, RELEASE, ...): `_jp`, `_us` and `_ue` are byte-identical for
+  `000`, `003`, `005`, `007`; `_fr` differs. The layouts name the `_jp`
+  file. **Hypothesis:** the game swaps the suffix for the language.
+* **Art with buttons drawn in.** Tutorial pictures: `game_027_000c` and
+  `002c`–`005c` (○ △ □ HOLD R over a scene), `menu_eu_tutorial_002`/`005`/`006`
+  (□/○ on hands, □ R), `menu_034_002`/`003` (journal screenshots with small
+  button captions) and `menu_eu_tutorial_001c`, a photo of a Vita.
+  `menu_006_000` is a Japanese control chart. Found by matching the four
+  face symbols over all 3,410 decoded textures (`archive` + `archive_patch3`);
+  hits below these were effects and noise.
+* **Buttons in text.** The fonts (`resource/font/*.gly` + `.gxt`, U8
+  atlases; `.gly` is a big-endian `u16` count and 10-byte header, then
+  14-byte records starting with the UTF-16 code) draw △ ○ □ from
+  `elder_number_font` and × (U+00D7) from `elder_normal_font`. The US text
+  uses them rarely: "Press the △ button" (`ingame_tutorial` 3204, 3208;
+  `online_text` 1084) and "Press the %lc button" (`ingame_tutorial` 3111),
+  where the game puts in the character at run time. Most text names
+  buttons in words ("the L button", "the down button").
+* `boot/pad_caption_param.csv` (the Offering prompts) names abstract
+  keys (0 reset, 1 cast, 2 action, 3/4 left/right stick, +100 HOLD), not
+  icons.
+* Vita3K's texture replacement keys a texture by
+  `(width << 16 | height | gamma << 32 | swizzle << 33) ^ XXH3_64(first mip)`
+  (`hash_texture_nostride`). The Xbox labels (03-plan, Phase 8) don't use
+  it: they hash the atlas data themselves (FNV-1a 64), which matched the
+  archive's bytes in play (2026-11-20: `com_001_000`'s US copy, in the hub
+  and in a quest).
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |
