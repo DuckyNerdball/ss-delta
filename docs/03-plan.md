@@ -1014,7 +1014,11 @@ milestone, and nothing is released before it.
     (2026-11-20, `0d676e5`, 25 min). The APK is 99.4 MB, release-signed,
     with the tools and `game.json`; it updated the owner's app in place
     (saves intact, straight to the game). INSTALLING's Android section is
-    done. Left: tag v0.4.0 (the owner's call).
+    done. Left: tag v0.4.0 (the owner's call). Prepared (2026-11-20): the
+    release notes in `.github/release-notes/v0.4.0.md` (the workflow drafts
+    the release with them), Android in the README and INSTALLING, and a
+    manual run with the Xbox button labels and the intro skip. When
+    tagging, stamp `v0.4.0` into `recomplauncher.json` first.
 
 **Exit (v0.4.0):** with a Thor and their own dump, and no PC, a player
 gets from the release's APK to a quest on native code. With a PC, D25's

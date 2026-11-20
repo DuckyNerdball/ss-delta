@@ -269,6 +269,12 @@ jobs:
     needs: [android, windows, linux, macos]
     runs-on: ubuntu-24.04
     steps:
+      # the release's notes: .github/release-notes/<tag>.md when there is one (written when the release
+      # is prepared), else the short text below
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: .github/release-notes
+
       - uses: actions/download-artifact@v7
         with:
           path: dist
@@ -278,6 +284,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          notes=".github/release-notes/${{ github.ref_name }}.md"
+          if [ -f "$notes" ]; then
+            set -- --notes-file "$notes"
+          else
+            set -- --notes "Unpack the archive for your system and start the game: Windows, ss-delta.exe in ss-delta-${{ github.ref_name }}-windows.zip; Linux and Steam Deck (desktop mode the first time), ss-delta.x86_64 in ss-delta-${{ github.ref_name }}-linux.tar.gz; macOS 13.3 or newer on Apple Silicon, the app in ss-delta-${{ github.ref_name }}-macos.tar.gz (macOS blocks it the first time: System Settings, Privacy & Security, Open Anyway). Android (64-bit ARM with Vulkan; made for Snapdragon handhelds such as the AYN Thor): install ss-delta-${{ github.ref_name }}-android.apk and start it; its setup screen builds the game on the device from your dump (a PC that has built the game can also put it on the device with --android). The first start builds the game from your own dump of Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, update 1.30); everything stays in its folder. README.txt explains. SHA-256 and the build attestations: see the files attached and 'gh attestation verify'."
+          fi
           gh release create '${{ github.ref_name }}' dist/* --repo '${{ github.repository }}' --draft \
-            --title 'ss-delta ${{ github.ref_name }}' \
-            --notes "Unpack the archive for your system and start the game: Windows, ss-delta.exe in ss-delta-${{ github.ref_name }}-windows.zip; Linux and Steam Deck (desktop mode the first time), ss-delta.x86_64 in ss-delta-${{ github.ref_name }}-linux.tar.gz; macOS 13.3 or newer on Apple Silicon, the app in ss-delta-${{ github.ref_name }}-macos.tar.gz (macOS blocks it the first time: System Settings, Privacy & Security, Open Anyway). Android (64-bit ARM with Vulkan; made for Snapdragon handhelds such as the AYN Thor): build the game on a PC first, then start it there with --android to put it on the device (ss-delta-${{ github.ref_name }}-android.apk is the same app, also inside each PC archive). The first start builds the game from your own dump of Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, update 1.30); everything stays in its folder. README.txt explains. SHA-256 and the build attestations: see the files attached and 'gh attestation verify'."
+            --title 'ss-delta ${{ github.ref_name }}' "$@"

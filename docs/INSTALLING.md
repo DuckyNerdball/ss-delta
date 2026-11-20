@@ -29,6 +29,7 @@ game on your computer or device from **your own dump** of it.
 | Windows | Windows 10 or 11, x64, a GPU with Vulkan |
 | Linux | x64, glibc 2.30 or newer (any current distribution, SteamOS), a GPU with Vulkan |
 | macOS | macOS 13.3 or newer on Apple Silicon (M1 and later) |
+| Android | Android 9 or newer, 64-bit ARM, Vulkan; about 10 GB free while it builds ([Android](#android)) |
 | Disk space | about 4 GB for the game's folder, and up to 2 GB more while it builds |
 | Internet | the first start downloads the PS Vita firmware from Sony and a compiler |
 
@@ -54,8 +55,9 @@ The add-ons' content (raiments, hoods, additional pacts) is part of update
 1.30; ss-delta unlocks it.
 
 Download the archive for your system from the
-[latest release](https://github.com/vita-recomps/ss-delta/releases/latest).
-Each unpacks to a folder `ss-delta`: that folder **is** the game. Keep it
+[latest release](https://github.com/vita-recomps/ss-delta/releases/latest)
+(on Android, the `.apk`: see [Android](#android)).
+Each archive unpacks to a folder `ss-delta`: that folder **is** the game. Keep it
 wherever you like (not inside a folder that needs administrator rights, such
 as `C:\Program Files`).
 

@@ -96,7 +96,9 @@ with Python 3.12). `--apk <file>` adds the game's Android APK as
 a device ([09-android](09-android.md)). Pushing a tag `v*` runs
 `.github/workflows/release.yml`, which builds the APK (NDK r29 on Ubuntu,
 Gradle) and all three archives on GitHub, with their SHA-256 and build
-attestations, into a draft release.
+attestations, into a draft release. Its notes are
+`.github/release-notes/<tag>.md` when that file exists (write it before
+tagging), else a short default text.
 
 The APK is signed with the project's release key, from the repository's
 secrets `ANDROID_KEYSTORE_BASE64` (the keystore, base64), `ANDROID_KEYSTORE_PASSWORD`,
