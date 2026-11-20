@@ -23,6 +23,13 @@ window; --add-to-steam adds the game to Steam; --fullscreen or --windowed;
 --set section.key=value sets any setting of ss-delta.ini for one run; --game
 <folder> plays the game in another folder.
 
+Android (64-bit ARM with Vulkan; made for Snapdragon handhelds such as the AYN
+Thor): once the game is built here, ./ss-delta.x86_64 --android
+puts it on the device over USB or Wi-Fi debugging: a window asks how the device
+is connected, builds the game's code for Android, downloads adb from Google and
+copies the app (setup/android/ss-delta.apk), the game's files and its code.
+Saves already on the device stay.
+
 The US and EU games are the same build: either one runs. When both are
 installed, the US one does; ./ss-delta.x86_64 --title-id PCSF00532 starts the
 EU one.

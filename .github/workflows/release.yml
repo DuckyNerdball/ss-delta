@@ -4,7 +4,7 @@
 # its importer in setup/. A release holds no game or firmware data: the first time it starts on the
 # player's computer, it downloads the firmware from Sony and a compiler, and builds the game from the
 # player's own dump, in its folder.
-# A tag v* makes a draft release with the three archives, their SHA-256 and build attestations; a
+# A tag v* makes a draft release with the three archives and the APK, their SHA-256 and build attestations; a
 # manual run only uploads them as workflow artifacts.
 # Each archive carries recomplauncher.json (game.json release_files), with the version stamped into
 # its prepare.version: RecompLauncher builds the game again from the player's dump after every update,
@@ -22,7 +22,95 @@ permissions:
   attestations: write
 
 jobs:
+  # The game's APK (docs/decisions.md D25, docs/09-android.md): lib ss-delta.so built with the NDK on
+  # Linux, packed by Gradle. It goes into every PC archive (setup/android/ss-delta.apk), from where the
+  # setup's --android step puts it on a device, and into the release by itself. Signed with the release
+  # key from the repository's secrets (ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
+  # ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD): an installed APK can only be updated by one signed with the
+  # same key. A tag needs the key; a manual run without it signs with a throwaway debug key.
+  android:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      NDK_VERSION: 29.0.14206865
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # Vita3K's language catalog generator needs Python 3.12
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: NDK r29, platform 35, build-tools 35, Ninja
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q ninja-build
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;$NDK_VERSION" "platforms;android-35" "build-tools;35.0.0" > /dev/null
+          echo "NDK=$ANDROID_HOME/ndk/$NDK_VERSION" >> "$GITHUB_ENV"
+
+      - name: Build libss-delta.so (NDK, games only)
+        run: |
+          cmake -S third_party/vita3k -B build/vita3k-android -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=28 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVITA3K_GAMES_ONLY=ON \
+            -DUSE_DISCORD_RICH_PRESENCE=OFF
+          cmake --build build/vita3k-android --target ss-delta
+          # the game's library and libadrenotools' hooks beside it (add_game), without debug info
+          mkdir -p build/android/jniLibs/arm64-v8a
+          for f in build/vita3k-android/bin/*.so; do
+            "$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip" --strip-debug -o "build/android/jniLibs/arm64-v8a/$(basename "$f")" "$f"
+          done
+          ls -la build/android/jniLibs/arm64-v8a
+
+      - name: Pack and sign the APK
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ "${{ github.ref_type }}" = tag ]; then version="${{ github.ref_name }}"; else version="$(echo ${{ github.sha }} | cut -c1-7)"; fi
+          # versionCode: v<major>.<minor>.<patch> as major*10000 + minor*100 + patch, else the run number
+          code=$(echo "$version" | sed -nE 's/^v([0-9]+)\.([0-9]+)\.([0-9]+)$/\1 \2 \3/p' | awk '{ print $1 * 10000 + $2 * 100 + $3 }')
+          code=${code:-${{ github.run_number }}}
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            export ANDROID_KEYSTORE="$RUNNER_TEMP/release.jks"
+          elif [ "${{ github.ref_type }}" = tag ]; then
+            echo "::error::no release key (secrets.ANDROID_KEYSTORE_BASE64): a release APK must be signed with it"; exit 1
+          else
+            echo "::warning::no release key: the APK is signed with a debug key and can't update a release's install"
+          fi
+          bash third_party/vita3k/android/gradlew -p third_party/vita3k/vita3k/game-frontend/android assembleRelease \
+            --console=plain -Pgame=ss-delta -PapplicationId=io.github.vitarecomps.ssdelta -PappName=ss-delta \
+            -PversionName="${version#v}" -PversionCode="$code" -PjniLibsDir="$PWD/build/android/jniLibs"
+          rm -f "$RUNNER_TEMP/release.jks"
+          name="ss-delta-$version-android.apk"
+          mkdir -p build/release
+          cp third_party/vita3k/vita3k/game-frontend/android/build/outputs/apk/release/game-frontend-release.apk "build/release/$name"
+          (cd build/release && sha256sum "$name" > "$name.sha256")
+          echo "APK=build/release/$name" >> "$GITHUB_ENV"
+
+      - uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: ${{ env.APK }}
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: setup-android
+          path: |
+            ${{ env.APK }}
+            ${{ env.APK }}.sha256
+
   windows:
+    needs: android
     runs-on: windows-2025
     timeout-minutes: 180
     steps:
@@ -34,6 +122,11 @@ jobs:
         with:
           python-version: '3.12'
 
+      - uses: actions/download-artifact@v7
+        with:
+          name: setup-android
+          path: build/apk
+
       - name: Build ss-delta.exe (games only, no Qt)
         shell: pwsh
         run: python -I third_party/recomp/tools/build-vita3k.py --games-only --target ss-delta
@@ -44,8 +137,9 @@ jobs:
           $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ github.sha }}'.Substring(0, 7) }
           $name = "ss-delta-$version-windows"
           python -I tools/stamp-recomplauncher.py recomplauncher.json $version
+          $apk = (Get-ChildItem build/apk/*.apk | Select-Object -First 1).FullName
           python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-windows.json `
-            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --zip --archive "build/release/$name"
+            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --apk $apk --zip --archive "build/release/$name"
           $zip = "build/release/$name.zip"
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           "$hash  $name.zip" | Out-File -Encoding ascii "build/release/$name.zip.sha256"
@@ -63,6 +157,7 @@ jobs:
             ${{ env.ZIP }}.sha256
 
   linux:
+    needs: android
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     # the SDK the Deck's Steam Runtime matches: glibc 2.31, g++ 14 (docs/07-linux.md)
@@ -82,6 +177,11 @@ jobs:
           mkdir -p /opt/python && tar -xzf /tmp/python.tar.gz -C /opt/python --strip-components=1
           echo "PY=/opt/python/bin/python3" >> "$GITHUB_ENV"
 
+      - uses: actions/download-artifact@v7
+        with:
+          name: setup-android
+          path: build/apk
+
       - name: Build ss-delta.x86_64
         run: $PY -I third_party/recomp/tools/build-vita3k.py --target ss-delta
 
@@ -91,7 +191,8 @@ jobs:
           name="ss-delta-$version-linux"
           $PY -I tools/stamp-recomplauncher.py recomplauncher.json "$version"
           $PY -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-linux.json \
-            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --zip --archive "build/release/$name"
+            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta \
+            --apk "$(ls build/apk/*.apk | head -1)" --zip --archive "build/release/$name"
           tgz="build/release/$name.tar.gz"
           (cd build/release && sha256sum "$name.tar.gz" > "$name.tar.gz.sha256")
           echo "TGZ=$tgz" >> "$GITHUB_ENV"
@@ -109,6 +210,7 @@ jobs:
 
   macos:
     # Apple Silicon; the build targets macOS 13.3 (the fork's CMAKE_OSX_DEPLOYMENT_TARGET)
+    needs: android
     runs-on: macos-15
     timeout-minutes: 180
     steps:
@@ -119,6 +221,11 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: setup-android
+          path: build/apk
 
       - name: Ninja
         run: brew install ninja
@@ -132,7 +239,8 @@ jobs:
           name="ss-delta-$version-macos"
           python -I tools/stamp-recomplauncher.py recomplauncher.json "$version"
           python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-macos.json \
-            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --zip --archive "build/release/$name"
+            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta \
+            --apk "$(ls build/apk/*.apk | head -1)" --zip --archive "build/release/$name"
           tgz="build/release/$name.tar.gz"
           (cd build/release && shasum -a 256 "$name.tar.gz" > "$name.tar.gz.sha256")
           echo "TGZ=$tgz" >> "$GITHUB_ENV"
@@ -150,7 +258,7 @@ jobs:
 
   release:
     if: github.ref_type == 'tag'
-    needs: [windows, linux, macos]
+    needs: [android, windows, linux, macos]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/download-artifact@v7
@@ -164,4 +272,4 @@ jobs:
         run: |
           gh release create '${{ github.ref_name }}' dist/* --repo '${{ github.repository }}' --draft \
             --title 'ss-delta ${{ github.ref_name }}' \
-            --notes "Unpack the archive for your system and start the game: Windows, ss-delta.exe in ss-delta-${{ github.ref_name }}-windows.zip; Linux and Steam Deck (desktop mode the first time), ss-delta.x86_64 in ss-delta-${{ github.ref_name }}-linux.tar.gz; macOS 13.3 or newer on Apple Silicon, the app in ss-delta-${{ github.ref_name }}-macos.tar.gz (macOS blocks it the first time: System Settings, Privacy & Security, Open Anyway). The first start builds the game from your own dump of Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, update 1.30); everything stays in its folder. README.txt explains. SHA-256 and the build attestations: see the files attached and 'gh attestation verify'."
+            --notes "Unpack the archive for your system and start the game: Windows, ss-delta.exe in ss-delta-${{ github.ref_name }}-windows.zip; Linux and Steam Deck (desktop mode the first time), ss-delta.x86_64 in ss-delta-${{ github.ref_name }}-linux.tar.gz; macOS 13.3 or newer on Apple Silicon, the app in ss-delta-${{ github.ref_name }}-macos.tar.gz (macOS blocks it the first time: System Settings, Privacy & Security, Open Anyway). Android (64-bit ARM with Vulkan; made for Snapdragon handhelds such as the AYN Thor): build the game on a PC first, then start it there with --android to put it on the device (ss-delta-${{ github.ref_name }}-android.apk is the same app, also inside each PC archive). The first start builds the game from your own dump of Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, update 1.30); everything stays in its folder. README.txt explains. SHA-256 and the build attestations: see the files attached and 'gh attestation verify'."

@@ -570,8 +570,78 @@ took **4.6 min** (3.2 GB at about 12 MB/s over Wi-Fi). The app started
 on native code with T23 from `drivers/`: ST03A at 60.0 fps, no critical
 log lines.
 
-Open for 14e: the setup's window and `setup.py` (a player with a release
-folder rather than the project), the APK in the release workflow.
+### From a release folder (2026-11-20)
+
+A player has a release folder, not the project. The pieces for that:
+
+* **`setup.py --android`** (kit): from a folder whose game is built, the
+  Android modules from the game installed there (`install-game.py
+  --android-only`: no dump, no firmware, no PC compiler; the game is run
+  once unseen for its ELFs as in the PC build, then recompiled and
+  compiled with zig), then adb, then `android.py push` with the release's
+  APK (`setup/android/<id>.apk`). With `--install` parts it builds both
+  sets of modules in one run and then copies. `--push-only` copies what
+  an earlier run left in `<folder>/android/` (the modules stay there; the
+  downloads and work files go, as for the PC build). Without `--console`
+  and device options a window asks (below).
+* **adb from Google**: `android-tools.json` pins platform-tools r37.0.3
+  for Windows, Linux and macOS (SHA-1 from Google's
+  `repository2-3.xml` checked, SHA-256 pinned); `android.py fetch-adb`.
+  It comes under the Android SDK License Agreement, which the player
+  accepts (`--accept-android-sdk-license`, or the window's box), as
+  Microsoft's on Windows. The setup stops adb's server at the end, so its
+  downloads can be deleted.
+* **`android.py`**: `--pair <ip:port> --code <code>` (wireless debugging's
+  pairing dialog; adb then finds the device by mDNS within seconds) and
+  `--connect`; one device listed twice (its address and its mDNS name,
+  as the Thor is once paired) counts once (by `ro.serialno`); a clear
+  message when the installed app was signed by another key. **Found in
+  the test:** `push` started the app once for its folder and settings
+  file, and the game never started with the screen off (it waits for its
+  surface), so the push failed. The device's shell can make the app's
+  folder itself, so `push` no longer starts the app, except for
+  `--driver` (it then wakes the screen first).
+* **The window** (`setupgui.AndroidWindow`): Wi-Fi (pairing address,
+  port and code, or the connect address) or a USB cable, Google's licence,
+  "build again" when modules exist, Copy, then the same progress and log
+  view as the build window.
+* **The front end**: `--android` opens that window and quits afterwards;
+  `--serial`, `--pair`/`--code`, `--connect`, `--push-only`,
+  `--accept-android-sdk-license` and `--apk` go to the importer without
+  the window; with `--dump` it builds both, then copies.
+* **The APK**: `make-setup.py --apk` puts it in `setup/android/`. The
+  release workflow's new `android` job builds it (NDK r29 on Ubuntu,
+  Vita3K's Gradle wrapper, `assembleRelease`, versionCode from the tag),
+  and every PC job takes it into its archive; it is also a release asset.
+  The Gradle project signs the release build with the key in the
+  environment (`ANDROID_KEYSTORE`, its passwords and alias, from the
+  repository's secrets), else with the debug key; a tag without the
+  key fails. Checked: the job's CMake steps from a fresh build folder in
+  WSL (with Python 3.12: Vita3K's language catalog generator needs it;
+  the job sets it up), and a release-type APK (not debuggable) built and
+  run.
+
+**End to end from a release folder** (2026-11-20), the US dump, a
+scratch release from `make-setup.py --apk` (with a test package name in
+its `game.json`, so the owner's app was untouched), the download cache
+of the Phase 13 tests:
+
+* `ss-delta.exe --dump <zip> --accept-microsoft-license --android
+  --accept-android-sdk-license --build-only`: the PC build, the Android
+  modules, adb, the device found by itself and the APK installed, in
+  **16.7 min** for the whole run (`--cache`: the firmware and the
+  Windows compiler were there; zig for Android and adb were downloaded);
+  the push then failed as above (screen off).
+* After the fix, `setup.py --android --console --push-only`: **6.2 min**
+  (3.4 GB at about 9 MB/s over Wi-Fi), the ten modules.
+* On the Thor, the app from its icon: the Turnip offer, Download (D-pad
+  to it, then A: the dialog's first press only moves the focus), T23
+  injected, every module verified native, Stage Select, **ST03A at 60.0
+  fps** (longest frame 16.7 ms), no critical log lines.
+* The window, its Copy button driven by a test harness (the licence
+  ticked, Wi-Fi with empty fields: paired before), without `--cache`:
+  **4.4 min**, "Done"; afterwards `setup/` held only `android/`, `kit/`
+  and `python/` (adb's download deleted).
 
 ## The map sweep on Turnip (14c, 2026-11-20)
 
@@ -759,7 +829,7 @@ Stage Select screenshot matching Windows'. At the old rate (about 1 in
 
 ## Next steps
 
-Phase 14 in [03-plan](03-plan.md): access and baseline first (upstream's
-APK on the Thor with the test file system), then our renderer on the
-Adreno, the single-game APK on the JIT, native modules, the PC-side
-setup, and Thor polish.
+Phase 14 in [03-plan](03-plan.md): the release key in the repository's
+secrets and a tagged release run through the workflow (its `android` job
+hasn't run on GitHub yet); the Black Rite on the trigger seen in play;
+14g, the setup on the device itself, later.

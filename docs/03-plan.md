@@ -890,8 +890,15 @@ a PC builds the native modules first; an on-device build may come later.
     frontend unpacks driver packages from `drivers/`.
   * ☑ End to end from the owner's dump to a separate test app: 19 min on
     the PC, 4.6 min of copying, ST03A natively on T23 at 60 fps.
-  * ☐ `setup.py` and its window (a release folder, not the project); the
-    APK in the release workflow.
+  * ☑ From a release folder (2026-11-20): `setup.py --android` and its
+    window, `ss-delta.exe --android`, adb pinned from Google (its licence
+    accepted), the APK in `setup/android/`. End to end on the Thor:
+    built from the dump, copied, the app from its icon, Turnip
+    downloaded, ST03A natively at 60 fps (09-android).
+  * ◐ The APK in the release workflow: the `android` job (NDK r29,
+    Gradle, signed with the release key from the secrets) feeds every PC
+    archive. Its CMake steps checked in WSL; not yet run on GitHub, and
+    the release key isn't in the secrets yet.
 * ◐ **14f Thor polish**: the gamepad and the analog triggers, the
   touchscreen, the second screen (rear touch?), 120 Hz pacing, AYN's
   performance modes and battery, pausing in the background.

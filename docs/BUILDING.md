@@ -91,9 +91,18 @@ python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/
 ```
 
 Linux and macOS take `setup-linux.json` and `setup-macos.json` (run there,
-with Python 3.12). Pushing a tag `v*` runs `.github/workflows/release.yml`,
-which builds all three archives on GitHub, with their SHA-256 and build
+with Python 3.12). `--apk <file>` adds the game's Android APK as
+`setup/android/ss-delta.apk`, which the release's `--android` step puts on
+a device ([09-android](09-android.md)). Pushing a tag `v*` runs
+`.github/workflows/release.yml`, which builds the APK (NDK r29 on Ubuntu,
+Gradle) and all three archives on GitHub, with their SHA-256 and build
 attestations, into a draft release.
+
+The APK is signed with the project's release key, from the repository's
+secrets `ANDROID_KEYSTORE_BASE64` (the keystore, base64), `ANDROID_KEYSTORE_PASSWORD`,
+`ANDROID_KEY_ALIAS` and `ANDROID_KEY_PASSWORD`; a tag fails without them.
+Every release must use the same key ([D25](decisions.md)): Android
+updates an installed app only from an APK with the same signature.
 
 Each archive carries `recomplauncher.json` at its top (`game.json`'s
 `release_files`), for [RecompLauncher](https://recomplauncher.com)

@@ -1,7 +1,8 @@
 # Installing ss-delta
 
 ss-delta runs **Soul Sacrifice Delta** natively on Windows, Linux (and the
-Steam Deck) and macOS on Apple Silicon. The downloads contain no game files
+Steam Deck) and macOS on Apple Silicon, and on Android devices with a PC's
+help. The downloads contain no game files
 and no code derived from the game: the first start builds the game on your
 computer from **your own dump** of it.
 
@@ -11,6 +12,7 @@ computer from **your own dump** of it.
 * [Windows](#windows)
 * [Linux and the Steam Deck](#linux-and-the-steam-deck)
 * [macOS (Apple Silicon)](#macos-apple-silicon)
+* [Android](#android)
 * [The first start: building the game](#the-first-start-building-the-game)
 * [Playing](#playing)
 * [Saves](#saves)
@@ -107,6 +109,43 @@ Vita's front touchscreen.
 When you join or host Ad Hoc Play, macOS asks whether the game may "find and
 connect to devices on your local network": allow it. In fullscreen the game
 runs in macOS's Game Mode.
+
+## Android
+
+Android needs a PC (Windows, Linux or macOS) as well: the game is built
+there from your dump, then copied to the device. Made for Snapdragon
+handhelds (tested on an AYN Thor: Snapdragon 8 Gen 2); the device needs a
+64-bit ARM chip, Vulkan and Android 9 or newer.
+
+1. Build the game on the PC as above (the release for the PC's system).
+2. On the device, turn on **Developer options** (Settings > About device:
+   tap the build number seven times), then in Developer options either
+   **USB debugging** (and connect the cable), or **Wireless debugging**
+   (the same Wi-Fi network as the PC).
+3. On the PC, start the game with `--android` (Windows: `ss-delta.exe
+   --android`, from a command prompt in the game's folder; Linux:
+   `./ss-delta.x86_64 --android`; macOS:
+   `"Soul Sacrifice Delta.app/Contents/MacOS/ss-delta" --android`). A
+   window asks how the device is connected. Over Wi-Fi: on the device,
+   Wireless debugging > **Pair device with pairing code**, and type the IP
+   address, port and code it shows. Accept Google's licence for adb (the
+   tool that copies the game) and click **Copy to the device**.
+4. The PC builds the game's code for Android (a few minutes), downloads adb
+   from Google, installs the app (`setup/android/ss-delta.apk`, also
+   attached to each release) and copies the game's files (several GB:
+   minutes over Wi-Fi) and code to the device.
+5. Start **ss-delta** on the device. On a Snapdragon device it offers
+   Turnip, the open-source GPU driver that draws this game's fog correctly,
+   the first time: Download.
+
+Saves already on the device stay when you copy again. The game's files live
+in `Android/data/io.github.vitarecomps.ssdelta/files/` on the device
+(`ss-delta.ini` there holds the settings); uninstalling the app deletes
+them, saves included. Holding Select opens the settings menu, as on PCs.
+
+Without the window: `--android --accept-android-sdk-license` and the device
+as `--serial <adb serial>` or `--pair <ip:port> --code <code>`;
+`--push-only` copies again what was built before.
 
 ## The first start: building the game
 
@@ -242,6 +281,9 @@ game: don't share it.
 | `--cache <folder>`, `--jobs <n>` | with `--dump`: keep the downloads there for next time; compile with n jobs |
 | `--progress` | with `--dump`: also `progress <0-1> <text>` lines, for a launcher (RecompLauncher) |
 | `--add-to-steam` | Linux, Steam Deck: add the game to Steam (Steam running), then quit |
+| `--android` | put the game, built here, on an Android device (a window asks how it's connected), then quit; with `--dump`, build for both first |
+| `--serial <s>`, `--pair <ip:port> --code <code>`, `--connect <ip:port>` | with `--android`: the device, without the window |
+| `--accept-android-sdk-license`, `--push-only`, `--apk <file>` | with `--android`: accept Google's licence for adb; copy again without building; another APK |
 | `--set <section.key=value>` | a setting of `ss-delta.ini` for this run only |
 | `--fullscreen`, `--windowed` | the same as `--set display.fullscreen=true` / `false` |
 | `--player <1-4>` | Ad Hoc Play: another player's copy |

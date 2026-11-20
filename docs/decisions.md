@@ -1038,6 +1038,22 @@ tests (built with the NDK) pass on the Thor: 23,280 + 684, 0 failing.
 * The modules or a driver through `run-as`: only a debuggable APK allows it.
 * Vita3K's own Android app with our patches, as the product (D10's reasons).
 
+**Update (2026-11-20): from a release.** The PC release carries the APK
+(`setup/android/<id>.apk`, built by the release workflow's `android` job
+and also attached to the release by itself). `ss-delta.exe --android`
+(the importer's `setup.py --android`) builds the Android modules from
+the game already built in the folder, so the dump isn't needed again,
+and copies everything with adb. adb is Google's platform-tools, pinned
+and downloaded like the compiler; its licence (the Android SDK License
+Agreement) is the player's to accept, as Microsoft's is on Windows. The
+whole SDK is still not needed: adb is 8–16 MB. Release APKs are signed
+with **one release key**, kept in the repository's secrets and nowhere
+else: Android updates an installed app only from an APK signed with the
+same key, and a lost key means every player reinstalls (and loses the
+saves on the device unless copied off first). Builds without the key
+(local, or a manual workflow run) are signed with a debug key and are
+for testing only.
+
 ## D26 — iOS: the desktop setup writes the player's IPA; no IPA is released (accepted, 2026-11-20)
 
 **Context:** Phase 15 (10-ios), an M4 iPad Pro as the test device. The
