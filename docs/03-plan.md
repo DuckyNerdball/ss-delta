@@ -537,7 +537,7 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     installed game's data has them (1.30's pacts and raiments). Same bytes
     as the file Vita owners swap in; the new outfits appear.
 
-* ◐ **Xbox button labels** (2026-11-20; research in
+* ☑ **Xbox button labels** (2026-11-20; research in
   [01-research](01-research.md#button-prompts-local-2026-11-20)).
   * ☑ `[game] button_labels` (`playstation`, `xbox`, `auto`), live in the settings
     menu as Button prompts. The fork's texture cache takes a
@@ -571,8 +571,10 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☑ `ss-delta.exe --button-labels-test <in> <out>` draws the labels on
     extracted `.gxt` files, for review (all 17 US and French samples
     matched their table entries and looked right, 2026-11-20).
-  * ☐ A playtest on a gamepad (`auto` with an Xbox and a PlayStation pad;
-    the tutorial pictures and the △ text in play).
+  * ☑ Playtest (the owner, 2026-11-20): the icons and `auto` work, in play
+    and in the journal, its tutorial entries (Lore > Tactical advice, where
+    the tutorial pictures are) included. Not seen yet: the △ text (a
+    tutorial message when Offerings renewal or boosting unlocks).
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

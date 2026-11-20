@@ -231,7 +231,8 @@ Where the PlayStation button art comes from, read from the 1.30 `archive`
   (HOLD, RELEASE, ...): `_jp`, `_us` and `_ue` are byte-identical for
   `000`, `003`, `005`, `007`; `_fr` differs. The layouts name the `_jp`
   file. **Hypothesis:** the game swaps the suffix for the language.
-* **Art with buttons drawn in.** Tutorial pictures: `game_027_000c` and
+* **Art with buttons drawn in.** Tutorial pictures (shown in the journal,
+  Lore > Tactical advice): `game_027_000c` and
   `002c`–`005c` (○ △ □ HOLD R over a scene), `menu_eu_tutorial_002`/`005`/`006`
   (□/○ on hands, □ R), `menu_034_002`/`003` (journal screenshots with small
   button captions; the US copies show "× Back") and
