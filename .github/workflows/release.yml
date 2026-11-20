@@ -69,6 +69,13 @@ jobs:
           done
           ls -la build/android/jniLibs/arm64-v8a
 
+      # the tools the APK builds the game's modules with on the device (D27): python.org's Python,
+      # capstone, PyYAML, zig for aarch64-linux and the kit, pinned in android-build-tools.json
+      - name: The build tools for the device
+        run: |
+          python -I third_party/recomp/tools/android-build-tools.py third_party/recomp/tools/android-build-tools.json \
+            build/android/buildtools --ndk "$NDK"
+
       - name: Pack and sign the APK
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -90,7 +97,8 @@ jobs:
           fi
           bash third_party/vita3k/android/gradlew -p third_party/vita3k/vita3k/game-frontend/android assembleRelease \
             --console=plain -Pgame=ss-delta -PapplicationId=io.github.vitarecomps.ssdelta -PappName=ss-delta \
-            -PversionName="${version#v}" -PversionCode="$code" -PjniLibsDir="$PWD/build/android/jniLibs"
+            -PversionName="${version#v}" -PversionCode="$code" -PjniLibsDir="$PWD/build/android/jniLibs" \
+            -PbuildToolsDir="$PWD/build/android/buildtools"
           rm -f "$RUNNER_TEMP/release.jks"
           name="ss-delta-$version-android.apk"
           mkdir -p build/release

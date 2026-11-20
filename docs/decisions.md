@@ -1187,6 +1187,16 @@ The tools pack to 110 MB, so the APK will be about 130 MB
 (**estimate**). Still open: the same from the app's native library
 folder.
 
+**Update (2026-11-20): inside the app** (09-android).
+
+* The tools run from the APK's native library folder: the self-test
+  passes, and a library zig builds loads into the app.
+* Started by the app, the full build takes **14.6 min** on the Thor (it
+  gets more CPU than adb's shell) and gives the same modules.
+* Trimmed, the tools add 85 MB: the release APK will be about
+  **105 MB**.
+* Every tool is aligned for 16 KiB pages (zig to 64 KiB).
+
 **Consequences:**
 
 * The APK grows to roughly 100 MB (**estimate**).

@@ -896,6 +896,74 @@ What the probe leaves open: the tools running from the app's native
 library folder instead of adb's shell; the time with all eight cores;
 and devices smaller than the Thor (8 GB, slower SoCs).
 
+### The tools inside the APK (2026-11-20)
+
+**How they get into the APK:**
+
+* vita-recomp-kit's `tools/android-build-tools.py` lays the tools out
+  for the APK's Gradle project (`-PbuildToolsDir`). The lock file
+  `android-build-tools.json` pins Python 3.14.10, zig 0.17.1, capstone
+  5.0.7 and PyYAML 6.0.3 by SHA-256. The NDK builds capstone (its ARM
+  sources only) and the launcher.
+* The programs and libraries go in as `jniLibs`, all `lib*.so`:
+  `libpython3.14.so`, the `lib*_python.so` it links, `libpython-launcher.so`,
+  `libcapstone.so` and `libzig.so`.
+* The rest goes in as `assets/buildtools.zip` (6,538 files, 77 MB
+  unpacked): the standard library without its tests, IDLE, Tk and
+  ensurepip; capstone's and PyYAML's Python sides; the kit's `recomp/`
+  and `tools/`; and zig's `lib/` without other C libraries' headers and
+  sources (58 MB of its 217).
+* The release workflow's `android` job runs the script and packs its
+  output.
+
+**How the app runs them** (`BuildTools.java`):
+
+* On first use, the app unpacks `buildtools.zip` into
+  `files/buildtools/`, and again whenever `buildtools.json` changes
+  (1.1 s on the Thor).
+* It links `toolchain/zig/zig` to `libzig.so` in the native library
+  folder, so `toolchain.py` finds zig where it expects it.
+* It starts Python as `libpython-launcher.so`, with `PYTHONHOME`,
+  `LD_LIBRARY_PATH` and `LIBCAPSTONE_PATH` pointing at the native library
+  folder, and `ZIG_LIB_DIR` at the unpacked `lib/` (zig resolves its own
+  path past the link).
+* For testing, a debuggable build accepts
+  `am start ... SetupActivity --es buildtools selftest` or
+  `--es buildtools python --es args "..."`.
+
+**Checked on the Thor** (a test package, debug build):
+
+* The self-test passes inside the app: Python 3.14.10 runs from the
+  native library folder, capstone disassembles, zig 0.17.1 starts, and a
+  library zig built in the app's storage loads into the app.
+* The full build, started by the app, recompiles the ten modules in
+  **4.3 min** and compiles them in **10.3 min** (8 jobs): **14.6 min**
+  in all.
+  * That is 2.4× faster than the same compile from adb's shell (24.4
+    min), at the same clocks (the prime core at 3.19 GHz for 140 of 145
+    samples). The app runs in the `top-app` cpuset, affinity `df`
+    (7 cores, as the shell's `taskset` got).
+  * Why the shell is so much slower is unexplained (**hypothesis**: the
+    scheduler's boost for the foreground app).
+* The CPU sensors held about 94 °C (peak 95.9 °C), the battery 28 °C on
+  the charger. At least 9.3 GB of memory stayed available.
+* The modules are byte-identical to the shell probe's, so the trimmed
+  zig `lib/` holds everything a build reads.
+* **Size**: the tools add about 85 MB to the APK, compressed (zig 62 MB,
+  `buildtools.zip` 18 MB, Python's libraries 5 MB), so the release APK
+  grows from 20 to about 105 MB. Installed, they take 185 MB in the
+  native library folder and 100 MB unpacked. A build needs 4.4 GB more
+  while it runs.
+* The APK also goes into each PC archive (`setup/android/`), which grows
+  them by the same amount.
+
+* **16 KiB pages** (an Android 15+ option): zig's release is a static
+  program with 64 KiB-aligned segments; python.org's libraries, capstone
+  and the launcher are aligned to 16 KiB. All of them load on such
+  devices too (read with `llvm-readelf`, not run on one).
+
+**Open:** devices with 8 GB, and slower SoCs.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below stays unused (the

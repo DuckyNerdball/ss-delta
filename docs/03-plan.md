@@ -933,11 +933,11 @@ milestone, and nothing is released before it.
     unchanged under python.org's Python 3.14 with zig 0.17.1: recompiling
     took 4.2 min and compiling 24.4 min (8 jobs), peaks of 1.8 GB and
     95.9 °C, 4.4 GB of space. The output is the PC's, byte for byte.
-  * ☐ The tools in the APK: libpython with a launcher, capstone and zig
-    in `jniLibs`; the standard library, the kit and zig's `lib/`
-    unpacked on first use. Zig and Python must start from the native
-    library folder inside the app, not just from the shell. Note the
-    APK's size.
+  * ☑ The tools in the APK (2026-11-20, 09-android): kit
+    `android-build-tools.py`, the APK's `buildToolsDir`, `BuildTools.java`,
+    and the release workflow packs them. Started by the app, the full
+    build takes 14.6 min on the Thor (4.3 to recompile, 10.3 to compile)
+    and the modules match. The APK grows to about 105 MB.
   * ☐ The front end's own steps called from Java: install the firmware
     and the content, dump the ELFs (on the PC, `ss-delta.exe` options).
   * ☐ The setup screen and a foreground service: the file picker, the
