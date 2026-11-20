@@ -1012,6 +1012,70 @@ an APK moves its native library folder (`/data/app/~~<random>/...`), so
 the `toolchain/zig/zig` link pointed at the old one. `BuildTools` now
 links it again on every use.
 
+### The setup screen (2026-11-20)
+
+The APK now sets the game up itself when it has the build tools (D27).
+
+**Opening it:** `SetupActivity`, the launcher's entry, opens
+`BuildActivity` when:
+
+* the game isn't installed, or has no native modules; or
+* the modules carry an older stamp (`android-build.json`: the APK's
+  `versionCode` and its tools' SHA-256); or
+* a setup is under way.
+
+Modules a PC put there (no `android-build.json`) are left alone.
+
+**The screen:**
+
+* The intro, then **Add the game's files** (Android's file picker),
+  **Add a licence** (for a `.pkg`), **Clear**, **Build**.
+* Then the current step, the error if there is one, and the log.
+  **Try again** restarts a stopped step and **Start over** forgets it.
+  **Play** appears when the game is built.
+* It works by gamepad: the first press takes the focus, as in Android's
+  dialogs.
+* The steps are remembered across restarts.
+
+**The steps:**
+
+1. Firmware from Sony (`BuildService`, `android-setup.py firmware`, the
+   kit's `fetch-firmware.py`).
+2. The firmware, then the picked files, installed (`FrontendStepActivity`).
+   Each picked `content://` file is opened in the step's process and
+   reaches the front end as a link named with its extension to
+   `/proc/self/fd/N`, so a 3 GB zip isn't copied.
+3. The version check (`android-setup.py check`, `game.json`'s
+   `eboot_sha256`).
+4. The module dump (`--dump-elfs`, `dump_seconds`).
+5. The build (`android-setup.py build`): one job per core as far as
+   memory allows (2 GB each), at least 5 GB free, the modules into the
+   game's folder, `android-build.json` written, the work files removed.
+
+The build runs in a foreground service (type `dataSync`, a wake lock, a
+notification with the compile's progress), so the player may leave the
+app. The service's output also goes to `setup.log` in the game's folder.
+
+**After an app update** the stamp changes and the setup opens again. When
+the game is installed and its dumps are there, **Build** needs no dump: the
+build step alone runs.
+
+**Checked on the Thor** (a test package, from a fresh install, the US dump
+in `Download`):
+
+* The dump was picked in the picker.
+* Firmware took seconds; the firmware install, game install, version
+  check (1.30 US) and dump went through.
+* The build took **15.3 min** (6 jobs: memory allowed 6), then Play, the
+  Turnip offer, and the title on T23 with native code.
+* All ten modules are byte-identical to the PC's build.
+* Installing a `versionCode` 2 APK opened the setup with its rebuild
+  text. Build, with no dump, built again in 15.3 min (stamp `2-…`).
+
+**Not there yet:** a cancel button (Start over after a stop, or
+force-stopping the app, do for now). Folders (zip them first). A zRIF
+typed instead of a licence file.
+
 ### The settings menu on Android (2026-11-20)
 
 The owner saw PC leftovers in the Android menu, such as F-key mentions.

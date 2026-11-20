@@ -74,7 +74,7 @@ jobs:
       - name: The build tools for the device
         run: |
           python -I third_party/recomp/tools/android-build-tools.py third_party/recomp/tools/android-build-tools.json \
-            build/android/buildtools --ndk "$NDK"
+            build/android/buildtools --ndk "$NDK" --project .
 
       - name: Pack and sign the APK
         env:

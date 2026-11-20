@@ -1,10 +1,9 @@
 # Installing ss-delta
 
 ss-delta runs **Soul Sacrifice Delta** natively on Windows, Linux (and the
-Steam Deck) and macOS on Apple Silicon, and on Android devices with a PC's
-help. The downloads contain no game files
-and no code derived from the game: the first start builds the game on your
-computer from **your own dump** of it.
+Steam Deck), macOS on Apple Silicon, and Android. The downloads contain no
+game files and no code derived from the game: the first start builds the
+game on your computer or device from **your own dump** of it.
 
 ## Contents
 
@@ -112,17 +111,48 @@ runs in macOS's Game Mode.
 
 ## Android
 
-Android needs a PC (Windows, Linux or macOS) as well: the game is built
-there from your dump, then copied to the device. Made for Snapdragon
-handhelds (tested on an AYN Thor: Snapdragon 8 Gen 2); the device needs a
-64-bit ARM chip, Vulkan and Android 9 or newer.
+The game builds itself on the device from your dump: no PC needed. Made
+for Snapdragon handhelds (tested on an AYN Thor: Snapdragon 8 Gen 2); the
+device needs a 64-bit ARM chip, Vulkan, Android 9 or newer, about 10 GB of
+free space (5 GB of it only while building) and preferably 12 GB of memory
+or more.
 
-1. Build the game on the PC as above (the release for the PC's system).
-2. On the device, turn on **Developer options** (Settings > About device:
+1. Download `ss-delta-<version>-android.apk` from the release onto the
+   device and install it (allow installing from your browser or file
+   manager when Android asks).
+2. Copy your dump to the device (for example into `Download`): the NoNpDrm
+   `.zip` or `.vpk` (zip a dumped folder first), or the game's `.pkg` with
+   its licence file (`work.bin` or `.rif`) and, if the dump lacks it, the
+   1.30 update's `.pkg`.
+3. Start **ss-delta**. Its setup screen asks for the files: **Add the
+   game's files** (the dump; then the update's `.pkg` if needed) and, for
+   a `.pkg`, **Add a licence**. Then **Build**.
+4. The app downloads the PS Vita firmware from Sony, installs it and the
+   game, runs the game for a moment to find its code, and builds the native
+   code: about 15 minutes on a Snapdragon 8 Gen 2. Keep the device
+   charging; you may leave the app meanwhile (a notification says when it
+   is done).
+5. **Play**. On a Snapdragon device the game offers Turnip, the
+   open-source GPU driver that draws this game's fog correctly, the first
+   time: Download.
+
+After an app update the setup screen comes back and builds the native code
+again (your dump isn't needed). The game's files live in
+`Android/data/io.github.vitarecomps.ssdelta/files/` on the device
+(`ss-delta.ini` there holds the settings, `setup.log` the setup's log);
+uninstalling the app deletes them, saves included. Holding Select opens
+the settings menu, as on PCs.
+
+### From a PC instead
+
+A PC that has built the game (as above) can copy it to the device too, for
+a device too small or slow to build:
+
+1. On the device, turn on **Developer options** (Settings > About device:
    tap the build number seven times), then in Developer options either
    **USB debugging** (and connect the cable), or **Wireless debugging**
    (the same Wi-Fi network as the PC).
-3. On the PC, start the game with `--android` (Windows: `ss-delta.exe
+2. On the PC, start the game with `--android` (Windows: `ss-delta.exe
    --android`, from a command prompt in the game's folder; Linux:
    `./ss-delta.x86_64 --android`; macOS:
    `"Soul Sacrifice Delta.app/Contents/MacOS/ss-delta" --android`). A
@@ -130,22 +160,15 @@ handhelds (tested on an AYN Thor: Snapdragon 8 Gen 2); the device needs a
    Wireless debugging > **Pair device with pairing code**, and type the IP
    address, port and code it shows. Accept Google's licence for adb (the
    tool that copies the game) and click **Copy to the device**.
-4. The PC builds the game's code for Android (a few minutes), downloads adb
+3. The PC builds the game's code for Android (a few minutes), downloads adb
    from Google, installs the app (`setup/android/ss-delta.apk`, also
    attached to each release) and copies the game's files (several GB:
    minutes over Wi-Fi) and code to the device.
-5. Start **ss-delta** on the device. On a Snapdragon device it offers
-   Turnip, the open-source GPU driver that draws this game's fog correctly,
-   the first time: Download.
 
-Saves already on the device stay when you copy again. The game's files live
-in `Android/data/io.github.vitarecomps.ssdelta/files/` on the device
-(`ss-delta.ini` there holds the settings); uninstalling the app deletes
-them, saves included. Holding Select opens the settings menu, as on PCs.
-
-Without the window: `--android --accept-android-sdk-license` and the device
-as `--serial <adb serial>` or `--pair <ip:port> --code <code>`;
-`--push-only` copies again what was built before.
+Saves already on the device stay when you copy again. Without the window:
+`--android --accept-android-sdk-license` and the device as `--serial <adb
+serial>` or `--pair <ip:port> --code <code>`; `--push-only` copies again
+what was built before.
 
 ## The first start: building the game
 

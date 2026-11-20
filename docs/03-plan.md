@@ -948,13 +948,20 @@ milestone, and nothing is released before it.
     in dumps (`SSD_AOT=none` set by the front end) made the dumps match
     the PC's. With the build on top, all ten modules are byte-identical
     to the owner's app's.
-  * ☐ The setup screen and a foreground service: the file picker, the
-    Sony download, progress and log, cancel and resume, by gamepad or
-    touch.
-  * ☐ Rebuild when the modules no longer match the app (after an
-    update), keeping the saves.
-  * ☐ The workflow's APK with the tools, INSTALLING's Android section,
-    then tag v0.4.0.
+  * ☑ The setup screen and a foreground service (2026-11-20,
+    09-android): `BuildActivity`, `BuildService`, kit `android-setup.py`.
+    On the Thor, from the launcher with a fresh app: the dump picked in
+    Android's file picker, then firmware from Sony, install, version
+    check, dump and build (15.3 min), then Play, the Turnip offer, and the
+    title on native code. All ten modules byte-identical to the PC's. By
+    gamepad or touch; a stopped step can be tried again. No cancel button
+    yet.
+  * ☑ Rebuild when the modules no longer match the app: an update (a new
+    `versionCode` or new tools) opens the setup again, which builds from
+    the installed game and its dumps without the dump (15.3 min on the
+    Thor). The saves stay.
+  * ◐ The workflow's APK with the tools (written, not run on GitHub
+    since), INSTALLING's Android section (done), then tag v0.4.0.
 
 **Exit (v0.4.0):** with a Thor and their own dump, and no PC, a player
 gets from the release's APK to a quest on native code. With a PC, D25's

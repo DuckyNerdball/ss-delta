@@ -134,7 +134,7 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 | [06-compatibility](docs/06-compatibility.md) | what works in each part of the game, and how it was checked |
 | [07-linux](docs/07-linux.md) | Linux and the Steam Deck: what the code needs, the setup, packaging |
 | [08-macos](docs/08-macos.md) | macOS on Apple Silicon: what the code needs, MoltenVK and memory mapping, signing |
-| [09-android](docs/09-android.md) | Android on the AYN Thor (in progress): what the code needs, where the modules are built |
+| [09-android](docs/09-android.md) | Android on the AYN Thor (in progress): what the code needs, the setup on the device |
 | [10-ios](docs/10-ios.md) | iOS and iPadOS (planned): no JIT needed, the modules in a sideloaded IPA, memory limits, developing on the Mac |
 | [decisions](docs/decisions.md) | decision log |
 | [hashes](docs/hashes.md) | input hashes |

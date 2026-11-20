@@ -25,7 +25,9 @@ Thor): once the game is built here, ss-delta.exe --android
 puts it on the device over USB or Wi-Fi debugging: a window asks how the device
 is connected, builds the game's code for Android, downloads adb from Google and
 copies the app (setup\android\ss-delta.apk), the game's files and its code.
-Saves already on the device stay.
+Saves already on the device stay. The APK also builds the game on the device
+itself from your dump, with no PC: install it there and start it (Android in
+https://github.com/vita-recomps/ss-delta/blob/main/docs/INSTALLING.md).
 
 The US and EU games are the same build: either one runs. When both are
 installed, the US one does; ss-delta.exe --title-id PCSF00532 starts the EU one.
