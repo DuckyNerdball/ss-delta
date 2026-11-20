@@ -924,8 +924,13 @@ owner's choice: as much as possible on the Mac (Xcode, the Simulator,
 port needs no JIT (D11, `VITA3K_DYNARMIC=OFF`).
 
 * ☑ Survey of what the code needs (2026-11-19, 10-ios).
+* ☑ How other recomps ship for iOS (2026-11-19, 10-ios): the release is
+  the desktop setup with an iOS output, not an IPA ([D26](decisions.md)).
 * ☐ **15a Before the iPad**: the game's resident memory measured on the
-  Mac; a zig `aarch64-ios` module against a stub `libSystem.tbd`.
+  Mac; a module for `aarch64-ios` against a stub `libSystem.tbd`. Choose
+  the linker (zig's, rust-lld or LLVM's `ld64.lld`) and where the headers
+  come from (zig's Darwin headers or Apple's open-source ones: check the
+  licence first).
 * ☐ **15b Xcode and the address space**: Xcode and a free team on the
   Mac; a test app that reserves 4 GiB as `mem.cpp` does, on the iPad,
   with and without `increased-memory-limit`. Decides whether a free
@@ -935,10 +940,14 @@ port needs no JIT (D11, `VITA3K_DYNARMIC=OFF`).
   quest on native code.
 * ☐ **15d On the iPad**: ST03A on native code; the map sweep against
   Windows' pictures; memory and frame rate.
-* ☐ **15e The IPA for players** (kit): the base IPA in CI, the setup
-  putting the modules into it, AltStore, SideStore and Sideloadly
-  checked; the game data through Finder or Files. Record the choices in
-  decisions.md.
+* ☐ **15e The IPA for players** (kit, D26): the unsigned base app built
+  on GitHub's macOS runners as a release asset, its executable ad hoc
+  signed with its entitlements; the setup's iOS output (Windows, Linux,
+  macOS) downloads it pinned, builds the modules, writes an unsigned IPA;
+  release checks (reproducible zip, no personal strings, no game-derived
+  files in anything published); AltStore Classic, SideStore and
+  Sideloadly checked with a free Apple ID; the game data through Finder,
+  Apple Devices or Files.
 * ☐ **15f iPad polish**: touch and on-screen controls, gamepads, the
   lifecycle (no GPU in the background), 120 Hz pacing, thermals.
 

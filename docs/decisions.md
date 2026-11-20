@@ -1037,3 +1037,65 @@ tests (built with the NDK) pass on the Thor: 23,280 + 684, 0 failing.
   an Android process.
 * The modules or a driver through `run-as`: only a debuggable APK allows it.
 * Vita3K's own Android app with our patches, as the product (D10's reasons).
+
+## D26 — iOS: the desktop setup writes the player's IPA; no IPA is released (accepted, 2026-11-20)
+
+**Context:** Phase 15 (10-ios), an M4 iPad Pro as the test device. The
+port needs no JIT (D11), which makes a sideloaded app possible. iOS runs
+only code signed inside the app's bundle, and the modules must be built
+from the player's own dump (D2, D18), so a playable IPA can exist only
+after the player's setup has built them. Unlike Android's APK (D25), an
+IPA in the release would be useful only as an input to that setup. A
+survey of other recomps with iOS versions (2026-11-19, 10-ios): the two
+mature ones that keep game code private, LASRecomp and PadMint, both have
+a desktop program put the player's compiled code into a published base
+app with no game code. Everyone else either publishes game-derived code
+or builds only on a Mac with Xcode.
+
+**Decision:**
+
+* No IPA for players in the release. The **desktop setup** (Windows,
+  Linux, macOS; the D22 folders) gets an **iOS output** that writes an
+  unsigned IPA:
+  * the **base app** (the frontend, no game code) is built by CI on
+    GitHub's macOS runners and published as a release asset. Its
+    executable is ad hoc signed with the app's entitlements, so
+    sideloaders carry them over. The setup downloads it pinned by SHA-256
+    and refuses one from another release;
+  * the setup builds the modules for `aarch64-ios` with a pinned toolchain
+    against a `libSystem.tbd` stub, puts them at the app's root and zips
+    the IPA.
+* Signing and installing are the player's sideloader's job (AltStore
+  Classic, SideStore, Sideloadly). The setup signs nothing and never
+  handles an Apple ID.
+* The game data stays out of the IPA: the player copies it into the app's
+  `Documents/` (Finder, Apple Devices, Files).
+* Development runs from the Mac (the owner's choice): Xcode, the
+  Simulator, and the iPad through `devicectl` with a free personal team,
+  no sideloader.
+
+**Open, to settle in 15a:** the module linker (zig's own, rust-lld as
+LASRecomp uses, or LLVM's `ld64.lld` as PadMint uses) and the headers
+(zig's Darwin headers, or Apple's open-source headers as PadMint uses,
+because Apple's SDK may only be used on Apple computers). Check the
+licence of zig's Darwin headers first.
+
+**Consequences:** an iOS player needs a computer once per game or port
+update, as on Android, but not a Mac. The same IPA serves every weekly
+re-sign with a free Apple ID. The entitlements a player gets depend on
+their sideloader and account (10-ios); whether the 4 GiB guest
+reservation needs any is answered in 15b.
+
+**Rejected:**
+
+* A public IPA with the recompiled code inside (most XenonRecomp-based
+  iOS ports): D18's reason.
+* A base IPA for players to download: on its own it can't run anything.
+* Building only on a Mac with Xcode (SnapPad, HarkinianPad): shuts out
+  Windows and Linux players.
+* Apple's SDK extracted from an Xcode `.xip` for use off a Mac
+  (DiOShonored): Apple's licence.
+* Signing in the setup with the player's Apple ID (what AltServer and
+  Sideloadly do): their password through our tool, for little gain.
+* Building or signing on the device: no project does it, and it would
+  need a compiler and Python inside the app (as Android's 14g).

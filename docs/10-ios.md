@@ -72,7 +72,7 @@ as now.
 | Guest memory (`mem/src/mem.cpp`) | reserves `TOTAL_MEM_SIZE = GiB(4)` with `mmap`, `1 << 34` as a hint | **the main risk**: whether iOS grants a 4 GiB reservation, with or without the entitlements (below) |
 | Write tracking | `PROT_NONE` faults, 16 KiB pages handled (08-macos) | **hypothesis**: as on macOS. Debugging gets awkward: an attached debugger stops on every tracked write |
 | Renderer | MoltenVK on the M5: raster order groups for programmable blending, `double-buffer` mapping | **hypothesis**: the M4's GPU is the same family as the M5's and renders as the Mac does |
-| AOT loader | `dlopen` (POSIX) | the modules inside the bundle (`Frameworks/`), signed with the app |
+| AOT loader | `dlopen` (POSIX) | the modules inside the bundle, signed with the app. At the app's root rather than in `Frameworks/`, as SunPad does: LiveContainer can't load an app with a `Frameworks/` folder (DiOShonored's notes) |
 | Paths | everything next to the executable (D22); Android: the app's folders | the app's `Documents/` for `ss-delta.ini`, the log, the shader cache and `fs/`. `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace` make it visible in Finder and Files |
 | Importer | the kit's Python setup | not on the device: the frontend reports what's missing, as on Android |
 | Lifecycle | Android pauses on `onPause` (14d) | stop rendering when the app goes to the background: iOS kills apps that use the GPU there |
@@ -83,34 +83,123 @@ as now.
 ### The modules for iOS
 
 * The modules import only `abort` and `sched_yield` and export only
-  `armrecomp_aot_init` (D25). **Hypothesis**: zig (`aarch64-ios`) builds
-  them without Apple's SDK, using the Android trick: zig's macOS libc
-  headers (the same ABI for those functions) and a hand-written
-  `libSystem.tbd` stub marked as iOS. The `LC_BUILD_VERSION` platform
-  must be iOS, or dyld refuses to load the library.
-* Fallback: Xcode's clang on a Mac.
+  `armrecomp_aot_init` (D25). They need a compiler for `aarch64-ios`, a
+  few C headers, a Mach-O linker and a `libSystem.tbd` stub marked as
+  iOS. The `LC_BUILD_VERSION` platform must be iOS, or dyld refuses to
+  load the library.
+* Two projects already do this off the Mac (survey below):
+  * LASRecomp: zig (`zig cc -target aarch64-ios.16.4`) with zig's Darwin
+    headers, linked by **rust-lld** (`-flavor darwin -platform_version
+    ios`, `-undefined dynamic_lookup`), pinned per host, with a committed
+    `libSystem.B.tbd`;
+  * PadMint: upstream LLVM 21 (`clang`, `ld64.lld`) with a sysroot built
+    from **Apple's open-source headers** (apple-oss-distributions Libc,
+    xnu, libpthread and others, pinned) and generated `.tbd` stubs.
+* **To decide in 15a**: whether zig's own Mach-O linker links an iOS
+  dylib (it does for macOS, D21; LASRecomp chose rust-lld without saying
+  why), and where the headers come from. PadMint rejected Apple's SDK
+  off a Mac on licence grounds. **Hypothesis**: zig's Darwin headers come
+  from Apple's SDK, which raises the same question; check before relying
+  on them. Our modules need very few headers, so the open-source set is
+  small.
+* Fallback for development: Xcode's clang on the Mac.
 * Unwind tables are needed, because escapes throw C++ exceptions through
   module frames (as on every host).
 
-## Getting the modules into the IPA (D2, D18)
+## Getting the modules into the IPA (D26)
 
 A release can't contain the modules (D2), and iOS loads only code signed
-inside the bundle. The proposed flow for players:
+inside the bundle. So a playable IPA exists only after the player's own
+setup has built the modules, and an IPA in the release would be useful
+only as an input to that setup. The flow ([D26](decisions.md)):
 
-1. The release ships a **base IPA**: the frontend, with no game code.
-2. The setup on the player's PC or Mac builds the modules for iOS from
-   their dump, as for Android, and puts them into
-   `Payload/<app>.app/Frameworks/`. That makes a personal IPA.
-3. A sideloader (AltStore, SideStore, Sideloadly) re-signs the whole
-   bundle with the player's Apple ID and installs it.
+1. CI (GitHub's macOS runners) builds the **base app**: the frontend with
+   no game code, unsigned except for an ad hoc signature on its
+   executable that carries the entitlements, so sideloaders pick them up
+   (as SpeedBreaker, MHGURecomp and LASRecomp do). It is a release asset,
+   not something players download by hand.
+2. The **desktop setup** (Windows, Linux or macOS, the D22 folders) has an
+   iOS output. It downloads the base app pinned by SHA-256 (as it pins
+   zig and the firmware), builds the modules from the player's dump, puts
+   them into the bundle and writes an **unsigned IPA**.
+3. The player installs it with a sideloader (AltStore Classic, SideStore,
+   Sideloadly), which signs the whole bundle with their Apple ID. The same
+   IPA serves every weekly re-sign; the setup runs again only when the
+   game or the port changes.
 
-**Hypotheses to check**: the sideloaders sign loose `.dylib` files in
-`Frameworks/`, or each module has to be wrapped as a `.framework`; a
-~100 MB eboot module is no problem for them.
+The setup signs nothing and never sees the player's Apple ID. A player
+with a paid account can sign it themselves (zsign or codesign).
+
+**Hypotheses to check**: the sideloaders sign loose `.dylib` files at the
+app's root (SunPad's layout suggests so); a ~100 MB eboot module is no
+problem for them; AltStore Classic keeps `increased-memory-limit` with a
+free Apple ID while SideStore 0.7 drops it (LASRecomp's table).
 
 The game data (about 3.2 GB) stays out of the IPA. The player copies it
-into the app's `Documents/` through Finder or Files. **Hypothesis**: it
-survives the weekly re-sign as long as the bundle ID stays the same.
+into the app's `Documents/` through Finder, Apple Devices on Windows, or
+Files (a USB-C drive works too). **Hypothesis**: it survives the weekly
+re-sign as long as the bundle ID stays the same.
+
+## How other recomps ship for iOS (survey 2026-11-19)
+
+Read from their READMEs, workflows, scripts and release notes; no IPA was
+downloaded or run. Stars and dates as of 2026-11-19.
+
+**No game code distributed** (D2's constraint):
+
+* **LASRecomp** (Link's Awakening, Switch; PR #238, merged 2026-11-11):
+  "No game code ships, and on iOS that means no public `.ipa` at all."
+  * The release carries an iOS kit (`.laskit`): an unsigned base app
+    built on a Mac, zig, rust-lld (pinned per host), zig's Darwin headers
+    and a committed `libSystem.B.tbd`. The kit refuses a kit from another
+    release.
+  * The desktop program (`--build-ios`, or a page in its window) on
+    Windows, Linux or macOS generates the game code, compiles one dylib
+    and writes an unsigned IPA to Downloads.
+  * Only `increased-memory-limit` ("free with any team"); extended
+    virtual addressing deliberately not requested. Their table of what
+    keeps the memory entitlement with a free account: AltStore Classic
+    2.2+ and Impactor yes, an Xcode Personal Team yes, SideStore 0.7 no.
+  * Game files over Finder, Apple Devices or a USB-C drive. Tested on an
+    iPhone 15 Pro, an iPhone 17 and an M4 iPad Pro (iOS 27.0.1).
+* **PadMint** (the builder for about 34 ports by one author: KartPad,
+  BlueWake, SunPad, SnapPad, HarkinianPad and others):
+  * each game's release publishes an unsigned engine IPA with no game
+    code;
+  * PadMint, on the player's computer, compiles only the game-derived
+    code into one dylib (upstream LLVM 21, `ld64.lld`, the open-source
+    sysroot above), inserts it into a copy of that IPA with Python's
+    `zipfile` and leaves signing to the sideloader;
+  * Apple's SDK may only be used on Apple computers (their D12, D15), so
+    Windows and Linux use the open-source sysroot. An Apple Silicon Mac
+    builds all 34 games; Windows 9 and Linux 2, both experimental;
+  * proven on a device: a dylib built on Windows 11 ARM64, loaded from
+    the app's root on an iPad Pro, SunPad played at 30 fps with saves.
+    That test used a development profile, not a sideloader.
+* SnapPad, HarkinianPad and AnnePad (same author) withdrew their earlier
+  public IPAs ("Every copy contains code made from your ROM: keep it to
+  yourself").
+* DiOShonored (Dishonored, early): a shell IPA; the player builds on a
+  Mac, or on Linux with the Darwin SDK extracted from an Xcode `.xip`
+  they supply (xtool). The route PadMint rejected.
+* ACNH-Universal: a spec only, for the owner's own iPad.
+
+**A public IPA with the recompiled game code inside** (the route D18
+rejects): unleashed-recompiled-ios, SpeedBreaker (709★), Theft4,
+nfsmw-ios, MHGURecomp-iOS, LamaCelata2-iOS, skate3-ios-setup, and
+DKC1Recomp, which published one such IPA and then stopped. All of them
+build on a Mac with Xcode; none builds anything on the player's machine.
+Several say in their own docs that the generated code is derived from
+the game and not to be shared. Useful details from them:
+
+* SpeedBreaker's packaging: a reproducible zip, a scan for personal
+  strings (home paths, team IDs, profiles), entitlements checked against
+  the file after signing.
+* HaloPad (PadMint family) and SpeedBreaker show a message, or run
+  without the entitlements, rather than crash.
+
+No project compiles or generates code on the device, and every one says
+it needs no JIT.
 
 ## Memory and entitlements
 
@@ -121,8 +210,26 @@ survives the weekly re-sign as long as the bundle ID stays the same.
 * `com.apple.developer.kernel.extended-virtual-addressing` raises the
   address-space cap. Reportedly it is for paid accounts only.
 * Whether the 4 GiB guest reservation fits without the second one decides
-  whether a free Apple ID is enough. Answer it first, on the iPad, with a
-  small test app.
+  whether a free Apple ID is enough. Other ports suggest it does on recent
+  devices:
+  * XenonRecomp-based ports reserve a 4 GB guest block: SpeedBreaker
+    measured 4 GB plus about 3 GB more address space;
+  * unleashed-recompiled-ios runs on an iPhone 15 with no memory
+    entitlements;
+  * nfsmw-ios runs inside LiveContainer, where entitlements don't apply,
+    on an M4 iPad Pro;
+  * HaloPad reserves the full 32-bit space and ran on an iPad Pro without
+    either entitlement;
+  * skate3-ios-setup found extended virtual addressing "not needed on an
+    A15".
+
+  Still a **hypothesis** for us: answer it first, on the iPad, with a
+  small test app. If the block doesn't fit, show a message instead of
+  crashing, as SpeedBreaker does.
+* Free accounts and `increased-memory-limit`: ACNH-Universal's desk study
+  says a free Apple ID gets neither entitlement; LASRecomp and SpeedBreaker
+  report from devices that the memory limit works with the right
+  sideloader. The iPad test settles it for us.
 * The game's resident memory has never been measured on any platform.
   Measure it on the Mac first. Which iPad model (8 or 16 GB) is used
   matters for the limit.
@@ -171,14 +278,16 @@ What the owner does once, on the Mac's screen:
 Phase 15 in [03-plan](03-plan.md), in this order:
 
 1. Without the iPad: measure the game's resident memory on the Mac; build
-   a zig `aarch64-ios` module against a stub `.tbd`.
+   a module for `aarch64-ios` against a stub `.tbd`, and choose the linker
+   and the headers' source.
 2. Xcode on the Mac. A test app that reserves memory as `mem.cpp` does,
    installed on the iPad with and without `increased-memory-limit`.
 3. The fork for the iOS Simulator, no dynarmic: title, then a quest on
    native code.
 4. On the iPad: ST03A on native code, then the map sweep against
    Windows' pictures.
-5. The base IPA in CI, the setup's IPA step, the sideloaders checked.
+5. The base app in CI, the setup's iOS output, the sideloaders checked
+   (D26).
 6. Touch and on-screen controls, the lifecycle, 120 Hz, thermals.
 
 Sources for the entitlement and JIT reports (2025–2026, not checked
@@ -187,3 +296,24 @@ here):
 [NX2Apple's ENTITLEMENTS.md](https://github.com/LNPANDY/NX2Apple/blob/main/ENTITLEMENTS.md),
 [the libretro forum on JIT in iOS 26](https://forums.libretro.com/t/what-is-the-current-situation-with-ra-on-ios-26-and-jit-support/49244),
 [StikDebug](https://github.com/StephenDev0/StikDebug).
+
+The projects in the survey:
+[LASRecomp](https://github.com/peiikai/LASRecomp) and its
+[PR #238](https://github.com/peiikai/LASRecomp/pull/238),
+[PadMint](https://github.com/chrissotraidis/padmint) (its
+[DECISIONS.md](https://github.com/chrissotraidis/padmint/blob/HEAD/docs/DECISIONS.md)),
+[SunPad](https://github.com/chrissotraidis/sunpad),
+[KartPad](https://github.com/chrissotraidis/kartpad),
+[HaloPad](https://github.com/chrissotraidis/projectreach),
+[SnapPad](https://github.com/chrissotraidis/snappad),
+[HarkinianPad](https://github.com/chrissotraidis/harkinianpad),
+[DiOShonored](https://github.com/ometavr/dioshonored),
+[ACNH-Universal PR #144](https://github.com/iannitram/ACNH-Universal/pull/144),
+[unleashed-recompiled-ios](https://github.com/ITSeniy/unleashed-recompiled-ios),
+[SpeedBreaker](https://github.com/SpeedBreakerProject/speedbreaker),
+[Theft4](https://github.com/KoreanSeats1/Theft4),
+[nfsmw-ios](https://github.com/bep1s69/nfsmw-ios),
+[MHGURecomp-iOS](https://github.com/WiseManChris/MHGURecomp-iOS),
+[LamaCelata2-iOS](https://github.com/Ke619/LamaCelata2-iOS),
+[skate3-ios-setup](https://github.com/andrewnakas/skate3-ios-setup),
+[DKC1Recomp](https://github.com/elliotttate/DKC1Recomp).
