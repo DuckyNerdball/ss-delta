@@ -218,7 +218,7 @@ let the importer make one).
 | `ss-delta.ini` | settings |
 | `fs/` | the Vita file system: the installed game, the firmware, your saves |
 | `ssd_aot_*.dll` / `.so` / `.dylib` | the game's code, compiled for your computer |
-| `ss-delta/` | log (`vita3k.log`), save backups, screenshots, per-player data |
+| `ss-delta/` | logs (`vita3k.log`, the importer's `setup.log`), save backups, screenshots, per-player data |
 | `cache/` | the shader cache |
 | `patch/` | Vita3K-style patches, if you add any |
 | `setup/` | the importer (its Python and the recompiler kit), kept for `--install` |
@@ -271,6 +271,6 @@ copy in Applications (macOS).
 
 Open an [issue](https://github.com/vita-recomps/ss-delta/issues) with your
 system, the release, what you did and what happened. Attach the log,
-`ss-delta/vita3k.log` in the game's folder (for the importer, the messages
-in its window). Never attach game files, saves you don't want public, or
+`ss-delta/vita3k.log` in the game's folder (if the build from your dump
+failed, `ss-delta/setup.log`). Never attach game files, saves you don't want public, or
 anything from `fs/`.
