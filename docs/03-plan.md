@@ -895,10 +895,10 @@ a PC builds the native modules first; an on-device build may come later.
     accepted), the APK in `setup/android/`. End to end on the Thor:
     built from the dump, copied, the app from its icon, Turnip
     downloaded, ST03A natively at 60 fps (09-android).
-  * ◐ The APK in the release workflow: the `android` job (NDK r29,
+  * ☑ The APK in the release workflow: the `android` job (NDK r29,
     Gradle, signed with the release key from the secrets) feeds every PC
-    archive. Its CMake steps checked in WSL; not yet run on GitHub, and
-    the release key isn't in the secrets yet.
+    archive. A manual run on GitHub (2026-11-20, 33 min): the APK signed
+    with the release key, the same APK in all three archives.
 * ◐ **14f Thor polish**: the gamepad and the analog triggers, the
   touchscreen, the second screen (rear touch?), 120 Hz pacing, AYN's
   performance modes and battery, pausing in the background.

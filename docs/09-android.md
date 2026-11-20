@@ -619,7 +619,13 @@ A player has a release folder, not the project. The pieces for that:
   key fails. Checked: the job's CMake steps from a fresh build folder in
   WSL (with Python 3.12: Vita3K's language catalog generator needs it;
   the job sets it up), and a release-type APK (not debuggable) built and
-  run.
+  run. A manual run on GitHub (2026-11-20, `f2131e8`): the `android` job
+  in 11 min, the whole run in 33; the APK (20.3 MB, versionCode from the
+  run number) verifies with APK Signature Scheme v2 under the release
+  key (`CN=vita-recomps`), and the Windows, Linux and macOS archives
+  each carry the same file as `setup/android/ss-delta.apk`. Installing
+  it over an app signed with a debug key fails until that app is removed
+  (back its saves up first).
 
 **End to end from a release folder** (2026-11-20), the US dump, a
 scratch release from `make-setup.py --apk` (with a test package name in
@@ -829,7 +835,6 @@ Stage Select screenshot matching Windows'. At the old rate (about 1 in
 
 ## Next steps
 
-Phase 14 in [03-plan](03-plan.md): the release key in the repository's
-secrets and a tagged release run through the workflow (its `android` job
-hasn't run on GitHub yet); the Black Rite on the trigger seen in play;
+Phase 14 in [03-plan](03-plan.md): a tagged release through the
+workflow (a manual run already builds and signs the APK); the Black Rite on the trigger seen in play;
 14g, the setup on the device itself, later.

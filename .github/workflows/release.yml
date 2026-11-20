@@ -142,7 +142,7 @@ jobs:
             --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --apk $apk --zip --archive "build/release/$name"
           $zip = "build/release/$name.zip"
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
-          "$hash  $name.zip" | Out-File -Encoding ascii "build/release/$name.zip.sha256"
+          [IO.File]::WriteAllText("$PWD/build/release/$name.zip.sha256", "$hash  $name.zip`n")  # LF, for sha256sum -c
           "ZIP=$zip" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
 
       - uses: actions/attest-build-provenance@v3
