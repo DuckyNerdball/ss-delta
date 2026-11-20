@@ -815,6 +815,8 @@ The owner asked for it on 2026-11-19. Research:
 [09-android](09-android.md). The test device is an AYN Thor Max
 (Snapdragon 8 Gen 2, Adreno 740, 16 GB, Android 13). The owner's choice:
 a PC builds the native modules first; an on-device build may come later.
+Update (2026-11-20): the on-device build (14g, D27) is the 0.4.0
+milestone, and nothing is released before it.
 
 * ☑ Survey of what the code needs (2026-11-19, 09-android). The Android
   SDK, NDK r29 and adb installed on the test PC.
@@ -922,11 +924,33 @@ a PC builds the native modules first; an on-device build may come later.
     in Standard (4.1 W from USB, about 5½ h on the battery, an estimate);
     High Performance costs 0.7 W more for nothing. At 2× it drops a few
     frames in either mode (5.3–6.5 W).
-* ☐ **14g (later) The setup on the device**: Python, capstone and a
-  compiler in or beside the APK.
+* ☐ **14g The setup on the device: the 0.4.0 milestone**
+  ([D27](decisions.md); the owner, 2026-11-20: no release before it).
+  The APK builds the game itself, with Python, capstone and zig packed
+  in it as native libraries. Survey: 09-android, "The setup on the
+  device".
+  * ☐ Probe on the Thor over adb (the shell user, `/data/local/tmp`):
+    zig 0.17.1 `aarch64-linux` compiling the ten modules from the
+    generated C++, python.org's Python running `recompile.py`. Measure
+    time, peak memory and heat.
+  * ☐ The tools in the APK: libpython with a launcher, capstone and zig
+    in `jniLibs`; the standard library, the kit and zig's `lib/`
+    unpacked on first use. Zig and Python must start from the native
+    library folder inside the app, not just from the shell. Note the
+    APK's size.
+  * ☐ The front end's own steps called from Java: install the firmware
+    and the content, dump the ELFs (on the PC, `ss-delta.exe` options).
+  * ☐ The setup screen and a foreground service: the file picker, the
+    Sony download, progress and log, cancel and resume, by gamepad or
+    touch.
+  * ☐ Rebuild when the modules no longer match the app (after an
+    update), keeping the saves.
+  * ☐ The workflow's APK with the tools, INSTALLING's Android section,
+    then tag v0.4.0.
 
-**Exit:** with a Thor, a PC and their own dump, a player gets from a
-release to a quest on native code.
+**Exit (v0.4.0):** with a Thor and their own dump, and no PC, a player
+gets from the release's APK to a quest on native code. With a PC, D25's
+route still works.
 
 ## Phase 15 — iOS and iPadOS, targeting an M4 iPad Pro (L) ☐
 

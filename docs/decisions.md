@@ -1054,6 +1054,10 @@ saves on the device unless copied off first). Builds without the key
 (local, or a manual workflow run) are signed with a debug key and are
 for testing only.
 
+**Update (2026-11-20): D27.**
+The APK will build the game on the device itself; this PC route stays
+as an alternative.
+
 ## D26 — iOS: the desktop setup writes the player's IPA; no IPA is released (accepted, 2026-11-20)
 
 **Context:** Phase 15 (10-ios), an M4 iPad Pro as the test device. The
@@ -1115,3 +1119,91 @@ reservation needs any is answered in 15b.
   Sideloadly do): their password through our tool, for little gain.
 * Building or signing on the device: no project does it, and it would
   need a compiler and Python inside the app (as Android's 14g).
+
+## D27 — Android: the APK builds the game on the device; Python, capstone and zig ride in it (accepted, 2026-11-20)
+
+**Context:** the owner (2026-11-20): no release until a player can build
+the game on the Android device, without a PC. That is the 0.4.0
+milestone (14g). D25's PC route works, but it needs a computer and adb.
+The survey (09-android, "The setup on the device") found that the
+recomps with Android versions (Zelda64Recomp's line, Unleashed
+Recompiled's ports) publish their recompiled code, which D18 rules out.
+The one project that compiles on the phone, sm64ex-coop, does it in a
+modified Termux. Android 10+ lets an app execute only programs packed in
+its APK (the native library folder), not files it writes, while `dlopen`
+of a library it wrote still works. python.org publishes embeddable
+Android builds since 3.14, and zig has an `aarch64-linux` build of the
+version the desktop setups pin.
+
+**Decision:**
+
+* The **game's APK does the whole setup itself**, as the desktop folders
+  do (D22). On first start, or when the modules no longer match the app
+  after an update, a setup screen:
+  * picks the dump through Android's file picker (zip, vpk or folder; a
+    pkg with its licence);
+  * downloads the firmware from Sony, pinned as on the desktop;
+  * installs it and the game and dumps the modules' ELFs through the
+    front end's own native code;
+  * recompiles and compiles the modules, then starts the game.
+* **The tools ride in the APK as native libraries**, the one place
+  Android lets an app run programs from:
+  * python.org's CPython for Android (aarch64), with a small launcher
+    executable so the kit's scripts run as they do on the desktop;
+  * capstone built for Android;
+  * zig's `aarch64-linux` build, pinned like the desktop's.
+
+  They go in `jniLibs` as `lib*.so`, extracted at install. Python's
+  standard library, the kit's scripts and zig's `lib/` are assets,
+  unpacked into the app's storage on first use.
+* The long job runs in a **foreground service** (a notification and a
+  wake lock). The setup screen shows progress and the log, as the
+  desktop window does, and the steps can be resumed.
+* **D25's PC route stays**, for devices that are too weak or too full
+  to build, and for development.
+* Nothing derived from the dump leaves the device, and the APK holds no
+  game code (D18).
+
+**Open, for 14g's first step:**
+
+* The time, memory and heat of recompiling and compiling on the Thor.
+  The test PC builds the ten modules in 5.1 min with 10 jobs.
+* Whether zig's static binary, and the processes it starts, run from the
+  native library folder inside the app, not only from adb's shell.
+* Whether CPython's `subprocess` works on Android (**hypothesis**).
+* The APK's size: zig alone is 53 MB as `.tar.xz`, against today's
+  20 MB APK.
+
+**Consequences:**
+
+* The APK grows to roughly 100 MB (**estimate**).
+* Every APK update can rebuild the modules by itself, so a new front end
+  never runs stale modules.
+* A build takes minutes of full CPU load. The setup asks for a charger
+  and keeps the screen's progress honest.
+* 0.4.0 is tagged only when a Thor with no PC gets from the release's APK
+  to a quest on native code.
+
+**Rejected:**
+
+* The recompiled code prebuilt in the APK, as most recomps with Android
+  versions do: D18's reason.
+* Termux, sm64ex-coop's route:
+  * a third-party app the player installs and keeps working;
+  * unpinned packages outside our checks, and Android 14 already broke
+    that builder once;
+  * its output would have to be moved into our app by hand.
+* A separate builder APK: two apps to install and keep in step, and the
+  modules would have to cross between them (a signature-protected
+  provider). Kept as the fallback if one APK grows too big.
+* Downloading the tools on demand:
+  * Android won't execute a downloaded file;
+  * the `linker64` trick that Termux's Play build uses can't start a
+    static program like zig, and Google treats it as a W^X violation.
+* Targeting API 28 to execute from app storage, as F-Droid's Termux
+  does: it ties the whole app to old behaviour, against a rising install
+  floor.
+* LLVM as a library loaded in-process: no `exec` at all, and it could be
+  downloaded, but building and maintaining LLVM for Android would be
+  ours. The fallback if the tools can't run from the native library
+  folder.

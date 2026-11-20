@@ -79,6 +79,8 @@ What differs from all three earlier targets:
    machine. On Android that would mean packing Python, capstone and a
    compiler into the APK. **Owner's choice (2026-11-19): a PC builds the
    modules first; an on-device build may follow as its own step.**
+   Update (2026-11-20): the on-device build is the 0.4.0 milestone (D27,
+   below).
 3. **Qualcomm's Vulkan driver.** Mobile Vulkan drivers are the least
    tested target of Vita3K's renderer. Turnip (Mesa) can replace the
    system driver per app through adrenotools, which the fork's
@@ -790,6 +792,61 @@ Stage Select screenshot matching Windows'. At the old rate (about 1 in
   package is removed; measurements that need quests use a temporary
   one, copied on the device from the staged test file system (6 s).
 
+## The setup on the device: survey (14g, 2026-11-20)
+
+The owner (2026-11-20): no release until a player can build the game on
+the Android device itself, without a PC; that is the 0.4.0 milestone.
+How other recomp and decomp ports with Android versions get the game's
+code onto a phone:
+
+| Project | Code on Android | Player supplies |
+|---|---|---|
+| Zelda64Recomp (N64Recomp) and its Android ports (Goemon64Recomp-Android, Tooie Recompiled) | **prebuilt**: the release carries the recompiled code; the ROM is needed only to build from source | the ROM, picked at first start (assets) |
+| Unleashed Recompiled (XenonRecomp) and its community Android ports | **prebuilt**; the Android app's first start installs the player's files (in-app picker, zip or folder) and makes the installer's `patched` folder on the device when it's missing | the Xbox 360 files |
+| Ship of Harkinian, 2Ship (decompilations) | prebuilt (the source is public); the app generates its asset archive from the ROM on first start | the ROM |
+| sm64ex-coop (decompilation) | **built on the device**: a modified Termux app ("sm64ex-coop builder Termux") installs clang and friends with `pkg`, builds the APK from the player's ROM, the player installs it. Android 14 partly broke it (a Termux bug) | the ROM, in Termux |
+
+Nobody else among the recomps compiles game code on the phone: they
+publish it, which D18 rules out for us. The only working precedent for
+compiling on the device is the Termux route.
+
+**What Android allows** (sources: Android 10's behaviour change, Termux's
+wiki on Android 10, termux-exec's README):
+
+* An app targeting API 29+ **can't `exec()` a file it wrote** (W^X,
+  enforced by SELinux). Files packed in the APK as `lib*.so` and
+  extracted to the app's native library folder **can** be executed, even
+  when they're programs rather than libraries (`useLegacyPackaging`, so
+  they are extracted at install).
+* Running `/system/bin/linker64 <file>` sidesteps that for dynamically
+  linked programs (Termux's Play Store build does it through
+  `LD_PRELOAD`). Static programs such as zig's release can't run that
+  way, and Google calls it a W^X violation.
+* Targeting API 28 (F-Droid's Termux) still allows `exec()` from app
+  storage. The install floor rose to API 24 with Android 15 and stayed
+  there through 17.
+* `dlopen` of a `.so` the app wrote to its internal storage still works:
+  our app already copies the modules there and loads them (14d).
+* python.org publishes official Android builds since 3.14
+  (`python-<version>-aarch64-linux-android.tar.gz`). They're embedded only:
+  `libpython` loaded through JNI, the standard library unpacked from the
+  APK's assets. C extensions come as cross-built wheels. capstone's Python
+  binding loads `libcapstone.so` with `ctypes`.
+* zig 0.17.1 has an `aarch64-linux` build (53 MB `.tar.xz`), statically
+  linked, the same version the desktop setups pin.
+
+**What our setup would run on the device** (install-game.py's steps):
+installing the firmware and the game and dumping the modules' ELFs are
+the front end's own options (`--install-firmware`, `--install-content`,
+`--dump-elfs`), so the APK's native code can do them. Downloading the
+firmware is an HTTPS download with pinned hashes. Only recompiling
+(Python and capstone) and compiling (zig) need tools the APK doesn't
+have. On the test PC that part takes 5.1 min for the ten modules with 10
+jobs (D25). On the Thor's Snapdragon 8 Gen 2 it's **unmeasured**.
+
+The choice is [D27](decisions.md): the APK carries Python, capstone and
+zig as native libraries and runs the whole setup itself.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below stays unused (the
@@ -835,6 +892,8 @@ Stage Select screenshot matching Windows'. At the old rate (about 1 in
 
 ## Next steps
 
-Phase 14 in [03-plan](03-plan.md): a tagged release through the
-workflow (a manual run already builds and signs the APK); the Black Rite on the trigger seen in play;
-14g, the setup on the device itself, later.
+Phase 14 in [03-plan](03-plan.md): **14g, the setup on the device
+([D27](decisions.md)), is the 0.4.0 milestone**; no release is tagged
+before it. First, a probe over adb: zig and python.org's Python on the
+Thor, recompiling and compiling the ten modules (time, memory, heat).
+Then the Black Rite on the trigger, seen in play.
