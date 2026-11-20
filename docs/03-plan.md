@@ -539,7 +539,7 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
 
 * ◐ **Xbox button labels** (2026-11-20; research in
   [01-research](01-research.md#button-prompts-local-2026-11-20)).
-  * ☑ `[game] button_labels` (`playstation`, `xbox`), live in the settings
+  * ☑ `[game] button_labels` (`playstation`, `xbox`, `auto`), live in the settings
     menu as Button prompts. The fork's texture cache takes a
     `TextureOverride` from the front end (`game-frontend/button_labels.*`):
     the game's `com_001_*` atlases are decoded as they are uploaded, each
@@ -547,14 +547,32 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     gamepad button `[gamepad]` binds to it, drawn at the internal
     resolution, and uploaded like an imported texture. Switching re-uploads
     every texture.
-  * ☑ The atlases are found by an FNV-1a hash of their data: 33 language
-    copies, table from `tools/button-atlases.py` (the symbols sit at the
-    same place in every copy; only the words move).
-  * ☐ The D-pad, sticks (LS/RS), START/SELECT (Menu/View) and TOUCH icons.
-  * ☐ The tutorial pictures with buttons drawn in (`game_027_*`,
-    `menu_eu_tutorial_*`, `menu_034_002/003`).
-  * ☐ The few button characters in text (△ in three strings, "%lc").
-  * ☐ A playtest on a gamepad, and `auto` (from the connected pad's type).
+  * ☑ The textures are found by an FNV-1a hash of their data: 59 in all
+    languages, table from `tools/button-atlases.py` (the symbols sit at the
+    same place in every copy of an atlas; only the words move; a tutorial
+    picture's copies are matched by their strokes).
+  * ☑ START and SELECT (`com_001_002`, `005`): Xbox's Menu (≡) and View
+    symbols. Kept: the D-pad and the sticks (an Xbox pad's are the same,
+    and the icons are generic) and TOUCH (the touchscreen; only the Black
+    Rite is also on LT).
+  * ☑ The tutorial pictures with buttons drawn in: `game_027_000c`,
+    `002c`–`005c` (letters narrowed where the picture is drawn squeezed),
+    `menu_eu_tutorial_002`, `003`, `005`, `006`. Left as they are: the
+    journal screenshots `menu_034_002/003` (tiny inventory markers, and a
+    multiplication ×) and the photo of a Vita.
+  * ☑ The text's ○ △ □ (`elder_number_font`, the U8 font page they come
+    from): circled letters in the glyphs' cells. They are buttons in every
+    supported language's text. Not the × (U+00D7) of the Latin font, which
+    the UI also uses as a multiplication sign ("Ether × 0"): if "Press the
+    %lc button" (`ingame_tutorial` 3111) gets ×, it stays.
+  * ☑ `auto`: the first connected gamepad's own face-button labels (SDL):
+    lettered → Xbox labels with its letters (a Nintendo-style pad's A is
+    east), PlayStation symbols or no gamepad → the game's icons.
+  * ☑ `ss-delta.exe --button-labels-test <in> <out>` draws the labels on
+    extracted `.gxt` files, for review (all 17 US and French samples
+    matched their table entries and looked right, 2026-11-20).
+  * ☐ A playtest on a gamepad (`auto` with an Xbox and a PlayStation pad;
+    the tutorial pictures and the △ text in play).
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

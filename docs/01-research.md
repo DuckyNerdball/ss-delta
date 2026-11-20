@@ -234,14 +234,19 @@ Where the PlayStation button art comes from, read from the 1.30 `archive`
 * **Art with buttons drawn in.** Tutorial pictures: `game_027_000c` and
   `002c`–`005c` (○ △ □ HOLD R over a scene), `menu_eu_tutorial_002`/`005`/`006`
   (□/○ on hands, □ R), `menu_034_002`/`003` (journal screenshots with small
-  button captions) and `menu_eu_tutorial_001c`, a photo of a Vita.
+  button captions; the US copies show "× Back") and
+  `menu_eu_tutorial_001c`, a photo of a Vita.
   `menu_006_000` is a Japanese control chart. Found by matching the four
   face symbols over all 3,410 decoded textures (`archive` + `archive_patch3`);
   hits below these were effects and noise.
 * **Buttons in text.** The fonts (`resource/font/*.gly` + `.gxt`, U8
-  atlases; `.gly` is a big-endian `u16` count and 10-byte header, then
-  14-byte records starting with the UTF-16 code) draw △ ○ □ from
-  `elder_number_font` and × (U+00D7) from `elder_normal_font`. The US text
+  atlases with the `1RRR` swizzle; `.gly` is a big-endian `u16` count and
+  a 10-byte header with the cell height at +4, then 14-byte records:
+  UTF-16 code, x, y, width, ...; positions in 1/128 pixel) draw △ ○ □
+  from `elder_number_font` and × (U+00D7) from `elder_normal_font`.
+  `font_config.csv`'s font 1 (the default) looks in `elder_number_font`
+  first. The UI also prints × as a multiplication sign ("Ether × 0" in
+  the journal). The US text
   uses them rarely: "Press the △ button" (`ingame_tutorial` 3204, 3208;
   `online_text` 1084) and "Press the %lc button" (`ingame_tutorial` 3111),
   where the game puts in the character at run time. Most text names

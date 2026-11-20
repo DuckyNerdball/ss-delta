@@ -68,10 +68,10 @@ English, French, Spanish, German and Italian; a language the installed game
 lacks gives English.
 
 Button prompts: Xbox labels in place of the PlayStation symbols, from Button
-prompts on the menu's Game page ([game] button_labels = xbox; switches at
-once). Each symbol shows the gamepad button bound to it in [gamepad]: A, B,
-X, Y, LB, RB. The D-pad, sticks, START/SELECT and the tutorial pictures keep
-their PlayStation icons for now.
+prompts on the menu's Game page ([game] button_labels = xbox, or auto to
+follow the connected gamepad; switches at once). Each symbol shows the
+gamepad button bound to it in [gamepad]: A, B, X, Y, LB, RB, and Xbox's Menu
+and View for START and SELECT, also in the tutorial pictures and the text.
 
 The add-ons (raiments, hoods, additional pacts) are unlocked: their content
 is in the game since update 1.30, and ss-delta.x86_64 records them in your

@@ -89,8 +89,9 @@ Compared with running the game in Vita3K:
 * **The game's languages:** English, French, Spanish and Portuguese (Brazil)
   in the US game, English, French, Spanish, German and Italian in the EU
   one (Language in the settings menu).
-* **Xbox button labels** in the game's prompts, as an option (Button
-  prompts in the settings menu): A, B, X, Y, LB, RB after your gamepad
+* **Xbox button labels** in the game's prompts, tutorial pictures and
+  text, as an option (Button prompts in the settings menu; or as the
+  connected gamepad): A, B, X, Y, LB, RB, Menu and View, after your gamepad
   bindings.
 * **Touch on keys and buttons:** the Black Rite icon on F and the left
   trigger; the mouse is the touchscreens.
