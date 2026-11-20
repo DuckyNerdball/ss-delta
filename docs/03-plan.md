@@ -586,6 +586,29 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     a save loaded into the hub.
   * ☑ Playtest by the owner (2026-11-20): the skip works. It stays off by
     default (owner).
+* ☐ **Japanese Voice-over Pack** (a PSN add-on, 2026-11-20; research in
+  [01-research](01-research.md), "Japanese Voice-over Pack"; tests in
+  [02-baseline](02-baseline.md#japanese-voice-over-pack-installed-and-heard-from-2026-11-20)).
+  * ☑ The installer takes NoNpDrm dumps laid out as ux0 (the licence in
+    `license/addcont/<title>/<dir>/`, no `work.bin`), from a zip or a
+    folder, and warns when a content stays encrypted (fork); `dumpinfo.py`
+    sees that licence (kit).
+  * ☑ Both regions: each game looks in its own `addcont/<title>/`, and the
+    US and EU packs hold the same files. US game with the US pack, and EU
+    game with the pack in its folder: Voice Language offers Japanese, and
+    Librom's lines are read from `voice_jp.pk`.
+  * ☑ End to end: the front end takes `--dump=<file>`; `setup.py` takes a
+    pkg's licence from beside it, and with the game built by this release
+    (`ss-delta/build.json`, the executable's SHA-256) installs add-ons
+    alone in seconds (also from the setup window, the game's rows left
+    empty); RecompLauncher's setup asks for the pack as an optional `dlc`
+    input (`--dump={input:voice}`); Android installs one from the setup
+    screen, which the launcher's "Add an add-on" shortcut opens once the
+    game is built. Tested on the PC and the Thor.
+  * ☐ Playtest by the owner: the Japanese lines heard in play.
+  * ☐ Not supported: a pack for the other region's title (an EU game with
+    the US pack). It installs into the other title's folder, which the
+    game never reads; the setup says so.
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

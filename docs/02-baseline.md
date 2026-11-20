@@ -1375,6 +1375,73 @@ Radeon 760M, native code, the junction test folder (US) and
   language index drives every text folder), and Ad Hoc Play between copies
   set to different languages.
 
+## Japanese Voice-over Pack: installed and heard from (2026-11-20)
+
+The owner's US dump of the add-on (a NoNpDrm zip laid out as ux0:
+`addcont/PCSA00152/SSS000CVN0000001/` and
+`license/addcont/PCSA00152/SSS000CVN0000001/*.rif`); research in
+01-research ("Japanese Voice-over Pack").
+
+* **Install, before:** `ss-delta.exe --install-content <zip>` reported
+  success but left the pack PFS-encrypted, with the licence copied into
+  the pack as `0000001/<name>.rif`. Vita3K decrypts a NoNpDrm dump only
+  from `sce_sys/package/work.bin`, and it picked a content's zip entries
+  with `contains(<content path>)`, which `license/addcont/<same path>`
+  also matches.
+* **Install, after** (fork commit "installer: NoNpDrm dumps laid out as
+  ux0"): entries are picked by prefix, and an add-on (or game) without a
+  `work.bin` takes the `.rif` the dump keeps in `license/addcont/...`
+  (`license/app/...`), from a zip or a folder. The zip and the unpacked
+  folder both install decrypted (`voice_jp.pk` starts with `SXDF`; the
+  licence goes to `ux0/license/PCSA00152/`). Without a licence the
+  install still succeeds, with a warning that the files look encrypted.
+  `install-game.py` with the EU game and this zip installs both;
+  `dumpinfo.py` shows the add-on's "licence inside".
+* **US game** (test folder, native code): the pack is listed and
+  `voice_jp.pk` opened at boot; Options → Lang/Sub Settings → Voice
+  Language switches English → Japanese.
+* **EU game** (`install-game.py --name scratch-eu-jpvoice --no-recompile`,
+  JIT): no decrypted EU pack exists here, so the US pack's decrypted files
+  were linked into `addcont/PCSF00532/SSS000CVN0000001/` with the EU pkg's
+  own `param.sfo`. A US save imported into slot 1; Voice Language offers
+  Japanese beside English (UK). With file reads logged (a temporary build),
+  each of three Librom lines after the switch opened and read `voice_jp.pk`
+  from the EU folder; `voice_ue.pk` was not read.
+* **End to end, PC** (a scratch Windows release from `make-setup.py`,
+  the setup download cache): the first setup with the game and the pack
+  (`setup.py --install <game> --install <pack>`, as RecompLauncher's
+  `--dump {input:game} --dump={input:voice}` reaches it) built everything
+  in 593 s, the pack decrypted, and wrote the build stamp
+  (`ss-delta/build.json`). Then, through `ss-delta.exe` with its output
+  piped as a launcher has it:
+  * the pack deleted, `--dump <game> --dump=<pack> --build-only --progress`:
+    "The game is built here already: installing the add-on only", **5 s**,
+    the pack back and decrypted;
+  * `--dump=<pack>` alone: 6 s, the same;
+  * the EU pack's `.pkg` with the US `.rif` beside it as `work.bin`: the
+    licence found beside it, the note that a PCSF00532 add-on isn't used
+    by the PCSA00152 game, then the install failed (exit 1: the wrong
+    licence), leaving only an empty folder.
+  * The stamp's checks: a changed executable's SHA-256 (a new release)
+    means a full build; the game's own dump alone, or another game (the EU
+    dump), means a full build too.
+* **End to end, Android** (the Thor, the `ssdeltatools` test package with
+  the game built on the device; a debug APK of these changes, without the
+  build tools): the "Add an add-on" shortcut's intent opened the setup
+  screen and the file picker; the US zip picked from `Download` installed
+  in about 4 s through the front end's step (licence from
+  `license/addcont/...`, `voice_jp.pk` starts with `SXDF`); the screen
+  then said "Installed: jap-voice-US.zip. The game is built." with Play.
+  In the game (Turnip, native code), Voice Language offered Japanese, and
+  after the switch each of two Librom lines opened `voice_jp.pk`
+  (`log_level = trace`).
+* Not checked: listening to the lines (the test folders run at volume 0),
+  cutscenes and quests in Japanese, a real decrypted EU pack, the EU pkg
+  through `--zrif` (upstream's `install_pkg`, which handles add-ons), the
+  setup window's add-on-only path (the same `setup.py` run), and the
+  shortcut from a launcher's long-press menu (published with
+  `ShortcutManager`; started here by its intent).
+
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 
 Reported on a Ryzen 7 7840HS (Radeon 780M) + RTX 4070 Laptop GPU with

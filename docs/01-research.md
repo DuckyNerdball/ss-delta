@@ -461,6 +461,34 @@ numbers above:
     and saving changed only `+0x21c` (0 → 1) and the check [local,
     2026-10-12]. The first list then has room for at most 260 ids (it holds
     35); `unlock_addons` keeps to that (patch 0037).
+* **Japanese Voice-over Pack** [local, 2026-11-20]: a separate PSN add-on,
+  not in 1.30's data and not in the entitlement table above.
+  * Content IDs `UP9000-PCSA00152_00-SSS000CVN0000001` (US) and
+    `EP9000-PCSF00532_00-SSS000CVN0000001` (EU), both `c_date` 20140516,
+    version 01.00. It holds `resource/data/pack/mount/retail/voice_jp.{pk,pkh,pfs}`
+    (917,593,536 / 322,196 / 513,517 bytes). The EU pkg's file table (its
+    outer layer, read with Vita3K's public pkg keys; the files inside stay
+    PFS-encrypted without the zRIF) lists the same files at the same sizes as
+    the US dump, so the decrypted packs are taken to be the same
+    (**hypothesis**: no decrypted EU pack seen).
+  * `voice_jp.pk` holds 20,137 files against `voice_ue.pk`'s 16,417:
+    every English file has a Japanese counterpart (`_jp` for `_ue`) except
+    20 streams, plus 3,740 streams of its own.
+  * The game builds the add-on's folder name as `SSS000CVN0000%03d`
+    (`0x81b9c750`) in a loop at boot (`0x812ab018`, called from
+    `0x812ab30e`), lists `addcont0:SSS000CVN0000001` and opens `voice_jp.pk`
+    beside `voice_ue.pk` [checked in runs]. `addcont0:` is
+    `ux0:addcont/<title ID>/` (the title's `param.sfo` has no
+    `INSTALL_DIR_ADDCONT`), so the US game looks in `addcont/PCSA00152/` and
+    the EU game in `addcont/PCSF00532/`; each region's pack installs into
+    its own title's folder. Vita3K checks no licence for add-on folders.
+  * Options → Lang/Sub Settings → Voice Language then offers Japanese
+    beside English (US game) or English (UK) (EU game); what it offers
+    without the pack is not checked. With it chosen, each of Librom's
+    lines opens and reads `voice_jp.pk` and nothing reads `voice_ue.pk`
+    [EU game, checked in runs with file reads logged]. `online_text` 1042
+    "Japanese Voice-over Pack" and 1046 "English Voice Pack" name it and
+    its counterpart for the Japanese release.
 * **Touch** (the game's English text, `ingame_event_us.msgt`,
   `ingame_tutorial_us.msgt`, `letter_text_01_us.msgt`, `online_text_us.msgt`)
   [local, 2026-10-11]:

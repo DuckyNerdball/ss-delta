@@ -1087,6 +1087,29 @@ in `Download`):
 force-stopping the app, do for now). Folders (zip them first). A zRIF
 typed instead of a licence file.
 
+### Add-ons on the device (2026-11-20)
+
+The Japanese Voice-over Pack (01-research) is the first add-on a player
+brings. On the device it goes in two ways:
+
+* **With the game:** picked with the game's files on the setup screen; the
+  install step installs every picked file (`--install-content`), the
+  add-on included. The front end's installer now takes the licence a
+  ux0-style NoNpDrm dump keeps in `license/addcont/<title>/<dir>/`.
+* **Later:** the launcher opens the game straight away once it is built,
+  so `SetupActivity` publishes a dynamic shortcut, **Add an add-on**
+  (long press on the icon, action
+  `io.github.vitarecomps.frontend.ADD_ADDON`). It opens `BuildActivity`,
+  which opens the file picker (a `.pkg` then asks for its licence) and
+  runs one step, `INSTALL_ADDON` (the front end's `--install-content`), with
+  nothing built again. The screen then shows what was installed, Play and
+  **Add an add-on…**; the step is remembered like the others (Try again,
+  Start over).
+
+Checked on the Thor in the `ssdeltatools` test package (02-baseline,
+"Japanese Voice-over Pack"): the pack installed in about 4 s and the game
+read Librom's lines from it.
+
 ### The settings menu on Android (2026-11-20)
 
 The owner saw PC leftovers in the Android menu, such as F-key mentions.

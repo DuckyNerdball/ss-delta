@@ -71,6 +71,13 @@ is in the game since update 1.30, and ss-delta.exe records them in your save
 once ([game] dlc in ss-delta.ini; a copy of the previous file goes to
 ss-delta\save-backups).
 
+The Japanese Voice-over Pack is a separate add-on (the one for your
+version, US or EU). If you have it (a decrypted folder or .zip, or its .pkg
+with its work.bin or .rif beside it), add it without building again:
+  ss-delta.exe --dump "<the pack>"
+or with ss-delta.exe --install, the add-on alone in the importer. In the
+game: Options, Lang/Sub Settings, Voice Language, Japanese.
+
 Saves are in the Vita file system (ux0\user\00\savedata\PCSA00152, or
 PCSF00532 for the EU game). To use a
 save from a Vita (decrypted, e.g. with VitaShell or Apollo), run

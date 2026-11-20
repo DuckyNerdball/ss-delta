@@ -114,6 +114,7 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Credits (StaffRoll) | ✅ | scripted | the debug `StaffRoll` with "clear": the full credits to the closing copyright card |
 | Movies (FMV) | ✅ | scripted | new game: `ev01_opening.mp4` and `ev03_opening.mp4` play (AvPlayer, recompiled) |
 | Audio | ✅ | user | 2026-10-12 |
+| Japanese Voice-over Pack (add-on) | ✅ | scripted | installs from a NoNpDrm zip or folder (PC setup, RecompLauncher, Android's setup screen); Voice Language → Japanese in the US and EU games on the PC and in the US game on the Thor, Librom's lines read from `voice_jp.pk` (EU checked with the US pack's files in its folder); not yet heard ([02-baseline](02-baseline.md#japanese-voice-over-pack-installed-and-heard-from-2026-11-20)) |
 
 ## Developer content
 

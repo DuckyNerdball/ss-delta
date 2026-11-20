@@ -12,6 +12,16 @@
         { "type": "folder" },
         { "type": "file", "extensions": ["zip", "vpk", "pkg"] }
       ]
+    },
+    {
+      "id": "voice",
+      "label": "Optional: the Japanese Voice-over Pack add-on for your version (US: UP9000-PCSA00152_00-SSS000CVN0000001, EU: EP9000-PCSF00532_00-SSS000CVN0000001): its decrypted folder or .zip, or its .pkg with its work.bin or .rif beside it. In the game: Options, Lang/Sub Settings, Voice Language.",
+      "role": "dlc",
+      "optional": true,
+      "formats": [
+        { "type": "folder" },
+        { "type": "file", "extensions": ["zip", "vpk", "pkg"] }
+      ]
     }
   ],
   "start": {
@@ -19,7 +29,7 @@
   },
   "prepare": {
     "program": ["ss-delta.exe", "ss-delta.x86_64", "Soul Sacrifice Delta.app/Contents/MacOS/ss-delta"],
-    "args": ["--dump", "{input:game}", "--build-only", "--progress"],
+    "args": ["--dump", "{input:game}", "--dump={input:voice}", "--build-only", "--progress"],
     "label": "Building the game from your dump: the PS Vita firmware from Sony and a compiler are downloaded, and the game's code is compiled on this PC",
     "timeout": 3600,
     "version": "v0.3.1",

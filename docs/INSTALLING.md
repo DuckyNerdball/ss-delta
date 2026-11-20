@@ -54,6 +54,26 @@ Any of these forms works:
 The add-ons' content (raiments, hoods, additional pacts) is part of update
 1.30; ss-delta unlocks it.
 
+The **Japanese Voice-over Pack** is a separate add-on. If you have it, add
+it as an add-on in the importer: the pack for your version
+(`UP9000-PCSA00152_00-SSS000CVN0000001` for US,
+`EP9000-PCSF00532_00-SSS000CVN0000001` for EU; the other region's pack
+installs for the other version's title and isn't used), as a decrypted
+dump (a NoNpDrm folder or `.zip`, with its licence as
+`sce_sys/package/work.bin` or in `license/addcont/...`) or as its `.pkg`
+with its licence (a `work.bin` or `.rif` beside the `.pkg` is found by
+itself). Then choose it in the game: Options → Lang/Sub Settings → Voice
+Language → Japanese.
+
+Once the game is built, an add-on can be added on its own, without
+building the game again (it takes seconds):
+
+* PC: start the game with `--install` and add only the add-on in the
+  importer (leave the game's rows empty), or run
+  `ss-delta.exe --dump "<the pack>"`;
+* Android: long-press the app's icon → **Add an add-on**, and pick it;
+* RecompLauncher: the game's setup has an Add-ons step for it.
+
 Download the archive for your system from the
 [latest release](https://github.com/vita-recomps/ss-delta/releases/latest)
 (on Android, the `.apk`: see [Android](#android)).
@@ -215,7 +235,9 @@ ss-delta.exe --dump "<your dump>" --accept-microsoft-license      (Windows)
 [RecompLauncher](https://recomplauncher.com/game/ss-delta) can install the game, build
 it from the dump you pick (the same importer, without its window), show
 the main settings of `ss-delta.ini` on the game's page, and back up the
-saves. After an update it builds the game again from the same dump.
+saves. After an update it builds the game again from the same dump. Its
+setup also takes the Japanese Voice-over Pack (optional, on its Add-ons
+step); adding it later installs only the pack.
 
 ## Playing
 
@@ -305,7 +327,7 @@ game: don't share it.
 |---|---|
 | `--game <folder>` | play the game in that folder (default: the program's own) |
 | `--install` | open the importer again (another dump, an update), then play |
-| `--dump <file> [--license <work.bin\|.rif> \| --zrif <zRIF>]` | build from this dump without the window (repeat for the update and add-ons), then play |
+| `--dump <file> [--license <work.bin\|.rif> \| --zrif <zRIF>]` | build from this dump without the window (repeat for the update and add-ons; also `--dump=<file>`), then play. A `.pkg` takes the licence beside it. With the game built, add-ons alone are installed without building again |
 | `--build-only` | build if needed (or with `--install` / `--dump`), then quit |
 | `--accept-microsoft-license` | Windows, with `--dump`: accept Microsoft's licence for the compiler's runtime and SDK |
 | `--shortcut`, `--steam` | with `--dump`: a desktop shortcut, menu entry or Applications copy; add the game to Steam (Linux) |
