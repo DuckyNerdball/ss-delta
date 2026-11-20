@@ -680,14 +680,46 @@ Stage Select screenshot matching Windows'. At the old rate (about 1 in
   finger nor the trigger could be checked on it.
 * **No game yet**: on Android the message says to set the game up on a
   PC and copy it over (`android.py push`), not to edit the ini.
+* **AYN's performance modes** (the quick-settings tile; `settings put
+  system performance_mode` 0 Standard, 1 Performance, 2 High Performance,
+  as the tile's label shows). Of the readable limits only the GPU's
+  lowest clock changes: 401, 550 and 615 MHz. The highest stays at
+  680 MHz, and the CPU's maximums at 2.02/2.80/3.19 GHz in all three. The
+  CPU clocks in use rise all the same (a governor setting shell can't
+  read): in the quest the middle and big cores ran at 1.65/1.84 GHz in
+  Standard, 2.05/2.48 in Performance and 2.80/3.19 in High Performance.
+  Changing the mode also sets `fan_mode`.
+* **Power** (2026-11-20, ST03A after loading, the camera turning, 90 s
+  each, brightness 164/255). Measured as USB input with the battery
+  full, so it is what the whole device draws, the charger's losses
+  included. The home screen draws 1.5 W.
+
+  | Mode | Scale | USB in | fps (median, lowest 4 s) | GPU |
+  |---|---|---|---|---|
+  | Standard | 1× | 4.1 W | 60.0, 59.9 | 401 MHz, 48% busy |
+  | Performance | 1× | 4.5 W | 60.0, 60.0 | 550 MHz, 36% |
+  | High Performance | 1× | 4.8 W | 60.0, 60.0 | 615 MHz, 37% |
+  | Standard | 2× | 5.3 W | 60.0, 57.2 | 550 MHz, 82% |
+  | High Performance | 2× | 6.5 W | 59.9, 58.1 | 615 MHz, 74% |
+
+  At 1× (the default) Standard holds 60 fps, and the other modes cost
+  0.4–0.7 W for nothing. At 2× both modes drop a few frames. The battery
+  holds 5,938 mAh (design), about 23 Wh: roughly 5½ hours of play at
+  Standard 1×, 3½ at High Performance 2× (**hypothesis**: estimated from
+  USB input, not measured unplugged). The battery stayed at 25–26 °C
+  throughout.
+* **The owner's app** (`io.github.vitarecomps.ssdelta`) has this APK and
+  the modules with the exclusive monitor since 2026-11-20 (saves and
+  settings untouched; it started on its T23 at 59 fps). The test
+  package is removed; measurements that need quests use a temporary
+  one, copied on the device from the staged test file system (6 s).
 
 ## Thor-specific work
 
-* **Second screen**: the 3.92″ touchscreen below. Candidates: the Vita's
-  **rear touchpad** (the game uses it little; check where), the settings
-  menu, or nothing (black, to save power). SDL3 sees it as a second
-  display (**hypothesis**: AYN's launcher may hand it to the app only in
-  some modes).
+* **Second screen**: the 3.92″ touchscreen below stays unused (the
+  owner, 2026-11-20): most Android players have one screen, so nothing
+  in the game may depend on a second one. The app draws only on the main
+  display; AYN's own dual-screen settings decide what the second shows.
 * **Main screen**: 1920×1080 at 120 Hz. 960×544 scales 2× to 1920×1088,
   which is 8 lines too tall: scale 2 with a small crop, or fit to 1080 with
   a resample. 60 fps is every second refresh at 120 Hz; 30 every fourth.
@@ -699,8 +731,8 @@ Stage Select screenshot matching Windows'. At the old rate (about 1 in
   trigger) fires past half travel (input.cpp); on Android it needed the
   touch fix above (14f).
 * **Performance modes and fan**: AYN's quick settings (Standard,
-  Performance, Max, and fan curves). Measure 60 fps at 1× and 2× in each,
-  with power read from `/sys/class/power_supply` over adb.
+  Performance, High Performance, and fan curves). Measured in 14f
+  (above): Standard is enough at 1×.
 * **Lifecycle**: Android pauses an app when it loses focus and may kill it
   in the background. The Vita's own suspend has no counterpart in the
   emulator. At minimum, pause emulation and audio on `onPause` and keep

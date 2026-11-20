@@ -908,7 +908,13 @@ a PC builds the native modules first; an on-device build may come later.
     be checked there).
   * ◐ 60 Hz: the surface asks for it; unmeasured, the test Thor's
     setting caps the screen at 60 Hz already.
-  * ☐ The second screen; AYN's performance modes and battery.
+  * ☑ The second screen: dropped (the owner, 2026-11-20: most players
+    have one screen, so the game stays on the main one).
+  * ☑ AYN's performance modes and battery: they raise only the GPU's
+    lowest clock and the CPU clocks in use. ST03A runs at 60 fps at 1×
+    in Standard (4.1 W from USB, about 5½ h on the battery, an estimate);
+    High Performance costs 0.7 W more for nothing. At 2× it drops a few
+    frames in either mode (5.3–6.5 W).
 * ☐ **14g (later) The setup on the device**: Python, capstone and a
   compiler in or beside the APK.
 
