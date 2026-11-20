@@ -584,8 +584,8 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     timeline in guest memory, so native code stays on.
   * ☑ Checked: no logo drawn on any recorded frame; title → Continue →
     a save loaded into the hub.
-  * ☐ Playtest by the owner; then decide whether it should be on by
-    default.
+  * ☑ Playtest by the owner (2026-11-20): the skip works. It stays off by
+    default (owner).
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a
