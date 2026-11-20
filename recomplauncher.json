@@ -32,7 +32,7 @@
     "args": ["--dump", "{input:game}", "--dump={input:voice}", "--build-only", "--progress"],
     "label": "Building the game from your dump: the PS Vita firmware from Sony and a compiler are downloaded, and the game's code is compiled on this PC",
     "timeout": 3600,
-    "version": "v0.3.1",
+    "version": "v0.4.0",
     "options": [
       {
         "id": "microsoft",
