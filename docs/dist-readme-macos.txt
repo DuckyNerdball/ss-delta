@@ -60,6 +60,10 @@ In fullscreen, started from its app, the game runs in macOS's Game Mode (the
 controller icon in the menu bar): background work waits, and Bluetooth
 controllers answer faster.
 
+Intro logos: Skip intro logos on the menu's Game page ([game] skip_intro in
+ss-delta.ini) skips the health warning and the company logos at start; the
+game opens on its title screen.
+
 Language: the game has no language option of its own; it uses the console's
 language, which the game sets from Language on the menu's Game page
 ([game] language in ss-delta.ini; takes effect at the next start). The US

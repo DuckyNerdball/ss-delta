@@ -231,6 +231,9 @@ saves. After an update it builds the game again from the same dump.
   the gamepad's left trigger.
 * **Frame rate:** 60 fps by default; `frame_rate = 30` under `[display]`
   gives the Vita's rate. Loading screens run at 30.
+* **Intro logos:** Skip intro logos on the settings menu's Game page
+  (`skip_intro = true` under `[game]`) skips the health warning and the
+  company logos at start: the game opens on its title screen.
 * **Language:** Language on the settings menu's Game page. The US game has
   English, French, Spanish and Portuguese (Brazil), the EU game English,
   French, Spanish, German and Italian.

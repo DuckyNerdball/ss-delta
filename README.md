@@ -93,6 +93,8 @@ Compared with running the game in Vita3K:
   text, as an option (Button prompts in the settings menu; or as the
   connected gamepad): A, B, X, Y, LB, RB, Menu and View, after your gamepad
   bindings.
+* **Intro logos skipped** as an option (Skip intro logos in the settings
+  menu): the game opens on its title screen.
 * **Touch on keys and buttons:** the Black Rite icon on F and the left
   trigger; the mouse is the touchscreens.
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).

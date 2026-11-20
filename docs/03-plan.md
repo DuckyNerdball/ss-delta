@@ -575,6 +575,17 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     and in the journal, its tutorial entries (Lore > Tactical advice, where
     the tutorial pictures are) included. Not seen yet: the △ text (a
     tutorial message when Offerings renewal or boosting unlocks).
+* ☑ **Skip the intro logos** (GitHub issue #6, 2026-11-20; research in
+  [01-research](01-research.md#boot-logos-local-2026-11-20-github-issue-6)).
+  * ☑ `[game] skip_intro` (Skip intro logos, default off, as on the Vita):
+    the health warning and the four company logos are skipped and the game
+    opens on its title screen, about 6 s after start instead of 20.
+    Data only, like `frame_rate`: the front end zeroes each logo's
+    timeline in guest memory, so native code stays on.
+  * ☑ Checked: no logo drawn on any recorded frame; title → Continue →
+    a save loaded into the hub.
+  * ☐ Playtest by the owner; then decide whether it should be on by
+    default.
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

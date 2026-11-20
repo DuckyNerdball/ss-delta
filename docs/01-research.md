@@ -262,6 +262,47 @@ Where the PlayStation button art comes from, read from the 1.30 `archive`
   archive's bytes in play (2026-11-20: `com_001_000`'s US copy, in the hub
   and in a quest).
 
+### Boot logos [local, 2026-11-20; GitHub issue #6]
+
+What the `Title` boot sequence shows before the title screen, read from
+the 1.30 eboot's code and checked in `ss-delta.exe`:
+
+* **`GameLogoControlTask`** (0x60 bytes, vtable `0x81c5edd8`, constructor
+  `0x812ad8ce`, created by `0x812ae270`) is a singleton
+  (`*0x81c957d0`, set early in the constructor). The constructor fills a
+  list of `GameLogoTask`s (+0x50, count +0x48, capacity +0x4c), in order:
+  * `VITAwarningscreen_xx` (the health warning, hold 5 s), only when the
+    boot config's `+0x1c` (`DebugRegionType`; **hypothesis**: filled with
+    the region when the key is unset, US = 1) is 1;
+  * `SLS_ESRB_wDESCRIPTORS_resize` (hold 4 s), only when `0x818079f0`
+    returns 1 and `*0x81c9a488 + 0x45` is set. The US game doesn't show
+    it;
+  * `company_logo_scej_00_xx`, `company_logo_scej_01` ("Sony Computer
+    Entertainment presents", Japan Studio), `comcept_1024x512`,
+    `MAQL_1024x512` (MarvelousAQL).
+* It skips them all when the byte at `*0x81c9a488 + 0x54` is set.
+  **Hypothesis:** that is the debug parameter `IsModeTGS` (registered at
+  `+0x50` of a base 4 bytes into that object, where `SyncFps` at base + 1
+  is the known `+5`), a show-floor mode whose title menu has its own
+  layout (`m_tgs2013_*`), so not an option for players.
+* **Timeline.** Each `GameLogoTask` (0x130 bytes, vtable `0x81c5ee0c`,
+  update `0x812ae40e`) counts seconds at +0x48 and plays floats: start
+  delay +0x50 (1/6), fade in +0x54 (0.5), hold +0x58, fade out +0x5c
+  (0.5), black +0x60 (0.5). Buttons end the hold only after +0x64 seconds,
+  which is 999: retail logos can't be skipped. At the end its state
+  (+0x44) becomes 3.
+* **The control task's update** (`0x812ae354`) starts the next logo when
+  the current one is in state 3; past the last (or with an empty list) it
+  sets its own state to 2 and the title starts. Its state is 1 from its
+  init (`0x812ae322`, once the logos' textures have loaded) to then.
+* In the US game the title appeared about 20 s after the window opened
+  (2026-11-20, Radeon 760M); the US game shows five logos, no ESRB.
+* `[game] skip_intro` (`ss-delta.exe`) sets the five floats of each
+  logo to 0 once the control task is in state 1: each logo ends on its
+  first frame without being drawn. Recorded frame by frame: black, then
+  the game's own "Now Loading..." and the title about 6 s after the
+  window opened; loading a save from there works as usual.
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |
