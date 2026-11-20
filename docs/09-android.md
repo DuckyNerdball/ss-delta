@@ -964,6 +964,88 @@ and devices smaller than the Thor (8 GB, slower SoCs).
 
 **Open:** devices with 8 GB, and slower SoCs.
 
+### The front end's own steps on the device (2026-11-20)
+
+The desktop setup runs the executable for three steps: `--install-firmware`,
+`--install-content` and `--dump-elfs`. `GameActivity` already passes an
+intent's `args` to the front end, so the same options work on Android.
+
+**How a step runs** (`FrontendStepActivity`, a `GameActivity`):
+
+* It runs in a process of its own (`:frontend_step`), because the front
+  end keeps static state and never runs twice in one process.
+* It overrides SDL's `main()` to keep `nativeRunMain`'s exit code, hands
+  it back as the activity's result, and ends its process.
+* Debuggable builds can drive it over adb:
+  `--es buildtools frontend --es args "..."`.
+
+**On the Thor** (a test package, fresh storage):
+
+* Installing PSVUPDAT and PSP2UPDAT took **4.4 s**, and the US dump's zip
+  (3.3 GB) **16 s**, its eboot the supported 1.30. Both exited 0.
+* `--dump-elfs 45` took **45.5 s**.
+* All three ran from files in the app's own folder. The setup screen
+  will get them through the file picker.
+
+**Found on the way: libfiber.**
+
+* The first dump on Android had loaded **libfiber**, which moved libult,
+  libscemp4, libsceavplayer and adhoc_matching to other addresses.
+* SceFiber's HLE replaces libfiber only when `SSD_AOT` is set
+  (`load_module.cpp`). install-game.py has always set `SSD_AOT=none` for
+  its dump run; Android had no such environment.
+* The front end now sets `SSD_AOT=none` and `SSD_AOT_NATIVE=0` itself for
+  `--dump-elfs`, and `aot.cpp` takes `none` as no modules (it used to try
+  to load a file called "none").
+
+After the fix, ten of the eleven dumps are byte-identical to the PC's.
+adhoc_matching landed at 0x80755000 instead of 0x80757000, which
+`game.json`'s `load_bases` pins anyway.
+
+**The whole chain, on the phone:** recompiling the device's own dumps
+(4.3 min) and compiling them inside the app (10.1 min) gave **all ten
+modules byte-identical** to the ones the owner's app runs, which the PC
+built. From a dump to the modules takes about 15.5 min, with no PC.
+
+**Found on the way: a moving library folder.** Reinstalling or updating
+an APK moves its native library folder (`/data/app/~~<random>/...`), so
+the `toolchain/zig/zig` link pointed at the old one. `BuildTools` now
+links it again on every use.
+
+### The settings menu on Android (2026-11-20)
+
+The owner saw PC leftovers in the Android menu, such as F-key mentions.
+
+**Hidden on Android:**
+
+* `SettingSpec::desktop_only` keeps these out of Android's settings file
+  and menu, while their defaults still apply: window scale; fullscreen
+  (whose help names F11, Alt+Enter and F12); the Vulkan validation layer
+  (the PC's Vulkan SDK); and ss-delta's network mode and per-player
+  gamepad.
+* Android's network mode stays `lan`, its default there: a phone runs
+  one copy of the game, so `local` can't happen.
+
+**Changed for Android:**
+
+* The footer names only gamepad controls.
+* The GPU driver is a choice: Auto (the newest package), the device's
+  own, or each driver package on the device. It used to be text that only
+  the settings file could change, and a player can't reach that file.
+* The filter's and the network adapter's helps speak of a screen and a
+  device.
+
+**Changed everywhere:**
+
+* Tabs are as wide as their names, with a smaller font when they don't
+  fit. Seven pages used to run into each other ("MultiplayerNative
+  codeDebug").
+* "Jit" reads "Keep the JIT".
+* Helps say Off where the menu shows On/Off.
+
+Checked on the Thor in a test package, page by page. The PC's settings
+file keeps its desktop settings.
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below stays unused (the

@@ -910,6 +910,10 @@ milestone, and nothing is released before it.
     takes it (2026-11-20, checked in a test package).
   * ☑ Home and back to the game (same process, 60 fps); Back doesn't
     quit; holding Select opens the settings menu.
+  * ☑ The settings menu without PC leftovers (the owner, 2026-11-20;
+    09-android): no window, fullscreen, F-key, validation-layer or
+    several-copies settings on Android, and the GPU driver as a choice.
+    The tabs fit their names on every platform.
   * ◐ Touch: the touchscreen reaches the game; the `[touch]` bindings
     (Black Rite on the left trigger) didn't on Android and are fixed in
     `touch.cpp` (**hypothesis** until seen in play: no Black Rite icon
@@ -938,8 +942,12 @@ milestone, and nothing is released before it.
     and the release workflow packs them. Started by the app, the full
     build takes 14.6 min on the Thor (4.3 to recompile, 10.3 to compile)
     and the modules match. The APK grows to about 105 MB.
-  * ☐ The front end's own steps called from Java: install the firmware
-    and the content, dump the ELFs (on the PC, `ss-delta.exe` options).
+  * ☑ The front end's own steps called from Java (2026-11-20, 09-android):
+    `FrontendStepActivity` runs each in its own process. Firmware took
+    4.4 s, the dump's zip 16 s, `--dump-elfs` 45.5 s. The fix for libfiber
+    in dumps (`SSD_AOT=none` set by the front end) made the dumps match
+    the PC's. With the build on top, all ten modules are byte-identical
+    to the owner's app's.
   * ☐ The setup screen and a foreground service: the file picker, the
     Sony download, progress and log, cancel and resume, by gamepad or
     touch.
