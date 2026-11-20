@@ -1072,6 +1072,17 @@ in `Download`):
 * Installing a `versionCode` 2 APK opened the setup with its rebuild
   text. Build, with no dump, built again in 15.3 min (stamp `2-…`).
 
+**From GitHub** (a manual run of the release workflow, 2026-11-20,
+`0d676e5`): all four jobs passed in 37 min, the `android` job in 11.5.
+
+* The APK is **99.4 MB**, signed with the release key (versionCode 20),
+  with the tools and `game.json` as built locally.
+* Each PC archive grew by about 78 MB, as it carries the APK.
+* Installed over the owner's app (versionCode 19), it updated in place:
+  the saves were intact, and the launcher went straight to the game,
+  because the PC had put the modules there (no `android-build.json`).
+  The game ran native code on T23.
+
 **Not there yet:** a cancel button (Start over after a stop, or
 force-stopping the app, do for now). Folders (zip them first). A zRIF
 typed instead of a licence file.

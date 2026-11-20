@@ -999,8 +999,11 @@ milestone, and nothing is released before it.
     `versionCode` or new tools) opens the setup again, which builds from
     the installed game and its dumps without the dump (15.3 min on the
     Thor). The saves stay.
-  * ◐ The workflow's APK with the tools (written, not run on GitHub
-    since), INSTALLING's Android section (done), then tag v0.4.0.
+  * ◐ The workflow's APK with the tools: a manual run on GitHub
+    (2026-11-20, `0d676e5`, 25 min). The APK is 99.4 MB, release-signed,
+    with the tools and `game.json`; it updated the owner's app in place
+    (saves intact, straight to the game). INSTALLING's Android section is
+    done. Left: tag v0.4.0 (the owner's call).
 
 **Exit (v0.4.0):** with a Thor and their own dump, and no PC, a player
 gets from the release's APK to a quest on native code. With a PC, D25's
