@@ -929,10 +929,10 @@ milestone, and nothing is released before it.
   The APK builds the game itself, with Python, capstone and zig packed
   in it as native libraries. Survey: 09-android, "The setup on the
   device".
-  * ☐ Probe on the Thor over adb (the shell user, `/data/local/tmp`):
-    zig 0.17.1 `aarch64-linux` compiling the ten modules from the
-    generated C++, python.org's Python running `recompile.py`. Measure
-    time, peak memory and heat.
+  * ☑ Probe on the Thor over adb (2026-11-20, 09-android). The kit ran
+    unchanged under python.org's Python 3.14 with zig 0.17.1: recompiling
+    took 4.2 min and compiling 24.4 min (8 jobs), peaks of 1.8 GB and
+    95.9 °C, 4.4 GB of space. The output is the PC's, byte for byte.
   * ☐ The tools in the APK: libpython with a launcher, capstone and zig
     in `jniLibs`; the standard library, the kit and zig's `lib/`
     unpacked on first use. Zig and Python must start from the native

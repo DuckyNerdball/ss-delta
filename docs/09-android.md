@@ -847,6 +847,55 @@ jobs (D25). On the Thor's Snapdragon 8 Gen 2 it's **unmeasured**.
 The choice is [D27](decisions.md): the APK carries Python, capstone and
 zig as native libraries and runs the whole setup itself.
 
+### The probe on the Thor (2026-11-20)
+
+install-game.py's step 4 ran on the Thor from adb's shell
+(`/data/local/tmp`), with the tools D27 puts in the APK:
+
+* **The tools**:
+  * python.org's Python 3.14.10 for Android (aarch64), started by a
+    six-line launcher (`Py_BytesMain`) built with the NDK and linked to
+    `libpython3.14.so`;
+  * capstone 5.0.7 (the desktop's version, from its PyPI sdist), built
+    for Android with the NDK's CMake, ARM only;
+  * the desktop's capstone binding and PyYAML (pure Python);
+  * zig 0.17.1 `aarch64-linux` (the pinned SHA-256).
+
+  Packed, they are 110 MB as `.tar.gz` (zig 164 MB plus a 217 MB
+  `lib/`, Python 84 MB, unpacked).
+* **The kit ran unchanged**: `recompile.py` for each module through
+  `subprocess` with `sys.executable`, as install-game.py runs it, then
+  `toolchain.build_modules(..., android=True)`. CPython's `subprocess`
+  works on Android, and zig's static binary and its own child processes
+  run.
+* **Time**: recompiling the ten modules took **4.2 min** (eboot 235 s;
+  the test PC takes 3.0 min). Compiling the 205 files with 8 jobs took
+  **24.4 min** (the test PC: 5.1 min with 10). About **29 min** in all.
+  adb's shell may use only 6 of the 8 cores (affinity `0-5`; `taskset ff`
+  got 7), while an app in the foreground gets all 8 (`top-app` cpuset
+  `0-7`).
+* **Memory**: at most 1.45 GB for recompiling eboot and 1.8 GB for one
+  compiler process. At least 8.6 GB stayed available (16 GB device).
+* **Heat**, on the charger, battery full: the CPU sensors peaked at
+  95.9 °C (82.8 °C median). The prime core held 3.19 GHz for 157 of 162
+  samples (1.84 GHz for the other five), the battery stayed at 27 °C.
+  AYN's Standard mode, fan in the owner's setting.
+* **Space**: 4.4 GB while building (zig's objects 3.8 GB, the generated
+  C++ 592 MB), on top of the game.
+* **Same output**:
+  * the generated C++ matches the PC's file for file once Windows'
+    CRLF line endings are removed (only `report.txt`'s elapsed time
+    differs);
+  * seven of the ten `.so` are byte-identical to the PC's zig build and
+    to the modules the owner's app runs, eboot included;
+  * libc, libfios2 and libult differ only because the probe took their
+    unrelocated ELFs from `extracted/elf/` instead of the setup's
+    relocated dumps.
+
+What the probe leaves open: the tools running from the app's native
+library folder instead of adb's shell; the time with all eight cores;
+and devices smaller than the Thor (8 GB, slower SoCs).
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below stays unused (the
@@ -894,6 +943,6 @@ zig as native libraries and runs the whole setup itself.
 
 Phase 14 in [03-plan](03-plan.md): **14g, the setup on the device
 ([D27](decisions.md)), is the 0.4.0 milestone**; no release is tagged
-before it. First, a probe over adb: zig and python.org's Python on the
-Thor, recompiling and compiling the ten modules (time, memory, heat).
-Then the Black Rite on the trigger, seen in play.
+before it. The probe over adb is done (above: 29 min on the Thor, the
+same modules as the PC). Next, the tools inside the APK. Then the Black
+Rite on the trigger, seen in play.

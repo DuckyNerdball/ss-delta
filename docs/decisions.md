@@ -1174,6 +1174,19 @@ version the desktop setups pin.
 * The APK's size: zig alone is 53 MB as `.tar.xz`, against today's
   20 MB APK.
 
+**Update (2026-11-20): the probe** (09-android) ran the kit unchanged on
+the Thor from adb's shell:
+
+* about 29 min (4.2 to recompile, 24.4 to compile with 8 jobs);
+* peaks of 1.8 GB per process and 95.9 °C;
+* 4.4 GB of build space;
+* `subprocess` works, and so do zig and its child processes;
+* the modules are byte-identical to the PC's.
+
+The tools pack to 110 MB, so the APK will be about 130 MB
+(**estimate**). Still open: the same from the app's native library
+folder.
+
 **Consequences:**
 
 * The APK grows to roughly 100 MB (**estimate**).
