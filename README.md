@@ -23,6 +23,7 @@
 
 **[Download the latest release](https://github.com/vita-recomps/ss-delta/releases/latest)** ·
 [Installation guide](docs/INSTALLING.md) ·
+[Changelog](CHANGELOG.md) ·
 [Build from source](docs/BUILDING.md) ·
 [Compatibility](docs/06-compatibility.md) ·
 [Report an issue](https://github.com/vita-recomps/ss-delta/issues)
@@ -94,6 +95,11 @@ Compared with running the game in Vita3K:
 * **The game's languages:** English, French, Spanish and Portuguese (Brazil)
   in the US game, English, French, Spanish, German and Italian in the EU
   one (Language in the settings menu).
+* **Japanese voices:** the Japanese Voice-over Pack add-on, and rePatch
+  mods such as the Undub patch, installed beside the game.
+* **Cheats** on the settings menu's Cheats page: Infinite health,
+  Unlimited and Lasting offerings, One-hit kills, Max Lacrima and Max
+  levels.
 * **Xbox button labels** in the game's prompts, tutorial pictures and
   text, as an option (Button prompts in the settings menu; or as the
   connected gamepad): A, B, X, Y, LB, RB, Menu and View, after your gamepad
@@ -141,6 +147,7 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 
 | Doc | Contents |
 |---|---|
+| [CHANGELOG](CHANGELOG.md) | what changed in each release, with the issues that asked for it |
 | [INSTALLING](docs/INSTALLING.md) | for players: requirements, each system, the first start, saves, Ad Hoc Play, files, command line |
 | [BUILDING](docs/BUILDING.md) | building from source, installing a game into a build, making a release, the toolchain and tools |
 | [01-research](docs/01-research.md) | prior work, the dump's structure, measurements of the 1.30 eboot, Vita3K as donor, approach options |

@@ -98,7 +98,8 @@ a device ([09-android](09-android.md)). Pushing a tag `v*` runs
 Gradle) and all three archives on GitHub, with their SHA-256 and build
 attestations, into a draft release. Its notes are
 `.github/release-notes/<tag>.md` when that file exists (write it before
-tagging), else a short default text.
+tagging), else a short default text. Add the release to `CHANGELOG.md`
+too, with the issues each change answers.
 
 The APK is signed with the project's release key, from the repository's
 secrets `ANDROID_KEYSTORE_BASE64` (the keystore, base64), `ANDROID_KEYSTORE_PASSWORD`,
