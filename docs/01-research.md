@@ -324,8 +324,14 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
   * `*0x81c98f00` is a quest object (vtable `0x81c7a40c`) while a quest
     runs, 0 in the hub, menus and Stage Select. Its `+0x18`, `+0x44` and
     `+0x60` all point to the player object (vtable `0x81c61f6c`) in single
-    player; the codes use one each. **Hypothesis:** in Ad Hoc Play they
-    still point to this machine's player.
+    player; the codes use one each. In Ad Hoc Play (two copies, 2026-11-21)
+    `+0x18` and `+0x60` are this machine's player on the host and on the
+    guest alike; the other sorcerer is a second object of the same class.
+  * Every character (player, allies, enemies, bosses) has the same HP
+    component at `+0x54` (vtable `0x81c60fbc`, then the HP float at `+0x58`,
+    the maximum at `+0xf8`), so scanning the heap for that vtable lists them
+    all: goblins 110 or 120, kobolds 90, the Jack-o'-Lantern 2175 (its rank
+    0 row says 4350: half, **hypothesis:** single player), the Harpy 1700.
   * Player `+0x58`: HP, a float (1000.0 at level 1). Writing 300.0 made the
     HUD's health bar appear at 30%. `+0x5c` follows it (1000.0 again after
     a refill; **hypothesis:** the bar's displayed value). `+0xf8`: the
@@ -338,7 +344,13 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
     with (0 for an empty slot). A cast took slot 1 from 5 to 4, the copy at
     `+0x218` stayed 5.
   * tomberyx's "One Hit Kill" writes 1.07e20 to player `+0x370`, the first
-    of a run of 1.0 floats (**hypothesis:** damage multipliers). Not used.
+    of a run of 1.0 floats (**hypothesis:** damage factors). The game sets it
+    back to 1.0 from time to time, so it is written every frame. With it,
+    goblins (110-120 HP) fell to single hits (six punches without it left one
+    at 3), in single player and from an Ad Hoc guest (the host's copy of the
+    goblin at 0 too). A boss still took a fifth of its health a hit (the
+    Harpy: 1700, 1360, 1020, 680 ... 0, then its dying state as usual): the
+    game limits a hit on a boss to 20% (**hypothesis**, from these numbers).
 * **The save data**, `*0x81c98618` (the game's pointer, set from boot; a
   block of more than 1.5 MB, not the file's layout):
   * `+0x8c`: Lacrima (u32). 9627 in memory and on the Portraiture page.
@@ -350,6 +362,19 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
     (`boot/lowchaos_growth_param.csv`: level, EXP for the next level,
     attack, health ... for levels 1-99). Set to 99 and saved: both still 99
     after a reload, so the game doesn't recompute them from EXP.
+  * **Only later in the story.** The late-game save has the level pair in
+    eight records of the block (`+0xea2e8`, `+0xeb258`, then five 0x3ec
+    apart from `+0x17ba40`, and `+0x17ced8`); in the file they sit 0x8e3f0
+    lower. An early save (the journal's first chapters, Life 1 Magic 3 in
+    its summary, Portraiture hiding the appearance and the Right Arm) has
+    one, at `+0x139fa8`, and zeros at `+0x17ced8`; an early EU save has
+    zeros there too. No pointer in the block or the eboot's data points
+    near `+0x139fa8`, so the record is found by layout. **Hypothesis:** the
+    records are the journal author's and your own sorcerer's, and
+    `+0x17ced8` is yours. Max levels acts only when it is set.
+  * At boot, before a save loads, the block holds leftovers (levels 63302 /
+    30968, refused), then defaults that pass the checks for a moment, so
+    the cheats can write there before the save replaces it (logged).
   * The offering stock (r0ah): 840 entries of 0x2c bytes from `+0xb4`: an
     offering id (`100010`, `100020` ...), four counts (`+0x4`..`+0x10`,
     one per star rank) and four flags (`+0x14`..`+0x20`, 2 = owned). The

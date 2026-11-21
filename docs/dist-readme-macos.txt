@@ -65,9 +65,11 @@ ss-delta.ini) skips the health warning and the company logos at start; the
 game opens on its title screen.
 
 Cheats: the menu's Cheats page ([cheats] in ss-delta.ini), all off by
-default and switched while the game runs: Infinite health and Unlimited
-offerings in quests, Max Lacrima and Max levels (Life and Magic 99). Lacrima
-and levels are kept when the game saves; export a save first to go back.
+default and switched while the game runs: Infinite health, Unlimited
+offerings and One-hit kills in quests (bosses take five hits), Max Lacrima
+and Max levels (Life and Magic 99, once the story has opened your Right Arm's
+levels). Lacrima and levels are kept when the game saves; export a save first
+to go back. In Ad Hoc Play they change only your own sorcerer.
 
 Language: the game has no language option of its own; it uses the console's
 language, which the game sets from Language on the menu's Game page

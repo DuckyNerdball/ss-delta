@@ -1512,11 +1512,41 @@ the Radeon 760M.
 * `v3kdrive.py` step `memwrite:<addr>:<bytes>` (kit) and the input pipe's
   `memwrite` command (fork, `ctrl.cpp`, written by the front end) are new
   for these tests.
+* **Real fights** (Stage Select, `q_e0103` ST01A and `q_e0105` ST06A):
+  goblins and the Harpy hit the player, HP stayed 1000.0 in every read
+  and the log said "cheats: infinite health". One-hit kills (fork
+  `dac57802`), switched on in the menu: goblins 110 → 0 on single punches
+  (without it, six punches left one at 3); the Harpy 1700 → 1360 → 1020 →
+  680 → 647 → 307 → 0 (340 a strong hit, a fifth of its health), then its
+  dying scene as usual.
+* **EU game** (the EU scratch folder, its early save): Lacrima 50 → 9999999
+  in memory; levels 0 / 0 there. The first build wanted levels 1-99 and
+  therefore left the whole save alone (fork `97bd8574` takes 0, and Max
+  levels waits). Quest cheats: the same addresses (one build).
+* **Max levels on early saves**: the Thor's test save (Life 1, Magic 3)
+  imported into the PC test folder as slot 3: its levels are at
+  `+0x139fa8`, `+0x17ced8` holds zeros (01-research, "Cheats"). The cheat
+  logs once that it leaves them alone. The test folder's saves were put
+  back from the import's backup afterwards.
+* **Android** (the Thor, the `ssdeltatools` test package, debug APKs of
+  `97bd8574` and `dac57802` built in WSL and packed with Gradle): the
+  Cheats page's values from the settings file; Portraiture showed Lacrima
+  9999999 after loading the save; in `q_e0105` the log said one-hit kills,
+  infinite health after a goblin's hit, unlimited offering uses after a
+  cast; goblins fell, HP bar full. The test package's settings and
+  `BootSequence` were set back afterwards.
+* **Ad Hoc Play** (players 3 and 4 in the test folder, `network = local`;
+  player 3 hosting with no cheats, player 4 with health, offerings and
+  one-hit kills from `ss-delta-player4.ini`): room, ready, "Croaking
+  Fiends in the Forest". On each copy `+0x18` is its own player: the
+  host's at 524/1000, the guest's held at 1000, and the host's copy of
+  the guest at 1000 too. Player 4's log names only its own player. The
+  guest's single hits took two goblins 120 → 0, and the same goblins were
+  at 0 on the host.
 * Not checked: a hit that takes all the health at once (the cheat refills
   once a frame and leaves a player at 0 alone), the battle stats at
-  level 99 (the HUD's levels and the stats come from the game's own
-  tables), Ad Hoc Play (which player `+0x18` is on a guest), the EU game
-  (the same build), and Android (the same settings menu and code).
+  level 99, a quest played to its end in Ad Hoc Play with cheats, and
+  cheats on the host.
 
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 

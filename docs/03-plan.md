@@ -641,9 +641,15 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     codes for 1.30), after checking vtables and plausible values.
   * ☑ Checked on the PC: health and offering uses refilled in a quest, the
     Lacrima and levels shown on Portraiture, kept through a save and reload.
-  * ☐ Playtest by the owner: a real fight, the stats at level 99, Android.
+  * ☑ One-hit kills: ordinary enemies in one hit; bosses take five (the
+    game limits a hit on a boss to a fifth of its health).
+  * ☑ Checked in real fights, the EU game, Android (the Thor) and Ad Hoc
+    Play (each copy changes only its own player; enemies stay in step).
+  * ☐ Max levels early in the story: those saves keep the levels in play
+    in another record whose place depends on the save; left alone for now.
+  * ☐ Playtest by the owner: the stats at level 99, a whole quest.
   * ☐ Candidates (addresses known, not used yet): 99 of each owned
-    offering, slayer points, one-hit kills.
+    offering, slayer points.
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a
