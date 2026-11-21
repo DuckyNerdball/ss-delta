@@ -8,11 +8,12 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### Fixed
 
-* **Windows: the setup stopped with "msiexec failed (1639)"**
-  ([#9](https://github.com/vita-recomps/ss-delta/issues/9)) when the temp
-  folder's path has a space, as under a Windows user name with a space.
-  Windows Installer refused the folder the setup unpacks the Windows SDK
-  into. Linux, macOS and Android are the same as 0.4.0.
+* **Windows: the setup stopped with "msiexec failed (1639)"** when the
+  temp folder's path has a space, as under a Windows user name with a
+  space. Windows Installer refused the folder the setup unpacks the Windows
+  SDK into. One cause of
+  [#9](https://github.com/vita-recomps/ss-delta/issues/9), possibly not the
+  only one. Linux, macOS and Android are the same as 0.4.0.
 
 ## 0.4.0 (2026-11-21)
 
