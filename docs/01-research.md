@@ -489,6 +489,41 @@ numbers above:
     [EU game, checked in runs with file reads logged]. `online_text` 1042
     "Japanese Voice-over Pack" and 1046 "English Voice Pack" name it and
     its counterpart for the Japanese release.
+* **Undub patch** [local, 2026-11-21] (GitHub issue #8): swosho's "Soul
+  Sacrifice Delta UNDUB patch" v1.0 (archive.org, 2023-04-15; one `.7z`
+  of 747,214,819 bytes, MD5 `92b181b28a7846585708f15c0aa79fd7`). It is a
+  rePatch mod: `rePatch/PCSA00152/resource/data/pack/mount/retail/` holds
+  nine files that replace the game's `voice_ue`, `voice_patchv_ue` and
+  `archive_patch3` (`.pk`, `.pkh` and `.pfs` of each). Its description says
+  to rename the folder to `PCSF00532` for the EU game, and that with the
+  voice pack the voice language can only be switched after the prologue,
+  which the undub covers (the author's claims, not checked here).
+  * The three `.pfs` directory trees are 1.30's own, byte for byte.
+    `voice_patchv_ue.pk` replaces all 421 members. `voice_ue.pk` replaces
+    16,400 of 16,417; its index lacks 16 entries (parts of nine
+    streams, e.g. `VO_MA_0055_ue`, `EP_MA02_1_0500_ue`), which are then
+    missing: the author's "seven mute voice clips". `archive_patch3`
+    differs from 1.30's in one member of 3,026:
+    `resource/data/sound/se/prison_voice_ue.sxd` (1,041,120 → 1,979,600
+    bytes).
+  * US and EU: 1.30's `voice_ue` and `voice_patchv_ue` are the same in
+    both regions. `archive_patch3` differs in six members,
+    `project/obj/ElderFantasy/{Release,Ship}_PSVita/eb{771_bahamut,781_gigas,850_odin}.o`:
+    relocatable objects with debug info, the same sizes but different
+    string tables; build leftovers. No ELF of the game names `project/obj`
+    or `Release_PSVita` (the eboot names those bosses `boss_eb771` and so
+    on), so the game is taken not to read them (**hypothesis**), and the
+    US-made `archive_patch3` to be fine for the EU game.
+  * At boot the game opens the three archives' `.pkh` and `.pk` (not the
+    `.pfs`). Each voiced line of the prologue opens `voice_ue.pk` again
+    (AvPlayer's file streaming) and streams one member: the offsets read
+    are `OP_NA_0501_ue.sxd2`'s and `OP_PR_0001_ue.sxd2`'s in the undub's
+    index, and would be mid-member in 1.30's [checked in runs, file reads
+    logged]. The opening movies (`ev01_opening.mp4`, `ev03_opening.mp4`)
+    are separate files that the patch doesn't change.
+  * ss-delta installs it as a rePatch mod beside the game
+    (`ux0/rePatch/<title>/`, the installed region's) and serves its files
+    in place of the game's (`[game] repatch`); the game's own files stay.
 * **Touch** (the game's English text, `ingame_event_us.msgt`,
   `ingame_tutorial_us.msgt`, `letter_text_01_us.msgt`, `online_text_us.msgt`)
   [local, 2026-10-11]:

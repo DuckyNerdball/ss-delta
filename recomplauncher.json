@@ -22,6 +22,16 @@
         { "type": "folder" },
         { "type": "file", "extensions": ["zip", "vpk", "pkg"] }
       ]
+    },
+    {
+      "id": "mod",
+      "label": "Optional: a rePatch mod, such as the Undub patch (Japanese voices from the start, also without the pack): the folder that holds its rePatch folder, or a .zip of it (extract a .7z first). For the US or the EU game alike.",
+      "role": "dlc",
+      "optional": true,
+      "formats": [
+        { "type": "folder" },
+        { "type": "file", "extensions": ["zip"] }
+      ]
     }
   ],
   "start": {
@@ -29,7 +39,7 @@
   },
   "prepare": {
     "program": ["ss-delta.exe", "ss-delta.x86_64", "Soul Sacrifice Delta.app/Contents/MacOS/ss-delta"],
-    "args": ["--dump", "{input:game}", "--dump={input:voice}", "--build-only", "--progress"],
+    "args": ["--dump", "{input:game}", "--dump={input:voice}", "--dump={input:mod}", "--build-only", "--progress"],
     "label": "Building the game from your dump: the PS Vita firmware from Sony and a compiler are downloaded, and the game's code is compiled on this PC",
     "timeout": 3600,
     "version": "v0.4.0",
@@ -172,6 +182,15 @@
         { "label": "Locked", "set": { "game/dlc": "false" } }
       ],
       "defaults": { "game/dlc": "true" }
+    },
+    {
+      "id": "repatch", "label": "Mods", "group": "Game",
+      "help": "rePatch mods added in the setup, such as the Undub patch. Off plays the game as installed.",
+      "choices": [
+        { "label": "On", "set": { "game/repatch": "true" } },
+        { "label": "Off", "set": { "game/repatch": "false" } }
+      ],
+      "defaults": { "game/repatch": "true" }
     },
     {
       "id": "network", "label": "Ad Hoc Play", "group": "Game",

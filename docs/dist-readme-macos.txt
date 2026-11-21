@@ -89,6 +89,12 @@ with its work.bin or .rif beside it), add it without building again:
 or with --install, the add-on alone in the importer. In the game: Options,
 Lang/Sub Settings, Voice Language, Japanese.
 
+Mods made for rePatch, such as the Undub patch (Japanese voices from the
+start), are added the same way: unpack its .7z and give the folder that
+holds rePatch (or a .zip of it), for the US or the EU game alike. The mod
+is kept in fs/ux0/rePatch, the game's files stay as they are; Mods
+(rePatch) on the menu's Game page ([game] repatch) turns it off.
+
 Saves are in the Vita file system (ux0/user/00/savedata/PCSA00152, or
 PCSF00532 for the EU game). To use a save from a Vita (decrypted, e.g. with
 VitaShell or Apollo), or from the Windows or Linux port, run in Terminal, in

@@ -1110,6 +1110,13 @@ Checked on the Thor in the `ssdeltatools` test package (02-baseline,
 "Japanese Voice-over Pack"): the pack installed in about 4 s and the game
 read Librom's lines from it.
 
+A rePatch mod such as the Undub patch (01-research) goes the same ways,
+as a `.zip` of its `rePatch` folder: the front end's `--install-content`
+puts it into `ux0/rePatch/<title>/`, and the game reads it while
+`[game] repatch` is on (the settings menu's Game page, "Mods (rePatch)").
+The picker passes a file, so an unpacked folder or a `.7z` must be zipped
+first. Not yet tried on the device (2026-11-21).
+
 ### The settings menu on Android (2026-11-20)
 
 The owner saw PC leftovers in the Android menu, such as F-key mentions.

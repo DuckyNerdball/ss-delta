@@ -1442,6 +1442,42 @@ The owner's US dump of the add-on (a NoNpDrm zip laid out as ux0:
   shortcut from a launcher's long-press menu (published with
   `ShortcutManager`; started here by its intent).
 
+## Undub patch: a rePatch mod (2026-11-21, GitHub issue #8)
+
+The patch from archive.org (MD5 as in 01-research, "Undub patch"),
+unpacked, and as a zip of its `rePatch` folder. Fork: `game-frontend/repatch.cpp`;
+kit: `dumpinfo.py` reports kind `mod`, and `setup.py` installs mods like add-ons.
+
+* **Install, PC setup** (the scratch Windows release from the voice-pack
+  tests, the new `ss-delta.exe` and kit scripts copied in, its build stamp
+  set to that executable as a release would have it):
+  `setup.py --install <unpacked folder>`: "The game is built here
+  already: installing only the add-ons and mods", about 1 s. The nine
+  files are in `fs/ux0/rePatch/PCSA00152/`; `ux0/app` is unchanged.
+* **US game** (that folder, native code): the log says "rePatch: 9 files
+  ... read in place of the game's own". At boot the game opens
+  `voice_ue`, `voice_patchv_ue` and `archive_patch3` (`.pkh`, `.pk`) from
+  `ux0/rePatch`. Title screen as usual. New Game, then the save dialogs,
+  then the prologue: the opening movies, then voiced lines streamed from
+  the undub's `voice_ue.pk` (`OP_NA_0501_ue`, `OP_PR_0001_ue`, by the
+  offsets read; `VITA3K_TRACE_READS=1`).
+* **Off:** with `[game] repatch = false` the log says "mods off", and no
+  file is read from `ux0/rePatch`.
+* **EU game** (the EU scratch folder): `ss-delta.exe --install-content
+  <zip>` installed the zip (the mod made for PCSA00152) into
+  `ux0/rePatch/PCSF00532/` ("installed for PCSF00532, the game installed
+  here"), `voice_ue.pk` intact (same MD5). The EU game booted to its title
+  screen with the nine files served from there.
+* `dumpinfo.py` finds the mod from the unpacked folder, its `rePatch`
+  folder, `rePatch/PCSA00152` itself and the zip; the game's dump still
+  reads as game and update.
+* Not checked: the Japanese lines heard (volume 0), the prologue to its
+  end and the Final Fantasy bosses in the EU game with the US-made
+  `archive_patch3`, a full build with the mod among the parts (the same
+  `--install-content` step), the setup window, RecompLauncher, and
+  Android (the same front-end step, through the add-on picker, with a
+  zip).
+
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 
 Reported on a Ryzen 7 7840HS (Radeon 780M) + RTX 4070 Laptop GPU with

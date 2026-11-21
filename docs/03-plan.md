@@ -609,6 +609,26 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☐ Not supported: a pack for the other region's title (an EU game with
     the US pack). It installs into the other title's folder, which the
     game never reads; the setup says so.
+* ☐ **Undub patch** (GitHub issue #8, 2026-11-21; research in
+  [01-research](01-research.md), "Undub patch"; tests in
+  [02-baseline](02-baseline.md#undub-patch-a-repatch-mod-2026-11-21-github-issue-8)).
+  * ☑ rePatch mods (fork): `--install-content` takes a folder or zip with
+    `rePatch/<title>/` and installs it into `ux0/rePatch/<title>/`, for the
+    installed region when the mod names the other one. When the game
+    starts, those files are read in place of the game's own (IOState's
+    read overrides), while `[game] repatch` is on (default, in the settings
+    menu as "Mods (rePatch)"). A mod's `boot_config.ini` is the base of
+    the copy ss-delta serves.
+  * ☑ Setup (kit): `dumpinfo.py` reports a mod, and `setup.py` installs
+    mods alone when the game is built, like add-ons. The setup window's
+    "Add an add-on (DLC) or mod...", RecompLauncher's optional `mod` input
+    (`--dump={input:mod}`) and its Mods setting, and Android's add-on
+    picker (a zip) all reach the same step.
+  * ☑ Tested on the PC: the US game streams the prologue's lines from the
+    undub; the EU game boots with it.
+  * ☐ Playtest by the owner: the Japanese lines heard, the prologue played.
+  * ☐ A `.7z` isn't read: players unpack it (on Android, zip the
+    `rePatch` folder).
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

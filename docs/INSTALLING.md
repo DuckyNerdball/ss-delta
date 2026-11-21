@@ -65,13 +65,25 @@ with its licence (a `work.bin` or `.rif` beside the `.pkg` is found by
 itself). Then choose it in the game: Options → Lang/Sub Settings → Voice
 Language → Japanese.
 
-Once the game is built, an add-on can be added on its own, without
-building the game again (it takes seconds):
+**Mods made for rePatch**, such as the
+[Undub patch](https://archive.org/details/soul_sacrifice_delta_undub_patch)
+(Japanese voices from the very start, also without the pack), are added
+the same way, as an add-on. Unpack the `.7z` and give its folder (the one
+that holds `rePatch`), or a `.zip` of it. ss-delta keeps the mod beside the
+game, in `fs/ux0/rePatch/`, so the game's own files stay as they are. A
+mod made for one region (the undub's `PCSA00152` folder) also works with
+the other region's game, with no renaming. **Mods (rePatch)** on the
+settings menu's Game page (`[game] repatch` in `ss-delta.ini`) turns them
+off. To remove a mod, delete its folder in `fs/ux0/rePatch/`.
+
+Once the game is built, an add-on or a mod can be added on its own,
+without building the game again (it takes seconds):
 
 * PC: start the game with `--install` and add only the add-on in the
   importer (leave the game's rows empty), or run
   `ss-delta.exe --dump "<the pack>"`;
-* Android: long-press the app's icon → **Add an add-on**, and pick it;
+* Android: long-press the app's icon → **Add an add-on**, and pick it (a
+  mod as a `.zip`);
 * RecompLauncher: the game's setup has an Add-ons step for it.
 
 Download the archive for your system from the
@@ -236,8 +248,9 @@ ss-delta.exe --dump "<your dump>" --accept-microsoft-license      (Windows)
 it from the dump you pick (the same importer, without its window), show
 the main settings of `ss-delta.ini` on the game's page, and back up the
 saves. After an update it builds the game again from the same dump. Its
-setup also takes the Japanese Voice-over Pack (optional, on its Add-ons
-step); adding it later installs only the pack.
+setup also takes the Japanese Voice-over Pack and a rePatch mod such as
+the Undub patch (both optional, on its Add-ons step); adding one later
+installs only that.
 
 ## Playing
 
