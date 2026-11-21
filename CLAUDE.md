@@ -134,6 +134,10 @@ notes, kept in a private repo.
   format, `[eboot.bin]` then `seg:offset hexbytes`, little-endian values).
   Remove the file after use. A code patch disables native code for the
   eboot.
+- `memdump:<addr>:<size>:<path>` and `memwrite:<addr>:<hex bytes>`
+  (v3kdrive, `ss-delta.exe`) read and write guest memory in a running
+  game (the cheats' addresses were found this way, 01-research "Cheats").
+  Write only in a test folder.
 - `record:<n>:<dir>` (v3kdrive, `ss-delta.exe`) saves the next n rendered
   frames as PNGs: use it for glitches that last a few frames (the ST03A
   water patch is 5 frames). `close` now posts WM_CLOSE and waits up to 8 s

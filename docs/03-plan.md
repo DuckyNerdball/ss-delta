@@ -630,6 +630,20 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☐ Playtest by the owner: the Japanese lines heard, the prologue played.
   * ☐ A `.7z` isn't read: players unpack it (on Android, zip the
     `rePatch` folder).
+* ☐ **Cheats** (GitHub issue #7, 2026-11-21; research in
+  [01-research](01-research.md), "Cheats"; tests in
+  [02-baseline](02-baseline.md#cheats-2026-11-21-github-issue-7)).
+  * ☑ `[cheats]`, the settings menu's Cheats page (every platform, all off,
+    switched while the game runs): Infinite health and Unlimited offerings
+    (quests), Max Lacrima (9,999,999) and Max levels (Life and Magic 99).
+    Data only, like `skip_intro`: the front end sets the values in guest
+    memory each frame, through the game's own pointers (from the VitaCheat
+    codes for 1.30), after checking vtables and plausible values.
+  * ☑ Checked on the PC: health and offering uses refilled in a quest, the
+    Lacrima and levels shown on Portraiture, kept through a save and reload.
+  * ☐ Playtest by the owner: a real fight, the stats at level 99, Android.
+  * ☐ Candidates (addresses known, not used yet): 99 of each owned
+    offering, slayer points, one-hit kills.
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

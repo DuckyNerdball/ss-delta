@@ -271,6 +271,11 @@ installs only that.
 * **Intro logos:** Skip intro logos on the settings menu's Game page
   (`skip_intro = true` under `[game]`) skips the health warning and the
   company logos at start: the game opens on its title screen.
+* **Cheats:** the settings menu's Cheats page (`[cheats]`), all off by
+  default and switched while the game runs: Infinite health and Unlimited
+  offerings in quests, Max Lacrima and Max levels (Life and Magic 99).
+  Lacrima and levels are kept when the game saves, so export a save first
+  (below) to be able to go back.
 * **Language:** Language on the settings menu's Game page. The US game has
   English, French, Spanish and Portuguese (Brazil), the EU game English,
   French, Spanish, German and Italian.

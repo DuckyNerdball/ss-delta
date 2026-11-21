@@ -53,6 +53,11 @@ Intro logos: Skip intro logos on the menu's Game page ([game] skip_intro in
 ss-delta.ini) skips the health warning and the company logos at start; the
 game opens on its title screen.
 
+Cheats: the menu's Cheats page ([cheats] in ss-delta.ini), all off by
+default and switched while the game runs: Infinite health and Unlimited
+offerings in quests, Max Lacrima and Max levels (Life and Magic 99). Lacrima
+and levels are kept when the game saves; export a save first to go back.
+
 Language: the game has no language option of its own; it uses the console's
 language, which ss-delta.exe sets from Language on the menu's Game page
 ([game] language in ss-delta.ini; takes effect at the next start). The US

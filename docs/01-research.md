@@ -303,6 +303,60 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
   the game's own "Now Loading..." and the title about 6 s after the
   window opened; loading a save from there works as usual.
 
+### Cheats [local + web, 2026-11-21; GitHub issue #7]
+
+* **Sources.** The VitaCheat database (`r0ah/vitacheat`, `db/PCSA00152.psv`,
+  codes by r0ah, AngelofWoe, Yohoki; `db/PCSF00532.psv` by tomberyx) has
+  pointer codes for 1.30. There is also a 2016 taiHEN trainer ("Soul
+  Sacrifice Delta Trainer", vosman, a Better Amphetamin mod), binary only.
+  VitaCheat pointer codes (`$3XNN base off1`, `$3X00 0 offN`, `$3300 0
+  value`) read `*base + off1`, then `*(that) + off2` and so on, and write
+  the value at the last address. `$7` is the same with a repeat count and
+  stride (compression).
+* **One root for both regions.** The US codes start at `0x8105D64C`, a
+  literal-pool word in the eboot's code that holds `0x81c985e0`; their
+  first offsets (`+0x920`, `+0x38`) give `0x81c98f00` and `0x81c98618`.
+  The EU codes start at `0x81C98F00` itself. US and EU are one build
+  ([EU version](#eu-version-pcsf00532-130-the-same-build-local-2026-11-17)),
+  so the same addresses hold for both.
+* **The quest's player** (checked with `v3kdrive memdump`/`memwrite` in
+  Stage Select quests and from a save):
+  * `*0x81c98f00` is a quest object (vtable `0x81c7a40c`) while a quest
+    runs, 0 in the hub, menus and Stage Select. Its `+0x18`, `+0x44` and
+    `+0x60` all point to the player object (vtable `0x81c61f6c`) in single
+    player; the codes use one each. **Hypothesis:** in Ad Hoc Play they
+    still point to this machine's player.
+  * Player `+0x58`: HP, a float (1000.0 at level 1). Writing 300.0 made the
+    HUD's health bar appear at 30%. `+0x5c` follows it (1000.0 again after
+    a refill; **hypothesis:** the bar's displayed value). `+0xf8`: the
+    maximum HP, an int (1000).
+  * Player `+0xd0`, `+0xd4`: 1 and 1 at level 1 (tomberyx: "Magic-Power",
+    "Life-Power"; **hypothesis:** the quest's Magic and Life levels).
+  * Player `+0x200 + 4 × slot` (slots 0-5): an offering's uses left; -1 for
+    an empty slot, 9999 for an offering without a limit (it still counts
+    down from 9999). `+0x218 + 4 × slot`: the uses it started the quest
+    with (0 for an empty slot). A cast took slot 1 from 5 to 4, the copy at
+    `+0x218` stayed 5.
+  * tomberyx's "One Hit Kill" writes 1.07e20 to player `+0x370`, the first
+    of a run of 1.0 floats (**hypothesis:** damage multipliers). Not used.
+* **The save data**, `*0x81c98618` (the game's pointer, set from boot; a
+  block of more than 1.5 MB, not the file's layout):
+  * `+0x8c`: Lacrima (u32). 9627 in memory and on the Portraiture page.
+    9,999,999 shows in full there and survives a save and reload. `+0x88`
+    held 5,000,000 (unknown).
+  * `+0x17ced8`, `+0x17ceda`: the Life and Magic levels (u16), shown as the
+    two levels on Portraiture's Right Arm and in `SlotParam_N.bin`'s
+    summary ("Life Lv1 Magic Lv99"). Levels end at 99
+    (`boot/lowchaos_growth_param.csv`: level, EXP for the next level,
+    attack, health ... for levels 1-99). Set to 99 and saved: both still 99
+    after a reload, so the game doesn't recompute them from EXP.
+  * The offering stock (r0ah): 840 entries of 0x2c bytes from `+0xb4`: an
+    offering id (`100010`, `100020` ...), four counts (`+0x4`..`+0x10`,
+    one per star rank) and four flags (`+0x14`..`+0x20`, 2 = owned). The
+    count's meaning (copies or uses) isn't checked; not used yet.
+  * Slayer points (r0ah): Avalon, Sanctuarium, Grim at `+0xe50b0`,
+    `+0xe50b4`, `+0xe50b8` (u32; 310, 0, 0 in the test save). Not used yet.
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |

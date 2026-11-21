@@ -1488,6 +1488,36 @@ kit: `dumpinfo.py` reports kind `mod`, and `setup.py` installs mods like add-ons
   `archive_patch3`, a full build with the mod among the parts (the same
   `--install-content` step), the setup window, and RecompLauncher.
 
+## Cheats (2026-11-21, GitHub issue #7)
+
+`[cheats]` in `ss-delta.ini`, the settings menu's Cheats page (fork:
+`games/ss-delta/main.cpp`, `apply_cheats`; addresses in 01-research,
+"Cheats"). Test folder with a junction file system, US game, native code,
+the Radeon 760M.
+
+* **Quests** (Stage Select, `q_e0101` in ST03A): with the cheats off,
+  `memwrite` set HP to 300.0 and slot 0's uses to 3; the health bar showed
+  30%, and both stayed. On the Cheats page, Infinite health and Unlimited
+  offerings switched on (the log: "Settings menu: [cheats] ... = true",
+  then "cheats: infinite health" and "cheats: unlimited offering uses"):
+  HP back to 1000.0, slot 0 back to 15. Two casts with the cheat on left
+  the uses at their start; HP written to 300.0 again was 1000.0 half a
+  second later. The 9999 slot (no limit) is left alone.
+* **Save** (slot 2 of a copy of the story-complete save): Portraiture
+  showed Lacrima 9627 and levels 1 / 99, as in memory. Max Lacrima and Max
+  levels switched on in the menu: 9999999 and 99 / 99 on Portraiture.
+  Saved in the hub ("Save complete", `SlotParam_2.bin`: "Life Lv99 Magic
+  Lv99"), restarted with every cheat off, loaded: both still set. The
+  test folder's slot 2 was copied back from the original afterwards.
+* `v3kdrive.py` step `memwrite:<addr>:<bytes>` (kit) and the input pipe's
+  `memwrite` command (fork, `ctrl.cpp`, written by the front end) are new
+  for these tests.
+* Not checked: a hit that takes all the health at once (the cheat refills
+  once a frame and leaves a player at 0 alone), the battle stats at
+  level 99 (the HUD's levels and the stats come from the game's own
+  tables), Ad Hoc Play (which player `+0x18` is on a guest), the EU game
+  (the same build), and Android (the same settings menu and code).
+
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 
 Reported on a Ryzen 7 7840HS (Radeon 780M) + RTX 4070 Laptop GPU with
