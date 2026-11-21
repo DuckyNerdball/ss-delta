@@ -343,6 +343,37 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
     down from 9999). `+0x218 + 4 × slot`: the uses it started the quest
     with (0 for an empty slot). A cast took slot 1 from 5 to 4, the copy at
     `+0x218` stayed 5.
+  * **What a cast spends** (Giant's Arm, 5 casts, in the Harpy quest, no
+    cheats): each cast takes one from `+0x204`. At 0 the offering still
+    casts once more ("Power of Giant's Arm is almost exhausted." at 1);
+    that last cast shows "Giant's Arm was lost." and the slot becomes -1,
+    its start at `+0x218` unchanged, so a lost slot (-1, start > 0) and an
+    empty one (-1, start 0) differ. Writing the uses back to a lost slot
+    brings it back: its icon returns and it casts again.
+  * **How long a cast lasts** is separate from the cast limit: the arm
+    stays out for its duration (70 s for Giant's Arm), then goes. The
+    duration is data, read at each cast, in two of the game's tables as it
+    holds them from boot:
+    * `boot/arms_param.csv` for arms and weapons on the right arm (126
+      rows, 30-180 s): records of 0x128 bytes, the skill id, category,
+      control type, then the duration float at `+0xc` and the model name
+      at `+0x1c` (`ws170_00` for Giant's Arm, 70.0).
+    * `boot/item_param_ply.csv` for the other offerings (`効果時間`):
+      records of 0x6c bytes, the id at `+0x0`, the duration float at
+      `+0x40` (0 none, -1 no limit for the cursed swords), the skill at
+      `+0x5c`, the cast limit at `+0x64`. For Giant's Arm this one says
+      70 too, but changing it had no effect on the arm: arms take theirs
+      from `arms_param`.
+    * `boot/skill_param_ply.csv` has a "stock time" (60 for the arm's
+      skill), not the arm's duration.
+    * A cast copies the duration into a timer (remaining and total floats,
+      in a pooled block with no pointer to it). No pointer leads to the
+      tables either, only a tree of the game's tables whose sentinel
+      thousands of nodes share, so the cheat finds each by a known record
+      pair (arms 1140000/`ws140_00` then 1140100/`ws140_01`; offerings
+      102000 then 102030 with their skills and cast limits).
+    * The tables are at the same addresses from boot to boot in our build
+      (arms `0x82acf654`, offerings `0x8277e950`), but not by design.
   * tomberyx's "One Hit Kill" writes 1.07e20 to player `+0x370`, the first
     of a run of 1.0 floats (**hypothesis:** damage factors). The game sets it
     back to 1.0 from time to time, so it is written every frame. With it,

@@ -1543,10 +1543,28 @@ the Radeon 760M.
   the guest at 1000 too. Player 4's log names only its own player. The
   guest's single hits took two goblins 120 → 0, and the same goblins were
   at 0 on the host.
+* **Offerings** (fork `2a29069a`, Stage Select `q_e0105`, Giant's Arm in
+  slot 1):
+  * No cheats: 5 → 4 per cast; the arm left after about 70 s each time;
+    at 0 one more cast, "Giant's Arm was lost.", slot -1.
+  * Unlimited offerings refills the casts only; the arm still left after
+    70 s with it on. With slot 1 lost (-1), switching it on gave the slot
+    its 5 uses back; the empty slots stayed -1.
+  * Lasting offerings, on from boot: "duration tables: arms at 0x82acf654,
+    offerings at 0x8277e950", 126 of 126 arms and 503 of 1015 offering
+    records set to 9999 s. Cast in a new quest: the arm still out at 30,
+    60 and 90 s. Switched on in the menu during a quest, then cast: still
+    out after 85 s.
+  * One run stopped with a Vulkan device loss about 40 s after a cast
+    (`waitForFences`); the owner had started another program that took
+    the GPU. The rerun went through.
 * Not checked: a hit that takes all the health at once (the cheat refills
   once a frame and leaves a player at 0 alone), the battle stats at
   level 99, a quest played to its end in Ad Hoc Play with cheats, and
-  cheats on the host.
+  cheats on the host. For Lasting offerings: buffs, armour and summons
+  (only an arm was tested; the debug Stage Select gives one loadout),
+  switching it off (the durations go back for the next cast), and
+  Android and the EU game.
 
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 

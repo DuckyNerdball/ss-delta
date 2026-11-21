@@ -645,6 +645,11 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     game limits a hit on a boss to a fifth of its health).
   * ☑ Checked in real fights, the EU game, Android (the Thor) and Ad Hoc
     Play (each copy changes only its own player; enemies stay in step).
+  * ☑ Offerings: Unlimited offerings gives each cast back and brings a
+    lost offering back; Lasting offerings (new) keeps an arm, armour or
+    buff for the whole quest instead of its 30-180 s. Tested with Giant's
+    Arm.
+  * ☐ Lasting offerings on buffs, armour and summons; on Android.
   * ☐ Max levels early in the story: those saves keep the levels in play
     in another record whose place depends on the save; left alone for now.
   * ☐ Playtest by the owner: the stats at level 99, a whole quest.

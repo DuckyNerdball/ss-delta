@@ -273,7 +273,8 @@ installs only that.
   company logos at start: the game opens on its title screen.
 * **Cheats:** the settings menu's Cheats page (`[cheats]`), all off by
   default and switched while the game runs: Infinite health, Unlimited
-  offerings and One-hit kills in quests (bosses take five hits), Max
+  offerings (casts never run out), Lasting offerings (arms and buffs stay
+  for the whole quest) and One-hit kills in quests (bosses take five hits), Max
   Lacrima and Max levels (Life and Magic 99, once the story has opened
   your Right Arm's levels). Lacrima and levels are kept when the game
   saves, so export a save first (below) to be able to go back. In Ad Hoc
