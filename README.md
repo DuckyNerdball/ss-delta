@@ -45,11 +45,12 @@ Vita3K, which supplies the rest of the console.
 
 ## Status
 
-The whole game plays on native code, without a JIT: every quest map and the
-story up to the final battle render correctly on AMD and NVIDIA GPUs, the
-add-ons are unlocked, and Ad Hoc Play works between copies on one PC and
-across a LAN ([compatibility](docs/06-compatibility.md)). The endings after
-the final battle have not been reached in testing yet.
+The whole game plays on native code, without a JIT, from the opening to the
+ending: every quest map and the story up to the final battle render
+correctly on AMD and NVIDIA GPUs, the final battle has been won and its
+ending plays correctly (on an AMD GPU), the add-ons are unlocked, and Ad Hoc
+Play works between copies on one PC and across a LAN
+([compatibility](docs/06-compatibility.md)).
 
 Since 0.4.0 it runs on four platforms, each natively at 60 fps:
 
