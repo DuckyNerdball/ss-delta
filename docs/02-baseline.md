@@ -1471,12 +1471,22 @@ kit: `dumpinfo.py` reports kind `mod`, and `setup.py` installs mods like add-ons
 * `dumpinfo.py` finds the mod from the unpacked folder, its `rePatch`
   folder, `rePatch/PCSA00152` itself and the zip; the game's dump still
   reads as game and update.
+* **Android** (the Thor, the `ssdeltatools` test package with the game
+  built on the device; a debug APK of fork `dda265d9`, without the build
+  tools): the "Add an add-on" shortcut's intent opened the file picker,
+  and the zip picked from `Download` installed through the front end's
+  step ("Installed: undub-test.zip. The game is built.", the button now
+  "Add an add-on or mod…"). The nine files are in
+  `fs/ux0/rePatch/PCSA00152/`, `voice_ue.pk` with the same MD5 as the
+  original. Play: "rePatch: 9 files ... read in place of the game's own",
+  the three archives opened from there, the title screen, then Continue
+  into the hub (native code, Turnip). No new errors in the log. (That
+  save has Voice Language set to Japanese from the voice-pack test, so
+  its lines come from the pack's `voice_jp.pk`, not the undub.)
 * Not checked: the Japanese lines heard (volume 0), the prologue to its
   end and the Final Fantasy bosses in the EU game with the US-made
   `archive_patch3`, a full build with the mod among the parts (the same
-  `--install-content` step), the setup window, RecompLauncher, and
-  Android (the same front-end step, through the add-on picker, with a
-  zip).
+  `--install-content` step), the setup window, and RecompLauncher.
 
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 

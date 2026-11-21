@@ -1115,7 +1115,8 @@ as a `.zip` of its `rePatch` folder: the front end's `--install-content`
 puts it into `ux0/rePatch/<title>/`, and the game reads it while
 `[game] repatch` is on (the settings menu's Game page, "Mods (rePatch)").
 The picker passes a file, so an unpacked folder or a `.7z` must be zipped
-first. Not yet tried on the device (2026-11-21).
+first. Checked on the Thor (02-baseline, "Undub patch"): the undub's zip
+installed through the shortcut and the game read its files.
 
 ### The settings menu on Android (2026-11-20)
 

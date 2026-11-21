@@ -625,7 +625,8 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     (`--dump={input:mod}`) and its Mods setting, and Android's add-on
     picker (a zip) all reach the same step.
   * ☑ Tested on the PC: the US game streams the prologue's lines from the
-    undub; the EU game boots with it.
+    undub; the EU game boots with it. On the Thor: installed through the
+    "Add an add-on" shortcut from a zip, served at boot, the hub reached.
   * ☐ Playtest by the owner: the Japanese lines heard, the prologue played.
   * ☐ A `.7z` isn't read: players unpack it (on Android, zip the
     `rePatch` folder).
