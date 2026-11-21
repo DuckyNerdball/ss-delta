@@ -1558,6 +1558,44 @@ the Radeon 760M.
   * One run stopped with a Vulkan device loss about 40 s after a cast
     (`waitForFences`); the owner had started another program that took
     the GPU. The rerun went through.
+* **Lasting offerings, every kind** (fork `3fe4016e`; test folder, slot 2,
+  the story-complete save; the created pact "Hell Minion in Splendor"
+  with the stone shell, stone charm, shield shard, large falcon feather
+  and fire golem heart written into the loadout in memory, not saved):
+  * Without the cheat: the golem left before 30 s.
+  * The first version (arms and offerings tables only): the golem left
+    before 40 s, the stone armour and the rock wall before 70 s. Their
+    durations are in other tables (01-research, "Cheats").
+  * With all four tables: stone armour still on at 100 s (normally 50),
+    rock wall up at 90 s (30), rolling boulder at 45 s (15), golem at 75 s
+    (30). The feather (a type-16 buff, its "80" as text) first still got
+    80 s; after the text fix its timer started at 9999 (9882 after
+    2 minutes).
+  * Switched off in the menu: "offering durations back as the game has
+    them (943)", and the feather's next cast got 80 s again.
+  * A first check of the protector table compared its anchor's duration,
+    which the cheat itself changes, so a minute later the log said the
+    armour table was missing; fixed before commit.
+* **EU game** (`dist/scratch-eu-jpvoice`, Stage Select `q_e0105`): all four
+  tables found at other addresses, 37 buffs; Giant's Arm still out at
+  90 s.
+* **Android** (the Thor, `ssdeltatools`, debug APK of `3fe4016e`): the same
+  log lines (tables at the EU-like addresses); Giant's Arm still out at
+  90 s in `q_e0105`.
+* **Ad Hoc Play, PC and Android** (2026-11-21): the test folder's player 3
+  (`network = lan`, `adapter = 1`, the PC's Wi-Fi) and the Thor, both with
+  slot 2 (copied to the Thor's test package for the test, removed after;
+  its own saves checked by MD5). The PC created the room; the Thor's
+  Search for Room listed "Gamora [1/4]" and joined; both showed the same
+  lobby (host flag on the PC's sorcerer). Both readied, the host started
+  "Croaking Fiends in the Forest", and both entered the quest together,
+  each showing the other's sorcerer and name. The beasts brought the
+  idle PC host down; the Thor showed "Gamora is dying" and the
+  save/sacrifice choice for the ally. On the Thor, the Cheats page (Select
+  held) switched on Infinite health and One-hit kills; its sorcerer kept
+  full health beside the fallen host. A kill from the Thor wasn't reached
+  (steering its melee blind over adb); one-hit kills from a guest were
+  checked between two PCs above.
 * Not checked: a hit that takes all the health at once (the cheat refills
   once a frame and leaves a player at 0 alone), the battle stats at
   level 99, a quest played to its end in Ad Hoc Play with cheats, and

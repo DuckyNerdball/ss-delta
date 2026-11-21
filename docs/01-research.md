@@ -350,30 +350,51 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
     its start at `+0x218` unchanged, so a lost slot (-1, start > 0) and an
     empty one (-1, start 0) differ. Writing the uses back to a lost slot
     brings it back: its icon returns and it casts again.
-  * **How long a cast lasts** is separate from the cast limit: the arm
+  * **How long a cast lasts** is separate from the cast limit: an arm
     stays out for its duration (70 s for Giant's Arm), then goes. The
-    duration is data, read at each cast, in two of the game's tables as it
-    holds them from boot:
+    duration is data, read at each cast, in the game's tables as it holds
+    them from boot. Each kind of offering has its own (found 2026-11-21,
+    with the story-complete save's created pact and a loadout written into
+    the save data's first six words, `+0x0`, `+0xc`, `+0x18` ...: offering
+    id, count, 0 for each slot; Portraiture showed the new icons):
     * `boot/arms_param.csv` for arms and weapons on the right arm (126
       rows, 30-180 s): records of 0x128 bytes, the skill id, category,
       control type, then the duration float at `+0xc` and the model name
       at `+0x1c` (`ws170_00` for Giant's Arm, 70.0).
-    * `boot/item_param_ply.csv` for the other offerings (`効果時間`):
-      records of 0x6c bytes, the id at `+0x0`, the duration float at
-      `+0x40` (0 none, -1 no limit for the cursed swords), the skill at
-      `+0x5c`, the cast limit at `+0x64`. For Giant's Arm this one says
-      70 too, but changing it had no effect on the arm: arms take theirs
-      from `arms_param`.
-    * `boot/skill_param_ply.csv` has a "stock time" (60 for the arm's
-      skill), not the arm's duration.
+    * `boot/magic_gimmick_param_ply.csv` for summons, transforms, traps,
+      healing zones and the like (`生存時間`, lifetime): records of 0x328
+      bytes, the skill id, a type, the lifetime float at `+0x8` (the fire
+      golem, 1201110: 30 s; the stone shell's boulder, type 4: 15 s). The
+      table also holds the game's own short effects (bosses' spells, hit
+      effects), so only skills of offerings with a duration count.
+    * The self-buffs in that table (type 16: falcon feathers, the
+      regeneration offerings; 37 of them) leave the lifetime at 0 and keep
+      the duration in their second general parameter (`汎用パラメータ１`,
+      "80" for the large falcon feather) as text: from `+0x14` each
+      parameter is a string object of 8 bytes (a class word `0x81c5abbc`,
+      then a pointer into the table's string pool), so "80" is pointed to
+      from `+0x20`. Its timer is in the player object, `+0x254`.
+    * `boot/protector_param.csv` for armour and shields (the stone charm's
+      armour, 50 s; the shield shard's rock wall, 30 s; 43 rows): records
+      of 0x11c bytes found by the skill id, with the duration float just
+      before it and the model name (`pa240_00.chr`) just after.
+    * `boot/item_param_ply.csv`, the offerings (`効果時間`): records of
+      0x6c bytes, the id at `+0x0`, the duration float at `+0x40` (0 none,
+      -1 no limit for the cursed swords), the skill at `+0x5c`, the cast
+      limit at `+0x64`. This one only says what the game shows: changing
+      it had no effect on the arm, the armour or the feather.
+    * `boot/skill_param_ply.csv` has a "stock time" (60 for most), not
+      the duration.
     * A cast copies the duration into a timer (remaining and total floats,
       in a pooled block with no pointer to it). No pointer leads to the
       tables either, only a tree of the game's tables whose sentinel
       thousands of nodes share, so the cheat finds each by a known record
-      pair (arms 1140000/`ws140_00` then 1140100/`ws140_01`; offerings
-      102000 then 102030 with their skills and cast limits).
-    * The tables are at the same addresses from boot to boot in our build
-      (arms `0x82acf654`, offerings `0x8277e950`), but not by design.
+      pair (arms 1140000/`ws140_00` then 1140100/`ws140_01`; gimmicks
+      80100 then 81100; protectors 1240000/`pa240_00.chr` then 1240010;
+      offerings 102000 then 102030 with their skills and cast limits).
+    * The tables move with the build and the region (US: arms
+      `0x82acf654`, gimmicks `0x832c2708`, protectors `0x82ad85c8`,
+      offerings `0x8277e950`; EU and the Thor: elsewhere), all found.
   * tomberyx's "One Hit Kill" writes 1.07e20 to player `+0x370`, the first
     of a run of 1.0 floats (**hypothesis:** damage factors). The game sets it
     back to 1.0 from time to time, so it is written every frame. With it,
