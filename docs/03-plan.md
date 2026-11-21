@@ -463,8 +463,9 @@ Results: [02-baseline](02-baseline.md#phase-7-map-sweep-2026-10-11).
   * with a story-complete save (2026-10-11): the late chapters' pages,
     the boss intros, the sacrifice scene, Magusar's introduction and the
     credits all render correctly;
-  * not seen: the endings after defeating Magusar, which need a won final
-    battle (a playtest).
+  * the ending after defeating Magusar: playtested by the owner
+    (2026-11-21, the final battle won with the cheats on): it plays
+    correctly and returns to Librom's menu.
 * ☑ Bloom drawn frames late (ghost book, title butterfly): fixed by fork
   patch 0019, confirmed by the user.
 * ☑ ST03A water: a dark patch over the water during the opening
@@ -476,8 +477,8 @@ Results: [02-baseline](02-baseline.md#phase-7-map-sweep-2026-10-11).
 bugs. **Met** (2026-10-11): 48 of 50 map IDs (ST17A is unreachable from
 Stage Select but uses the ST17B/C arena), and the story scenes up to the
 final battle. No known rendering bugs remain. The ST17 ground shimmer is
-also there on a real Vita. Left for a playtest: the endings after
-defeating Magusar.
+also there on a real Vita. The ending after defeating Magusar was
+playtested later (2026-11-21).
 
 ## Phase 8 — PC features (M) ☑
 
@@ -605,7 +606,8 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     input (`--dump={input:voice}`); Android installs one from the setup
     screen, which the launcher's "Add an add-on" shortcut opens once the
     game is built. Tested on the PC and the Thor.
-  * ☐ Playtest by the owner: the Japanese lines heard in play.
+  * ☑ Playtest by the owner (2026-11-21): the lines heard in Japanese
+    (story-complete save, Voice Language → Japanese, US game, PC).
   * ☐ Not supported: a pack for the other region's title (an EU game with
     the US pack). It installs into the other title's folder, which the
     game never reads; the setup says so.
@@ -627,7 +629,8 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☑ Tested on the PC: the US game streams the prologue's lines from the
     undub; the EU game boots with it. On the Thor: installed through the
     "Add an add-on" shortcut from a zip, served at boot, the hub reached.
-  * ☐ Playtest by the owner: the Japanese lines heard, the prologue played.
+  * ☑ Playtest by the owner (2026-11-21): the prologue's lines heard in
+    Japanese (New Game, US game, PC).
   * ☐ A `.7z` isn't read: players unpack it (on Android, zip the
     `rePatch` folder).
 * ☐ **Cheats** (GitHub issue #7, 2026-11-21; research in
@@ -688,7 +691,8 @@ Matrix: [06-compatibility](06-compatibility.md).
 * ☑ A compatibility matrix: story, all quest types, Avalon
   hub, sigils, Book (Librom) menus, FMV, audio, saves (2026-10-12). Two
   non-blocking ⚠️: the endings after the final battle (not reached; their
-  movies and event mechanism checked) and the debug-only `BookEnding`.
+  movies and event mechanism checked; ✅ since the owner's playtest of
+  2026-11-21) and the debug-only `BookEnding`.
 * ☑ Comparisons against Vita3K for timing-sensitive systems (Havok physics,
   AI): an idle boss fight, five runs native and five on the JIT, ends the
   same within the emulator's own run-to-run spread

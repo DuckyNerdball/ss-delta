@@ -1001,7 +1001,9 @@ Scripted through `ss-delta.exe`, all modules native, 27–30 fps:
     boot doesn't set (**hypothesis**). It is not a difference from the
     reference.
 * **Not seen:** the endings after defeating Magusar. They need a won final
-  battle, which a script can't play.
+  battle, which a script can't play. (Seen later, 2026-11-21: the owner
+  won it with the cheats on; see "Owner playtest: the voice pack and the
+  ending".)
 
 ## Phase 8 (2026-10-11)
 
@@ -1435,8 +1437,9 @@ The owner's US dump of the add-on (a NoNpDrm zip laid out as ux0:
   In the game (Turnip, native code), Voice Language offered Japanese, and
   after the switch each of two Librom lines opened `voice_jp.pk`
   (`log_level = trace`).
-* Not checked: listening to the lines (the test folders run at volume 0),
-  cutscenes and quests in Japanese, a real decrypted EU pack, the EU pkg
+* **Heard** (the owner, 2026-11-21): see "Owner playtest: the voice pack
+  and the ending" below.
+* Not checked: a real decrypted EU pack, the EU pkg
   through `--zrif` (upstream's `install_pkg`, which handles add-ons), the
   setup window's add-on-only path (the same `setup.py` run), and the
   shortcut from a launcher's long-press menu (published with
@@ -1483,10 +1486,32 @@ kit: `dumpinfo.py` reports kind `mod`, and `setup.py` installs mods like add-ons
   into the hub (native code, Turnip). No new errors in the log. (That
   save has Voice Language set to Japanese from the voice-pack test, so
   its lines come from the pack's `voice_jp.pk`, not the undub.)
-* Not checked: the Japanese lines heard (volume 0), the prologue to its
-  end and the Final Fantasy bosses in the EU game with the US-made
+* **Heard** (the owner, 2026-11-21): a test folder from that day's build
+  (`make-dist.py`, `vita_fs` the scratch release's file system with the
+  undub and the voice pack, volume 100). The log: "rePatch: 9 files ...
+  read in place of the game's own", the three archives from
+  `ux0/rePatch`. New Game: the prologue's lines are in Japanese.
+* Not checked: the prologue to its end and the Final Fantasy bosses in the EU game with the US-made
   `archive_patch3`, a full build with the mod among the parts (the same
   `--install-content` step), the setup window, and RecompLauncher.
+
+## Owner playtest: the voice pack and the ending (2026-11-21)
+
+A test folder from that day's build (`make-dist.py`, `vita_fs` the scratch
+release's file system with the pack installed, `[game] repatch = false`,
+volume 100), US game, native code, the Radeon 760M. The story-complete
+Apollo save imported into slot 2 (`--import-save ... --slot 2`).
+
+* **Voice pack:** with Voice Language set to Japanese, the owner heard
+  the lines in Japanese. The log: "rePatch: mods off", `voice_jp.pk`
+  opened from `addcont0:`.
+* **The ending:** Fight Magusar, then `ev00_ending.mp4`; in the battle
+  the owner turned on one-hit kills, unlimited offerings and infinite
+  health on the Cheats page and killed Magusar. `ev01_ending.mp4` played,
+  the trophy "The Wheel of Fate" ("... fought Magusar, and saw ending")
+  unlocked, and the game went back to Librom's menu. The ending played
+  correctly (the owner). No errors in the log. Whether the game has
+  other endings, and the movies they would play, is not checked.
 
 ## Cheats (2026-11-21, GitHub issue #7)
 
