@@ -1152,6 +1152,123 @@ The owner saw PC leftovers in the Android menu, such as F-key mentions.
 Checked on the Thor in a test package, page by page. The PC's settings
 file keeps its desktop settings.
 
+## On-screen controls (2026-11-21)
+
+The owner asked for them: the APK was made for handhelds with built-in
+controls, and most Android players have a phone without a gamepad. On by
+default, off on the settings menu.
+
+**What there is.** The Vita's controls drawn over the game: L and R at
+the top corners, the D-pad above the left stick on the left, the face
+buttons above the right stick on the right, SELECT and START at the
+bottom's middle, LOCK beside L (below), and a menu button at the top's
+middle that opens the
+settings menu (a phone has no Select to hold). Shapes drawn with Android's
+Canvas (no bitmaps), PlayStation symbols in their colours, sizes in dp
+(shrunk to fit a screen under 360 dp high), clear of a display cutout.
+Sticks centre where the thumb comes down (their area is 1.5 times the base);
+the D-pad has eight directions; a finger slides from one button to the
+next. A press lasts at least 70 ms: adb's taps, a few ms long, fell
+between two of the game's reads of the pad and were lost.
+
+**Settings** (`[controls]`, a section the frontend adds to every game's
+layout on Android only, after `[audio]`; the menu's **Controls** page, all
+live): `on_screen` (true), `on_screen_size` (50–150 %), `on_screen_opacity`
+(10–100 %, 60).
+
+**The pieces:**
+
+* `OnScreenControls.java`, a view over SDL's surface in `GameActivity`'s
+  layout, added when the frontend first configures it.
+* Their state reaches the game as a new input source,
+  `CtrlState::screen_state`, added to the keyboard and the test driver's
+  in `ctrl.cpp` (the game) and `poll_overlay_input` (Vita3K's dialogs and
+  the settings menu), through JNI in `android.cpp`. Not an SDL virtual
+  gamepad, as upstream's app does it: an unknown virtual pad has lettered
+  face buttons to SDL, so `button_labels = auto` would switch the game's
+  prompts to Xbox letters under PlayStation symbols.
+* The menu button sets the input pipe's menu toggle
+  (`injected_menu_toggle`).
+* The frontend tells the view `[controls]` and the game's touch spots when
+  its window exists and when the settings menu changes them, and when the
+  settings menu opens and closes.
+
+**With the game's own touchscreen.** The view takes every finger: one that
+comes down on a control belongs to it until it lifts, any other is handed
+to SDL as a touch (`SDLActivity.onNativeTouch`, as `SDLSurface` sends it),
+so the Vita's touchscreen works everywhere else, also while a thumb holds a
+stick. Declining a finger to let it through would not work: Android gives
+a view that holds one finger every further finger inside it. The game's
+touch spots, the `[touch]` bindings' points (Soul Sacrifice: the Black Rite
+icon at 56, 494), are kept clear: on the screen where Vita3K fits the
+picture, a control that would cover one moves away (the sticks straight
+up, so the D-pad and face buttons stay above them), and a finger on one
+always goes to the game. Spots a game moves each frame (`touch_targets`,
+Shinobido 2's caution eye) are not kept clear. A spot's radius is 36 of
+the Vita's points (**hypothesis**: the Black Rite icon's size; the icon
+did not show in the quests tried, as in 14f).
+
+**Gamepads.** The controls hide while a gamepad's buttons or sticks are
+used, and at start when one with buttons and sticks is connected (the
+Thor's built-in controls), and come back when the last gamepad is
+disconnected or the setting is switched on again. Switched off, the menu
+button stays, and all of them show while the settings menu is open: a
+phone without a gamepad that switched them off could otherwise never
+reach the menu, nor switch them back (the settings file is out of a
+player's reach on Android).
+
+**Checked on the Thor** (a test package, debug build; switched on in the
+menu, since the built-in controls hide them):
+
+* Hidden at start; switched off and on in the menu, they show. The
+  on-screen D-pad, L/R, Cross and Circle drive the settings menu; the
+  menu button opens and closes it.
+* Cross through the title screen and the save list; Yes on the save
+  dialog tapped as a touch through the view, also with a second finger
+  holding the left stick (raw multi-touch events written to the
+  touchscreen's device).
+* In ST03A: the left stick walks, the right stick turns the camera,
+  Circle closes the quest menu.
+* Size and opacity change live; off → only the menu button, which opens
+  the menu with all the controls back.
+* A phone's screen: the display set to 2400×1080 at 420 dpi (`wm size`,
+  `wm density`, reset afterwards). The picture is pillarboxed and the
+  controls sit mostly in the bars; the left stick moved up off the Black
+  Rite spot. On the Thor (16:9) it moves up too, by about 100 px.
+* Windows: `ss-delta.exe` unchanged (title and menus by the input pipe; no
+  `[controls]` in its settings file).
+
+**The lock-on toggle** (the owner, 2026-11-21: holding L for the lock-on
+is awkward on a touchscreen). A game may ask for a latch button
+(`Profile::screen_latch`: a Vita button and a label); ss-delta's is
+**LOCK**, for L, a smaller button right of L. A tap holds L down, lit, until
+the next tap. It lets go when the controls hide (a gamepad, the app leaving
+the screen) and when the settings menu opens, which pages with L (a held L
+would keep the on-screen L from registering there). Checked on the Thor:
+lit and released by taps in ST03A; the lock-on itself not yet seen (no
+enemy in view).
+
+**Found on the way, not from this change** (both also without the view):
+
+* Fixed: the settings menu opened over one of Vita3K's system dialogs (the
+  save list, "Do you want to load", "Loading complete") answered no input
+  and stopped redrawing; reproduced on Windows too (`menu` through the
+  input pipe), so not Android's. Two causes in the overlays' input thread
+  (`overlay/`, upstream Vita3K code): the dialog's loop, interrupted by the
+  menu, came back first when the queue was rebuilt (RPCS3, where the code
+  comes from, puts the new overlay first); and the renderer attached the
+  dialog again on every frame because an interrupted loop counted as
+  exited, which took the input from the menu each time. Now the newest
+  overlay goes first, and an interrupted loop is "suspended" and not
+  attached again. Checked on Windows (menu over the load prompt: pages,
+  closes, and the dialog answers again) and on the Thor (over the save
+  list).
+* Vita3K's save dialog misses a touch of a few ms (adb's tap); 200 ms
+  works. It reads the touch once a frame.
+
+**Not yet:** a real phone; moving the controls (a layout editor);
+haptics checked (Android's virtual-key feedback, on a press).
+
 ## Thor-specific work
 
 * **Second screen**: the 3.92″ touchscreen below stays unused (the

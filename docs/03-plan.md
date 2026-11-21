@@ -1045,6 +1045,16 @@ milestone, and nothing is released before it.
     setting caps the screen at 60 Hz already.
   * ☑ The second screen: dropped (the owner, 2026-11-20: most players
     have one screen, so the game stays on the main one).
+  * ◐ On-screen controls for phones without a gamepad (the owner,
+    2026-11-21; 09-android, "On-screen controls"): on by default, off on
+    the settings menu's Controls page; a finger elsewhere is the Vita's
+    touchscreen, the Black Rite spot stays clear; hidden while a gamepad
+    is used; LOCK holds L for the lock-on until tapped again. Checked on
+    the Thor, also with a phone-shaped display. Left: a real phone, the
+    Black Rite spot's size and the lock-on seen in play.
+  * ☑ The settings menu froze over a system dialog (save list, load
+    prompt): Vita3K's overlay input queue (09-android, "On-screen
+    controls"). Fixed; checked on Windows and the Thor.
   * ☑ AYN's performance modes and battery: they raise only the GPU's
     lowest clock and the CPU clocks in use. ST03A runs at 60 fps at 1×
     in Standard (4.1 W from USB, about 5½ h on the battery, an estimate);

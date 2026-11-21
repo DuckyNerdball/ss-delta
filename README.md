@@ -60,6 +60,7 @@ Since 0.4.0 it runs on four platforms, each natively at 60 fps:
 * **Android** 9 or newer on 64-bit ARM with Vulkan, made for Snapdragon
   handhelds (tested on an AYN Thor): the app builds the game on the device
   itself from your dump, no PC needed ([09-android](docs/09-android.md)).
+  On a phone without a gamepad it has on-screen controls.
 
 They play Ad Hoc Play together over a LAN: a Windows PC, a Steam Deck and
 a Mac have shared one room and played a quest, with any of them as host.

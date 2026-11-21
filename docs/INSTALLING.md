@@ -180,6 +180,16 @@ again (your dump isn't needed). The game's files live in
 uninstalling the app deletes them, saves included. Holding Select opens
 the settings menu, as on PCs.
 
+**On-screen controls.** Without a gamepad (a phone), the game shows the
+Vita's buttons, D-pad and both sticks on the touchscreen, a **LOCK** button
+beside L (tap it to lock on to enemies, tap again to let go: no need to hold
+L), and a menu button at the top that opens the settings menu. A finger anywhere else touches the
+game's own touchscreen, as on a Vita; the Black Rite icon (lower left in
+quests: touch and hold) is always left clear. They hide while a gamepad is
+used, and come back when it is disconnected. Size, opacity and On/Off are on
+the settings menu's **Controls** page; switched off, only the menu button
+stays.
+
 ### From a PC instead
 
 A PC that has built the game (as above) can copy it to the device too, for
