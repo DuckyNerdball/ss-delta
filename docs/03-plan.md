@@ -658,6 +658,23 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☐ Playtest by the owner: the stats at level 99, a whole quest.
   * ☐ Candidates (addresses known, not used yet): 99 of each owned
     offering, slayer points.
+* ☐ **Mouse camera** (2026-11-21; research in
+  [01-research](01-research.md), "Mouse camera"; tests in
+  [02-baseline](02-baseline.md#mouse-camera-2026-11-21)).
+  * ☑ `[mouse]` (PC only; the settings menu's Mouse page): Tab or a middle
+    click captures the cursor, and mouse motion turns the camera through
+    the right stick; the same again or Esc releases it, and the settings
+    menu, a text dialog or another window release it while they last.
+    Sensitivity (1: a full turn for 7200 counts) and Invert vertical
+    switch while the game runs.
+  * ☑ Through the game's measured stick table, each axis on its own, so
+    the camera turns by as much as the mouse moved (up to its ~550°/s);
+    byte-exact pushes, added after Vita3K's unit-circle clamp.
+  * ☑ Checked through the input pipe: steady 5-200°/s and whole motions
+    within about 10%, diagonals at full speed.
+  * ☑ Played by the owner with a real mouse (2026-11-21): "it works".
+  * ☐ The pitch's speed is assumed to follow the yaw table
+    (**hypothesis**, not measured).
 
 **Exit:** a full playthrough is possible on keyboard/controller at
 ≥ 2× internal resolution. **Met** (2026-10-12): the owner played on a

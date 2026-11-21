@@ -434,6 +434,43 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
   * Slayer points (r0ah): Avalon, Sanctuarium, Grim at `+0xe50b0`,
     `+0xe50b4`, `+0xe50b8` (u32; 310, 0, 0 in the test save). Not used yet.
 
+### Mouse camera [local, 2026-11-21]
+
+How the right stick turns the camera in a quest, measured for the mouse
+camera (fork `game-frontend/input.cpp`, `MouseCamera`; the table is in
+`games/ss-delta/main.cpp`). Stage Select's first quest, US game, native
+code, 60 fps setting (55-60 shown). The input pipe's `axes` held the stick;
+the yaw is the angle of the compass's red N (top right, centre (1800, 120)
+in the 1920×1088 frame) between two screenshots taken during the hold, so
+the start of the turn doesn't count.
+
+* **Per axis.** The yaw speed depends on the x value alone: (0.6, ±0.6)
+  turns like 0.6, and (0.8, ±0.5) like 0.8. Pushing up or down doesn't
+  turn the yaw at all. Stick down (y > 0) looks down; the pitch stops at
+  its limits within about 0.3 s at full push.
+* **The stick is a byte, 128 at the centre.** Vita3K's `float_to_byte`
+  truncates (v + 1) × 127.5, so +0.7 reaches the game as 216 (+88) and
+  −0.7 as 38 (−90). The game turned +0.7 at 27°/s and −0.7 at 31°/s,
+  which is (90/88) to a high power: the game counts from 128.
+* **Speed by push** (degrees per second, steady; push = byte offset /
+  127, both directions averaged):
+
+  | push | 0.40 | 0.45 | 0.50 | 0.55 | 0.60 | 0.70 | 0.76 | 0.80 | 0.85 | 0.87 | 0.90 | 0.93 | 0.95 | 1.0 |
+  |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+  | °/s | 0 | 0.6 | 2.0 | 4.8 | 9.3 | 28 | 47 | 73 | 119 | 156 | 210 | 355 | ~510 | ~550 |
+
+  Nothing up to 0.40, then about tenfold for each 0.25 (exponential from
+  0.6 to 0.9), and almost flat from 0.95. A mouse mapped straight onto
+  the stick (motion speed = push) does nothing for slow motions and spins
+  for fast ones; the mouse camera asks this table for the push that turns
+  at the speed it wants.
+* **Short pushes turn less.** Full push held 50 / 100 / 150 / 200 / 300 ms
+  turned 7.5 / 27 / 54 / 89 / 138°: about the first 45 ms count for
+  nothing, so the camera ramps up. Small mouse flicks (1-2°) arrive at
+  65-80%.
+* **Hypothesis:** the pitch uses the same table (the compass shows only
+  the yaw; the pitch wasn't measured).
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |

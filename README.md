@@ -102,6 +102,9 @@ Compared with running the game in Vita3K:
   menu): the game opens on its title screen.
 * **Touch on keys and buttons:** the Black Rite icon on F and the left
   trigger; the mouse is the touchscreens.
+* **Mouse camera** on the PC: Tab or a middle click captures the cursor,
+  and the mouse turns the camera (Sensitivity and Invert vertical in the
+  settings menu); Tab, a middle click or Esc gives the touchscreen back.
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).
 * **One program** per platform (`ss-delta.exe`, `ss-delta.x86_64`, the
   macOS app), without Vita3K's interface and offline, which builds itself

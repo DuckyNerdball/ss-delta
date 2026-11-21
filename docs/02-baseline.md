@@ -1604,6 +1604,39 @@ the Radeon 760M.
   switching it off (the durations go back for the next cast), and
   Android and the EU game.
 
+## Mouse camera (2026-11-21)
+
+`[mouse]` in `ss-delta.ini`, the settings menu's Mouse page (PC only;
+fork `game-frontend/input.cpp` `MouseCamera`, `frontend.cpp`; the stick
+table in 01-research, "Mouse camera"). Test folder with a junction file
+system, US game, native code, Stage Select's first quest, the Radeon 760M.
+The motion came through the input pipe's new `mouse <dx> <dy>` command
+(`v3kdrive.py` step `mouse:<dx>:<dy>[:ms]`, kit), which the front end
+takes as captured mouse motion, in 10 ms pieces; the turn was read from
+the compass. At sensitivity 1 a count asks for 0.05°.
+
+* **Steady motion** (counts per second → asked → measured, both
+  directions): 100 → 5 → 4.9-5.0°/s; 400 → 20 → 15-20; 1000 → 50 →
+  46-53; 2000 → 100 → 91-105; 4000 → 200 → 188-218.
+* **Whole motions** (counts over ms → asked → turned): 1000/500 → 50° →
+  47-49; 2000/1000 → 100° → 100-105; 200/200 → 10° → 9.4-10.6; 100/2000
+  → 5° → 4.3; 40/100 → 2° → 1.0-1.6; 3000/300 → 150° → 117 (faster than
+  the game can turn: what waits longer than 0.25 s is dropped).
+* **Diagonal** (1000, 1000 over 500 ms): yaw 51-52°, as without the
+  vertical part.
+* **Before the fixes:** a linear stick (motion speed = push) and a v⁸
+  model turned 75-89% of the motion; without the byte rounding, right
+  turns came out 15% short of left ones (44° against 49°); inside Vita3K's
+  unit circle a diagonal flick turned at 0.71 push, a few degrees a second.
+* **Settings menu:** the Mouse page lists Mouse camera, Capture key
+  (shown, not editable), Sensitivity and Invert vertical; Sensitivity
+  1 → 1.1 → 1 was saved to the ini and logged.
+* **Not tested here** (the test driver never takes focus): the real
+  cursor capture (SDL's relative mouse mode, Tab and middle click, Esc,
+  release for the menu and a text dialog, alt-tab and back) and how it
+  feels with a real mouse. The owner played it with a mouse the same day:
+  it works.
+
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 
 Reported on a Ryzen 7 7840HS (Radeon 780M) + RTX 4070 Laptop GPU with
