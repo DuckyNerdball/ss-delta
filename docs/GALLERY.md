@@ -3,7 +3,9 @@
 The raiments and hoods that ss-delta adds to *Soul Sacrifice Delta* beyond
 the add-ons the game already unlocks
 ([#11](https://github.com/vita-recomps/ss-delta/issues/11)), and the two
-raiments from the original *Soul Sacrifice* that a mod adds.
+raiments from the original *Soul Sacrifice* that a mod adds. What else of
+the original is or isn't in Delta: [Content from the original Soul
+Sacrifice](ORIGINAL-CONTENT.md).
 
 Taken from the port at 2× resolution (scaled down here) in Portraiture →
 Appearance → Raiments. Each raiment is worn as both top and bottom (△
@@ -74,7 +76,8 @@ first colour.
 > (update 1.30), with `tools/og-raiments.py`: see
 > [The original game's raiments](INSTALLING.md#what-you-need) in
 > INSTALLING. Delta never had them: they were collaboration raiments of
-> the original game only.
+> the original game only. The rest of the original's content, and what
+> ss-delta does with it: [ORIGINAL-CONTENT](ORIGINAL-CONTENT.md).
 
 In the original each one is a single whole-body costume. Delta's raiments
 have a top and a bottom, so the mod uses the whole-body model for both:

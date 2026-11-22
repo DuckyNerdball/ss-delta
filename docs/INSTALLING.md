@@ -125,6 +125,8 @@ switches them on (`[game] spirits_offerings`, on by default, with Add-ons
 Offerings, marked new. They look and play like Delta's own offerings of
 the same kind (Imp Pitchfork, Swordsman Icebrand, Firegiant's Arm ...),
 with their own numbers. Nothing of the original game is needed.
+[ORIGINAL-CONTENT](ORIGINAL-CONTENT.md) compares each with the offering
+it copies.
 
 * ss-delta makes a copy of the game's patch archive with them in
   `fs/ux0/rePatch/` at the first start (it keeps the Undub's changes, and
