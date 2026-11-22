@@ -6,7 +6,9 @@
   "other_title_ids": ["PCSF00532"],
   "eboot_sha256": {
     "a13a1bfed7f58aa743fc8c0e2db166438ac3af0f2d92b107c2e3f84b92e64fed": "1.30 (US)",
-    "a1055b12371c4fa7cb2f153d19729ccfae577de582d0cf9e731be83805d27197": "1.30 (EU)"
+    "a1055b12371c4fa7cb2f153d19729ccfae577de582d0cf9e731be83805d27197": "1.30 (EU)",
+    "b194d16907ce9ff0323155fff7d8bb76394f40298b04ac91d2d54b841a078189": "1.30 (US, decrypted by Vita3K)",
+    "1730d04bf05e36d04875a8a6d3a24dcfe00ffda54dd362cc91578f42c4248a28": "1.30 (EU, decrypted by Vita3K)"
   },
   "modules": {
     "eboot": "eboot",

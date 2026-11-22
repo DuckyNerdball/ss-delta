@@ -166,6 +166,29 @@ addresses), against the US ones:
 * The EU game boots in `ss-delta.exe` on the JIT and on native code (see
   02-baseline).
 
+### Dumps decrypted by an older Vita3K [local, 2026-11-22; GitHub issue #9]
+
+Until upstream commit `57202418` (Dec 2024, "packages: Implement decrypt
+fself in a fly"), Vita3K's pkg install decrypted every SELF in place:
+`self2elf` (decrypt and decompress the segments into an ELF), then
+`make_fself` (the vita-make-fself layout: a 0x1000-byte header with
+plaintext, uncompressed segment entries, then the whole ELF; the original
+authid is kept). Folders copied out of such an install (shared as
+"[vita3k]" dumps) hold that FSELF as `eboot.bin`, so its file hash is
+neither of the NoNpDrm ones, though the code is the same.
+
+* Rebuilt from our own decrypted 1.30 ELFs: US
+  `b194d16907ce9ff0…4b841a078189` (13,543,649 bytes), the exact hash in the
+  #9 reporter's setup.log; EU `1730d04bf05e36d0…f42c4248a28` (derived the
+  same way, not yet seen in a real dump). Both are in `game.json`.
+* A Python port of the old `self2elf` on the installed US files gives
+  `eboot.elf`, `libc`, `libfios2`, `libult` and `libsmart` with exactly the
+  hashes in `hashes.md`: the decrypted ELFs are the ones we recompile.
+  `sce_sys/about/right.suprx` (system-signed, key revision 1) is left
+  encrypted; the game never loads it.
+* Vita3K loads an unencrypted FSELF without a licence (`decrypt_fself`
+  returns it unchanged), so such a folder needs no `work.bin` or `.rif`.
+
 ### Text language [local, 2026-11-17; GitHub issue #3]
 
 There is no language option in the game: it follows the Vita's system

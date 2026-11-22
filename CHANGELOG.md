@@ -4,6 +4,17 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### Fixed
+
+* **The setup refused dumps decrypted by an older Vita3K**
+  ([#9](https://github.com/vita-recomps/ss-delta/issues/9)): "eboot.bin is
+  not a build this port supports". Vita3K versions before December 2024
+  decrypted the game's files when they installed it, and folders copied out
+  of such an install (often named "[vita3k]") hold those decrypted files.
+  They are the same 1.30 game, US or EU, and are now accepted.
+
 ## 0.4.2 (2026-11-22)
 
 ### New
