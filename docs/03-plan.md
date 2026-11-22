@@ -537,6 +537,25 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     the save's `system.bin` at start (`[game] dlc`, on), once the
     installed game's data has them (1.30's pacts and raiments). Same bytes
     as the file Vita owners swap in; the new outfits appear.
+  * ☑ The add-ons PSN gave as gifts at Cassus (GitHub issue #11, D14
+    update 1): Soulbinder, Fox (Necky), Slave, Archsorcerer, Mad Witch,
+    Easterner, Saint, Beast, White Cat, eight hoods, the Fox Sigil, given
+    in the loaded save as taking the gifts would. Seen NEW in the raiment
+    list, kept through a save and reload (test folder, slots 1 and 2).
+  * ☑ The Japan-only raiments (issue #11, part 2): `[game]
+    japan_raiments` (on, with `dlc`) gives Sylvan (Japan's boxes
+    COSTUME_09 and COSTUME_11: all twelve rows) and Benkei (in no box:
+    colour A, as Necky). Both listed and drawn in Raiments: Top (test
+    folder, 2026-11-21).
+  * ☑ The original game's raiments (issue #11, part 3, D28):
+    `tools/og-raiments.py` builds a rePatch mod from the player's dump of
+    the original Soul Sacrifice 1.30 and their Delta: ARKS Armor and
+    Dragonslayer as raiments 720-743, worn as top and bottom. Built from
+    the owner's EU dump (NoNpDrm, and installed), given by `ss-delta.exe`,
+    drawn in Raiments, Portraiture and the hub, kept through a save and
+    reload; built over another rePatch mod, rebuilt and removed again (the
+    mod beneath restored exactly). US Delta, test folder.
+  * ☐ The original's pre-order Spirits' offerings: not looked into.
 
 * ☑ **Xbox button labels** (2026-11-20; research in
   [01-research](01-research.md#button-prompts-local-2026-11-20)).

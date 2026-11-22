@@ -8,6 +8,22 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### New
 
+* **The add-ons PSN gave as gifts are unlocked too**
+  ([#11](https://github.com/vita-recomps/ss-delta/issues/11)): the
+  Soulbinder, Fox (the gift "Necky"), Slave, Great Seer ("Archsorcerer"),
+  Mad Witch, Easterner, Disciple ("Saint"), Beast and White Cat raiments,
+  eight hoods (Fox Hood, Demon's Horns, Golden Mask, Mind's Eyewear,
+  Wizard's Hat, Magic Helm, Polytan Hood, Possessed Mask) and the Fox
+  Sigil. On the Vita they came from the Claim Gift page at Cassus, which
+  needs PSN; now they appear in your save, marked NEW, with `[game] dlc`
+  on (the default). See them all in the [gallery](docs/GALLERY.md).
+* **The raiments only Japan had**: Sylvan and Benkei, both in the game's
+  data (`[game] japan_raiments`, on by default; Japan-only raiments in the
+  settings menu).
+* **The original game's raiments**, ARKS Armor and Dragonslayer, as a mod
+  you make from your own copy of the first *Soul Sacrifice* (1.30):
+  `tools/og-raiments.py` in the repository builds and installs it
+  ([INSTALLING](docs/INSTALLING.md#what-you-need)).
 * **The logs of the last five runs are kept**: `ss-delta/vita3k.log` is
   the latest, `vita3k.1.log` to `vita3k.4.log` the runs before it. A
   report sent after the game was started again (RecompLauncher sends the

@@ -63,6 +63,9 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Import / export of a Vita save | ✅ | scripted | a story-complete save from Apollo's database (Phase 8) |
 | Several saves (the game's three slots) | ✅ | scripted | `--import-save ... --slot 2`; the load screen lists both, slot 2 loads the 100% save (patch 0035) |
 | Add-ons (raiments, pacts) | ✅ | scripted | recorded in `system.bin` (D14); Healer, Beast, Easterner raiments shown as new. Add-on pacts: see quests |
+| Add-on gifts (Soulbinder, Fox, hoods, Fox Sigil ...) | ✅ | scripted | given in the loaded save as Cassus's Claim Gift would (D14 update 1, issue #11): Soulbinder, Fox, Mad Witch shown NEW in Raiments: Top; saved, reloaded, kept (test folder, US game, 2026-11-21) |
+| The original game's raiments (mod, `tools/og-raiments.py`) | ✅ | scripted | ARKS Armor and Dragonslayer from the EU original's 1.30: listed NEW, worn as top and bottom, drawn on Portraiture, saved and reloaded (D28; US game, test folder, 2026-11-22). Removing the mod with one worn: no body until another raiment is chosen (logged) |
+| Japan-only raiments (Benkei, Sylvan) | ✅ | scripted | `[game] japan_raiments` (issue #11): both listed NEW and drawn on the preview (test folder, US game, 2026-11-21) |
 
 ## Hub and Librom
 

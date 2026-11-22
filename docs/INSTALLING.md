@@ -76,6 +76,34 @@ the other region's game, with no renaming. **Mods (rePatch)** on the
 settings menu's Game page (`[game] repatch` in `ss-delta.ini`) turns them
 off. To remove a mod, delete its folder in `fs/ux0/rePatch/`.
 
+**The original game's raiments.** The first *Soul Sacrifice* had two
+collaboration raiments that Delta never got: ARKS Armor (*Phantasy Star
+Online 2*) and Dragonslayer (*Ragnarok Odyssey ACE*). If you have the
+original game with update 1.30 (any region; a NoNpDrm dump with its
+licences, or an installed copy), you can make a mod that adds them. You
+need Python 3 and two scripts from this repository's
+[`tools`](https://github.com/vita-recomps/ss-delta/tree/main/tools)
+folder, `og-raiments.py` and `lspk.py`, side by side:
+
+```
+python og-raiments.py --original "<the original game>" --vita-fs "<ss-delta>/fs" --exe "<ss-delta>/ss-delta.exe"
+```
+
+It reads the raiments' models from your copy of the original, builds the
+mod and installs it into `fs/ux0/rePatch/` (`--out <folder>` writes it to
+a folder instead, to add as a mod as above). Nothing from either game is
+in ss-delta; the mod is made on your computer. The two raiments then
+appear in Portraiture → Appearance → Raiments, marked new, with Add-ons
+(DLC) on. Wear one as both top and bottom (△ "Match with Above" in the
+bottom list); with another bottom, that bottom covers its legs. The
+[gallery](GALLERY.md#from-the-original-game-mod) shows both.
+
+* Build it **after** the Undub, or again after installing the Undub: the
+  Undub replaces the same archive, and building over it keeps both.
+* `--remove` takes it out again. Put on another raiment first: a save
+  that wears one of the two shows no body without the mod until you
+  choose another raiment.
+
 Once the game is built, an add-on or a mod can be added on its own,
 without building the game again (it takes seconds):
 

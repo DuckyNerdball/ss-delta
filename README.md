@@ -150,6 +150,7 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 |---|---|
 | [CHANGELOG](CHANGELOG.md) | what changed in each release, with the issues that asked for it |
 | [INSTALLING](docs/INSTALLING.md) | for players: requirements, each system, the first start, saves, Ad Hoc Play, files, command line |
+| [GALLERY](docs/GALLERY.md) | screenshots of the raiments and hoods ss-delta adds, and of the original game's two raiments (a mod) |
 | [BUILDING](docs/BUILDING.md) | building from source, installing a game into a build, making a release, the toolchain and tools |
 | [01-research](docs/01-research.md) | prior work, the dump's structure, measurements of the 1.30 eboot, Vita3K as donor, approach options |
 | [02-baseline](docs/02-baseline.md) | how the game behaves in Vita3K today, and how to re-run the baseline |
@@ -185,3 +186,6 @@ native code.
 | A moonlit field of blue crystals | A spell among ice and chains |
 | ![The dragon Dionaea lands](docs/assets/screenshots/boss-dragon.jpg) | ![Save or sacrifice a defeated monster](docs/assets/screenshots/save-or-sacrifice.jpg) |
 | The dragon Dionaea lands | Save or sacrifice |
+
+The raiments and hoods ss-delta adds, female and male, are in the
+**[gallery](docs/GALLERY.md)**.

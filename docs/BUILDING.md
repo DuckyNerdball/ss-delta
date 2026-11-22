@@ -131,7 +131,8 @@ own ([D17](decisions.md)):
 
 | Script | What |
 |---|---|
-| `tools/lspk.py` | list and extract the game's LSPK archives (`.pkh`/`.pk`/`.pfs`) |
+| `tools/lspk.py` | list, extract and repack the game's LSPK archives (`.pkh`/`.pk`/`.pfs`) |
+| `tools/og-raiments.py` | the original game's raiments mod (D28), from the player's dumps of both games |
 | `tools/questmaps.py` | the quest map list from `quest_param.csv` |
 | `tools/map-sweep.ps1` | screenshot every quest map through Stage Select (`-Frames`: at render resolution) |
 | `tools/devshell.ps1` | dot-source to load MSVC x64 and point CMake at Qt 6.11.0 (a fresh configure of the fork, `recomp/run-tests.ps1`) |

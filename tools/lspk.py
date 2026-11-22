@@ -1,7 +1,11 @@
-# Lists and extracts members of the game's LSPK archives (.pfs directory tree, .pkh hash table,
-# .pk data; docs/01-research.md "Assets"). Reads only; writes extracted members under <outdir>.
+# Lists, extracts and repacks members of the game's LSPK archives (.pfs directory tree, .pkh hash
+# table, .pk data; docs/01-research.md "Assets").
 #   python -I tools/lspk.py list <archive base path without extension> [substring...]
 #   python -I tools/lspk.py extract <archive base path> <outdir> <substring>...
+#   python -I tools/lspk.py pack <archive base path> <out base path> <folder>
+#       a copy of the archive (.pk, .pkh) with the files under <folder> added or replacing members of
+#       the same path (relative to <folder>, e.g. resource/boot/costume_table.csv). The .pfs name
+#       tree isn't rewritten: the game reads only .pkh and .pk.
 # Later archives override earlier ones in the game (archive_patch3 over archive); pass the one you want.
 import os
 import struct
@@ -63,9 +67,68 @@ def read_index(pkh):
     return index
 
 
+def read_member(base, path, index=None):
+    """A member's bytes, or None when the archive lacks it."""
+    if index is None:
+        with open(base + '.pkh', 'rb') as f:
+            index = read_index(f.read())
+    entry = index.get(path_hash(path))
+    if entry is None:
+        return None
+    off, size, csize = entry
+    with open(base + '.pk', 'rb') as pk:
+        pk.seek(off)
+        data = pk.read(csize or size)
+    return zlib.decompress(data) if csize else data
+
+
+def pack(base, out, members, remove=()):
+    """Write out.pk/out.pkh: base's members, raw, then `members` ({archive path: bytes}) added or
+    replacing by path hash, zlib-compressed; the paths in `remove` are left out. Data at 16-byte
+    offsets, the index sorted by hash, as the game's own archives are."""
+    with open(base + '.pkh', 'rb') as f:
+        index = read_index(f.read())
+    for p in remove:
+        index.pop(path_hash(p), None)
+    new = {path_hash(p): data for p, data in members.items()}
+    entries = []
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
+    with open(base + '.pk', 'rb') as src, open(out + '.pk', 'wb') as dst:
+        def put(h, raw, size, csize):
+            pad = -dst.tell() % 16
+            dst.write(b'\0' * pad)
+            entries.append((h, dst.tell(), size, csize))
+            dst.write(raw)
+        for h, (off, size, csize) in sorted(index.items(), key=lambda kv: kv[1][0]):
+            if h in new:
+                continue
+            src.seek(off)
+            put(h, src.read(csize or size), size, csize)
+        for h, data in new.items():
+            packed = zlib.compress(data, 9)
+            put(h, packed, len(data), len(packed))
+    entries.sort()
+    with open(out + '.pkh', 'wb') as f:
+        f.write(struct.pack('>I', len(entries)))
+        for e in entries:
+            f.write(struct.pack('>4I', *e))
+    return len(entries), sum(1 for h in new if h in index)
+
+
 def main():
+    if len(sys.argv) >= 5 and sys.argv[1] == 'pack':
+        folder = sys.argv[4]
+        members = {}
+        for root, _, names in os.walk(folder):
+            for n in names:
+                full = os.path.join(root, n)
+                with open(full, 'rb') as f:
+                    members[os.path.relpath(full, folder).replace(os.sep, '/')] = f.read()
+        count, replaced = pack(sys.argv[2], sys.argv[3], members)
+        print(f'{sys.argv[3]}.pk/.pkh: {count} members, {replaced} replaced, {len(members) - replaced} added')
+        return
     if len(sys.argv) < 3 or sys.argv[1] not in ('list', 'extract'):
-        sys.exit(__doc__ or 'usage: lspk.py list|extract <archive> ...')
+        sys.exit(__doc__ or 'usage: lspk.py list|extract|pack <archive> ...')
     cmd, base = sys.argv[1], sys.argv[2]
     with open(base + '.pfs', 'rb') as f:
         files = read_tree(f.read())

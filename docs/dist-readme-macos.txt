@@ -88,7 +88,11 @@ and View for START and SELECT, also in the tutorial pictures and the text.
 The add-ons (raiments, hoods, additional pacts) are unlocked: their content
 is in the game since update 1.30, and the game records them in your
 save once ([game] dlc in ss-delta.ini; a copy of the previous file goes to
-ss-delta/save-backups).
+ss-delta/save-backups). The ones PSN gave as gifts at Cassus (Soulbinder and
+other raiments, hoods, the Fox Sigil) appear in the loaded save, marked NEW,
+and so do the raiments only Japan had (Sylvan, Benkei; [game] japan_raiments).
+The original Soul Sacrifice's ARKS Armor and Dragonslayer can be added as a mod
+made from your own copy of that game (INSTALLING on the project's page).
 
 The Japanese Voice-over Pack is a separate add-on (the one for your
 version, US or EU). If you have it (a decrypted folder or .zip, or its .pkg

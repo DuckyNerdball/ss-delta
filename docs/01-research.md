@@ -579,9 +579,22 @@ numbers above:
   bytes) and `system.bin` (1,556 bytes), each with a `.bak` copy. In
   Vita3K they are plaintext; a decrypted save from another console (Apollo's
   PSV database) loads by copying those four files [local].
-* **Loose files override archives.** The engine `stat()`s loose files first,
-  and `archive_patch1` is an unused patch slot (1.30 ships `archive_patch3`).
-  Both are modding hooks [loktar].
+* **Loose files override archives** [loktar], **not for the boot tables or
+  models** [local, 2026-11-22]: with `resource/boot/parts_upper_param.csv`
+  and models served as new files under `app0:`, the game never looked for
+  them; the only loose path it stats in a whole boot is
+  `resource/database/gimmick/gm00_07_000_ext.csv`. Archives are mounted by
+  the app version (`0x812abc7c`; paths at `0x81c95700`): `archive`, then
+  **one** patch archive, the highest the version allows (version ≥ 0x11e:
+  `archive_patch3`, ≥ 0x114: `_patch2`, ≥ 0x10a: `_patch1`, ≥ 0x101:
+  `_patch0`). So `archive_patch1` isn't a usable extra slot on 1.30, and a
+  mod has to replace `archive_patch3`, as the Undub does.
+* **LSPK archives** [local, 2026-11-22]: `.pkh` is a big-endian count, then
+  16-byte entries (path hash, offset, size, compressed size or 0 if stored)
+  sorted by hash; `.pk` members start at 16-byte offsets, zlib-compressed.
+  The `.pfs` name tree isn't read by the game. `tools/lspk.py pack` writes a
+  copy with members added or replaced, and the game reads it (served through
+  rePatch, test folder).
 * **Debug menu:** the retail build still has Marvelous' dev sequence menu
   (Stage Select for all quests, cutscene viewer, test maps). Enable it in
   `config.ini` with `BootSequence DebugMenu` [loktar]. This is extremely
@@ -629,6 +642,155 @@ numbers above:
     and saving changed only `+0x21c` (0 → 1) and the check [local,
     2026-10-12]. The first list then has room for at most 260 ids (it holds
     35); `unlock_addons` keeps to that (patch 0037).
+* **Content from the original game, and locked raiments** [local + web,
+  2026-11-21, GitHub issue #11]:
+  * The entitlement table's box ids are resolved by
+    `database/network/itembox_fixed.csv`: `COSTUME_nn` gives
+    `costume_table.csv` rows (`COSTUME_01` = row 156 ×13, Soulbinder A–F
+    and the faction colours; `_02` 180 Necky; `_03` 360 Slave; `_04` 372
+    Archsorcerer; `_05` 528 Mad Witch; `_06` 252 Easterner ×6; `_07` 312
+    Saint ×6; `_08` 324 Beast ×6; `_10` 600 White Cat; `_09`/`_11` 612
+    Sylvan, never released). `PARTS_01`–`_08` give hoods 104–111 (Fox Hood,
+    Demon's Horns, Golden Mask, Mind's Eyewear, Wizard's Hat, Magic Helm,
+    Polytan Hood, Possessed Mask) and `STAMP_01` sigil 7101900 (Fox Sigil).
+    In the west, Soulbinder, the hoods and the Slave raiment were Delta's
+    first-four-weeks PSN bundle [web, PlayStation Blog 2014-05-13]. They are
+    handed out only through Cassus's Claim Gift page (above), so offline they
+    can't be obtained. Our `system.bin` lists don't include them.
+  * **Their names in the game** [local, 2026-11-22, US game]: three gift
+    names differ from the raiment's own. Necky (row 180, type 29) is
+    **Fox**, Archsorcerer (372, type 41, `大魔導士の法衣`) is **Great Seer**,
+    Saint (312, type 21, `仮１の法衣` in the table's comment) is
+    **Disciple**. Raiments: Top lists owned raiments in type order (the
+    table's third column), which places type 21 between Wanderer (20) and
+    Healer (24). Column 4 of `costume_table.csv` is the sex: 0 both, 1
+    male only (Great Seer), 2 female only (Mad Witch 528, White Cat 600).
+    Screenshots of all of them: [GALLERY](GALLERY.md).
+  * **The right arm's look** [local, 2026-11-22]: the sigil carved in the
+    arm's **Hand** slot (Carve Sigil, Up from the top sigil; "Affects right
+    arm") decides the arm model, from `parts_hand_param.csv` (186 rows:
+    neutral `AR00`, the Life and Magic stages `AR01`/`AR02`, allies' and
+    monsters' arms). The story-complete save's hand sigil "Arm of the
+    Grandmagus" draws Magusar's arm. With no hand sigil, the Life and Magic
+    levels choose it: Magic 99 gave Dark Arm VI, Life 1 Magic 1 (set in
+    memory, saved and loaded again) a plain arm and "Neutral Arm".
+  * The four tables (`entitlement_table.csv` JP, `_us`, `_eu`, `_as`) list
+    the same 21 boxes in the same order. The game picks one by the region
+    at `*0x81c9a7c8` (0 JP, 1 US, 2 EU, 4 Asia; loader `0x817ec5c0`) and
+    maps each product id to its box (index into the name table at
+    `0x81c9301c`: TSS 0–19, NEAR 20, CATALYST 21–30, COSTUME 31–45, PARTS
+    46–60, STAMP 61–70) and to its data row, counted from 0 after the
+    header (the CSV reader `0x81aae178` skips to the next line before each
+    read).
+  * **What taking a gift does** [local, verified in runs 2026-11-21]
+    (`0x816b06e6` ff., the gift's kind 2 raiment, 3 hood, 4 sigil):
+    * Received gifts: a byte per table row at `*0x81c9a160 + 0xc2ec8`,
+      set to 1 (`0x816b0a7e`). `*0x81c9a160` is the save file's image in
+      memory (its header `+0x8` is the file size, 0xef0e0), 0x8e3f0 past
+      the play block `*0x81c98618`; offsets into it are file offsets.
+    * Raiments: `0x812f8834(block, row)` sets the row's state from 0
+      (hidden) or 4 (shown, not owned: a colour still to be traded for) to
+      1 (new); the raiment list shows NEW and makes it 3 once seen. The
+      block holds 0x2c-byte entries from `+0x6ab28` (row, state at
+      `+0x14`; count `+0x6ab24`, 720). The file keeps 8 bytes a row (row,
+      state) from image `+0x84 + 0x522dc`, copied into the block when the
+      save is applied (`0x812f5c32`) and back when it is written. Granting
+      a colour A (costume record: type `+0x4` below 0x1c and not 5,
+      colour `+0xc` 0; records of 0x5c bytes at `*0x81c9a28c`,
+      `*0x81d301d0` of them) also gives rows +9 to +11, its faction
+      colours. A box's count: up to 12 rows from the first; 13: colours
+      A–F and the faction colours; 14: G–I and the faction colours; 15: A
+      and the faction colours.
+    * Hoods: a u16 per attach id below 0x80 at image `+0x84 + 0x568dc + 2 ×
+      id` (`+0x579d4` from 0x80), bit n for colour n and bit 15 for new
+      (`0x817808c8`, `0x8178095e`).
+    * Sigils: a byte at image `+0x84 + 0x564dc +` the stamp's index in the
+      stamp table (`*0x81c9a3e4`, records of 0xb4 bytes with the id at
+      `+0x4`, `*0x81d329b0` of them), bits 0, 1, 2 set (`0x81780708`,
+      `0x8178072a`, `0x81780768`).
+    * A load of an old save (US version `0x22` in the image's `+0x4`; 1.30
+      writes `0x3a`) checks the first 19 received bytes against owned
+      catalysts and raiments 99 and 117 and clears the unmatched ones
+      (`0x812f5ff2`), so it doesn't apply to current saves.
+    * The game reads into the image several times: the slot list, the
+      load, and `datag000N.bak` once the hub is reached (read only; no file
+      is written). Before a load it holds defaults, sometimes half-built
+      (raiment records not yet numbered).
+  * The `system.bin` list at `0x344` (112–119, 130) matches hood ids from
+    `attach_param_text` (112 Noble's Mask+ ...) better than costume rows, and
+    the one at `0x224` holds costume rows 624, 696, 708 (Mononofu, Sinner,
+    God Eater, colour A) (**hypothesis**; `saves.cpp` calls the `0x344` list
+    raiments). The story-complete Apollo save already owned Easterner,
+    Beast, Healer, Slave and White Cat; an early save (slot 1 of the test
+    folder) owned none of them before the gifts.
+  * `costume_table.csv` rows whose appearance condition is `q_a9999` are
+    the special-unlock raiments: 156 Soulbinder, 168 Benkei (JP collab, in no
+    entitlement box), 180 Necky, 252, 312, 324, 336, 360, 600, 612, 624,
+    648/660/672 (Wild Arms), 684, 696, 708. Their models (`UP19`, `UP23`,
+    `UP29`, ...) are all in `archive`. Every `UP`/`LW`/`CS` model in the
+    archives is referenced by the parts tables, so nothing else is hidden.
+  * Only in the original game: the Ragnarok Odyssey ACE raiment
+    (Dragonslayer, text 3956) and the Japan-only PSO2 ARKS Armor (text 3954)
+    have names in `d2a_text` but no costume rows and no models; the
+    original's pre-order Spirits' offerings are not in Delta's item text
+    [web: GameFAQs, r/soulsacrifice]. Black Rite Angelus (an original-game
+    DLC) is `TABOO_06` in `taboo_param.csv`, the Sanctuarium faction's rite
+    in Delta [web, TV Tropes], so it isn't missing.
+  * **The original's collaboration raiments** [local, 2026-11-22; the EU
+    original, PCSF00178 1.30, a NoNpDrm dump installed with `ss-delta.exe
+    --install-content` into a scratch file system]: its 1.30
+    `costume_table.csv` ends with `#コラボ衣装`, three raiments of one colour
+    each: row 117 Mononofu (text 3955), 118 ARKS Armor (3954), 119
+    Dragonslayer / Ace of Souls (3956). `parts_body_param.csv` gives their
+    whole-body models `CS20`, `CS21`, `CS22` (`_M0`, `_F0`). The add-ons that
+    unlocked them are "TOUKIDEN Collaboration Costume: Mononofu" and
+    "Ragnarok Odyssey Ace Collaboration Costume: Ace of Souls"
+    (`SSS000FZN…`, licence-only add-ons). The original 1.00 (a decrypted US
+    VPK, PCSA00092) has none of them.
+    * Delta remade Mononofu as `UP20`/`LW20`. For `CS21` and `CS22` Delta's
+      archives hold only the `.chr` (the same bytes as the original's) and
+      `CS21_F0_HKS.hks`: the 4 `.mdl` and 23 `.mxt` (`CS21_F0`, `CS21_F1`,
+      `CS21_M0_00`, `CS21_M0_01`, `CS22_F0`, `CS22_M0` textures) exist only in
+      the original. Delta's `CS12`–`CS15` `.chr`/`.mxt` are leftovers too.
+    * The `.chr` files use Delta's skeleton (`CS00_SKL.skl`) and format, so a
+      whole-body model works as a raiment part: with `CS22` as a raiment's
+      upper and lower model (`parts_upper_param.csv`, `parts_lower_param.csv`,
+      the model and textures packed into `archive_patch3`), Delta draws the
+      whole Ace of Souls, horns, armour and wings, in Raiments [test folder,
+      2026-11-22]. As the top with one of Delta's bottoms, the bottom covers
+      the costume's legs (Intellectual, Knight, Sand Dweller tried; no
+      flicker).
+  * **The eraser tables** (`parts_upper_eraser_param.csv`: a top's model name,
+    then a 1 for each mesh set it hides in the bottom; `_lower_` the other
+    way round) hide **switchable sets** only. The model loader (`0x81869080`
+    ff.) cuts each mesh name at `-geom-P`, and registers it under its base
+    name only when it ends in `_before` (shown) or `_after` (hidden), e.g.
+    `Waist_Parts_before` → column `Waist_Parts`. A part's main mesh
+    (`SET_model_2-geom-P0` in 59 bottoms, `SET_model_1` in 19, ...) has
+    neither, so no eraser hides it. Renaming a bottom's main mesh in place to
+    `S_before-geom-P0` didn't make an `S` column hide it either, and one such
+    test aborted the game in the preview (`sceKernelCallAbortHandler`). The
+    tables' arrays grow (initial 20), so their size isn't the limit.
+  * **Raiments added past row 719** [local, 2026-11-22, the mod of D28]:
+    with `costume_table.csv` at 744 rows the game's costume count
+    (`*0x81d301d0`) is 744 and the play block's raiment table grows with it
+    (`+0x6ab24` = 744, rows numbered, state 0). The save image keeps 0x300
+    records; those past the table's rows hold `{0xffffffff, 0}` until the
+    game writes the save with the longer table, which then stores them as
+    `{row, state}` (a save with the mod: `{720, 3}`, `{732, 3}` once seen).
+    The text ids, type numbers 51 and 52 (Delta's last is 50) and the
+    whole-body models drew in Raiments, Portraiture and the hub; "Match with
+    Above" puts the same raiment on as the bottom.
+  * **The raiment worn** is two u16 costume rows (top, bottom) in three
+    records of the image: `+0x5b770`/`+0x5b774`, `+0x5bf96`/`+0x5bf9a`,
+    `+0xeeb86`/`+0xeeb8a` (9 and 117 in the test save before, 732 and 732
+    with Dragonslayer worn). The play block holds no copy. A save that wears
+    a row the table lacks (the mod removed) loads, but the body isn't drawn
+    (head and right arm only) until another raiment is put on; the list
+    shows the missing one as the first raiment. Setting the records to 0
+    in memory came too late once the hub was loaded, and doing it every
+    frame during the load stalled the game at the title (no menu), so it
+    is only reported.
 * **Japanese Voice-over Pack** [local, 2026-11-20]: a separate PSN add-on,
   not in 1.30's data and not in the entitlement table above.
   * Content IDs `UP9000-PCSA00152_00-SSS000CVN0000001` (US) and

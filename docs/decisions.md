@@ -532,6 +532,22 @@ no third-party save is shipped or needed.
 * The change is in the save, so it carries over to a Vita (same format).
 * Turning `dlc` off later does not remove them; restoring the backup does.
 
+**Update 1 (2026-11-21, GitHub issue #11):** `system.bin` doesn't cover the
+add-ons PSN handed out as gifts on the Claim Gift page: Soulbinder, the
+Necky (Fox), Slave, Archsorcerer, Mad Witch, Easterner, Saint, Beast and
+White Cat raiments, eight hoods and the Fox Sigil (18 rows of the
+entitlement table; 01-research, "Content from the original game, and locked
+raiments"). With `dlc` on, `ss-delta.exe` now also does in the loaded save
+what taking those gifts does (raiment states, hood and sigil flags, the
+received byte), checking twice a second, for every save loaded and for a
+new game. Only items not yet owned change; the game keeps them when it
+saves. Not given: the developers' box (DBG001). A second switch,
+`[game] japan_raiments` (on), adds the raiments only Japan had: Sylvan
+(SSC018, SSC020, marked never distributed in the other regions' tables;
+all twelve rows) and Benkei (`costume_table.csv` row 168, in no box; its
+colour A, as for Necky). Where Benkei was given in Japan isn't known;
+its model and name are complete in the data.
+
 ## D15 — Ad hoc play uses Vita3K's ad hoc support; copies on one PC take 127.0.0.N (accepted, 2026-10-12)
 
 **Context:**
@@ -948,6 +964,16 @@ screenshot of the game out of git.
 **Rejected:** hosting the pictures outside the repository (release assets):
 the owner chose committing them, as for utakata.
 
+**Update 1 (2026-11-22):** the owner asked for a gallery of the add-ons
+from [#11](https://github.com/vita-recomps/ss-delta/issues/11) in the
+docs. [GALLERY](GALLERY.md) shows 39 more JPEGs in the same folder (so
+the clone's `leakscan.allow` covers them): the raiments and hoods that
+ss-delta adds and the two raiments of the original game's mod (D28),
+female and male, from Raiments in Portraiture. They were taken with
+`frame:` in a test folder (story-complete save, the mod installed there),
+cropped to the character and scaled to two thirds. The mod's two raiments
+are shown in a section of their own that says they aren't in ss-delta.
+
 
 ## D24 — RecompLauncher support: recomplauncher.json in every release (accepted, 2026-11-18)
 
@@ -1230,3 +1256,59 @@ folder.
   downloaded, but building and maintaining LLVM for Android would be
   ours. The fallback if the tools can't run from the native library
   folder.
+
+## D28 — The original game's raiments: a mod the player builds from their own dump (accepted, 2026-11-22)
+
+**Context:** GitHub issue #11 asked for the original Soul Sacrifice's
+content in Delta. Delta already has nearly all of it (D14 and its update),
+except two collaboration raiments of the original's 1.30: ARKS Armor
+(PSO2) and Dragonslayer / Ace of Souls (Ragnarok Odyssey ACE). Delta keeps
+their names and `.chr` files, but not their 4 models and 23 textures
+(01-research, "The original's collaboration raiments"). The owner chose a
+mod made from the original game's files, holding only what the raiments
+need, outside this repository, with the tools to make it in it, installed
+like the Undub (2026-11-22).
+
+**Decision:**
+
+* `tools/og-raiments.py` builds the mod from the player's own dump of the
+  original game with update 1.30 (any region; a NoNpDrm dump is installed
+  first with `ss-delta.exe --install-content`) and their installed Delta:
+  a copy of the `archive_patch3` the game reads now (the Undub's, if it is
+  installed) with
+  * the original's `CS21`/`CS22` models and textures;
+  * Delta's `costume_table.csv` with two raiments added, rows 720-731 (ARKS
+    Armor, type 51, text 3954) and 732-743 (Dragonslayer, type 52, text
+    3956), 12 rows each like Delta's own, colour A given;
+  * `parts_upper_param.csv` and `parts_lower_param.csv` with the
+    whole-body model as both the top and the bottom of each row.
+
+  It installs into `ux0/rePatch/<title>/` (or writes a folder, `--out`),
+  and `--remove` restores the archive it was built on. A manifest and the
+  replaced tables ride in the archive (`ss-delta/og-raiments/`), so
+  rebuilding and removing need nothing else.
+* A raiment is worn as top and bottom together ("Match with Above"). Worn
+  as a top with another bottom, that bottom covers the costume's legs.
+  The eraser tables can't hide a bottom's main mesh (01-research, "The
+  eraser tables"), so a top hiding any bottom (the owner's first choice)
+  would need a code change.
+* `ss-delta.exe` gives the two raiments (`[game] dlc`) when the game's
+  costume table has them, i.e. with the mod installed: the save's records
+  for rows past 720 are created as the game writes them.
+
+**Rejected:**
+
+* Loose files or another patch slot: the game reads neither for these
+  tables (01-research, "Loose files override archives").
+* Shipping the mod or anything from either game: the files are the
+  player's (CLAUDE.md, D18).
+
+**Consequences:**
+
+* Installing a mod that replaces `archive_patch3` after this one (the
+  Undub) replaces it; building again over it keeps both.
+* Removing the mod while a save wears one of the raiments leaves the body
+  undrawn until another raiment is put on; ss-delta logs a warning, and
+  the raiment list works. Writing the save image to fix it raced the
+  game's own check of the file and stalled the load, so it is only
+  reported.
