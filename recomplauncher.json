@@ -215,7 +215,7 @@
   "actions": [
     { "id": "saves", "label": "Saves", "help": "Your saves: three slots and the add-on record.", "open": "saves" },
     { "id": "screenshots", "label": "Screenshots", "help": "F12 in the game saves one here.", "open": "screenshots" },
-    { "id": "logs", "label": "Log", "help": "vita3k.log, for a bug report.", "open": "logs" },
+    { "id": "logs", "label": "Log", "help": "vita3k.log, for a bug report; vita3k.1.log to vita3k.4.log are the runs before it.", "open": "logs" },
     { "id": "shaders", "label": "Shader cache", "help": "Shaders the game has built, so later quests don't stutter. Clear it only if graphics look wrong after an update.", "clear": "cache/shaders" }
   ],
   "looks": {

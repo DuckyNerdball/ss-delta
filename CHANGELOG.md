@@ -4,6 +4,15 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### New
+
+* **The logs of the last five runs are kept**: `ss-delta/vita3k.log` is
+  the latest, `vita3k.1.log` to `vita3k.4.log` the runs before it. A
+  report sent after the game was started again (RecompLauncher sends the
+  whole log folder) still carries the run that crashed.
+
 ## 0.4.1 (2026-11-21)
 
 ### Fixed
