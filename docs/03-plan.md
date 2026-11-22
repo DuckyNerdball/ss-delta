@@ -555,7 +555,11 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     drawn in Raiments, Portraiture and the hub, kept through a save and
     reload; built over another rePatch mod, rebuilt and removed again (the
     mod beneath restored exactly). US Delta, test folder.
-  * ☐ The original's pre-order Spirits' offerings: not looked into.
+  * ☐ The original's pre-order Spirits' offerings (20 items): the only
+    other content the original has and Delta lacks (01-research, "What
+    only the original has", 2026-11-22). Delta keeps their names but not
+    their item and skill rows; restoring them would mean porting those
+    rows (and checking their effects), not looked into yet.
 
 * ☑ **Xbox button labels** (2026-11-20; research in
   [01-research](01-research.md#button-prompts-local-2026-11-20)).

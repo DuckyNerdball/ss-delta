@@ -731,9 +731,9 @@ numbers above:
     archives is referenced by the parts tables, so nothing else is hidden.
   * Only in the original game: the Ragnarok Odyssey ACE raiment
     (Dragonslayer, text 3956) and the Japan-only PSO2 ARKS Armor (text 3954)
-    have names in `d2a_text` but no costume rows and no models; the
-    original's pre-order Spirits' offerings are not in Delta's item text
-    [web: GameFAQs, r/soulsacrifice]. Black Rite Angelus (an original-game
+    have names in `d2a_text` but no costume rows and no models; for the
+    original's pre-order Spirits' offerings see "What only the original
+    has" below (Delta keeps their names). Black Rite Angelus (an original-game
     DLC) is `TABOO_06` in `taboo_param.csv`, the Sanctuarium faction's rite
     in Delta [web, TV Tropes], so it isn't missing.
   * **The original's collaboration raiments** [local, 2026-11-22; the EU
@@ -791,6 +791,37 @@ numbers above:
     in memory came too late once the hub was loaded, and doing it every
     frame during the load stalled the game at the title (no menu), so it
     is only reported.
+  * **What only the original has** [local, 2026-11-22; the EU original
+    1.30, its `archive_patch3` over `archive`, against Delta 1.30 (US); the
+    tables joined to the English text, by name and then by id]:
+    * Raiments: ARKS Costume (Delta's text: ARKS Armor) and Ace of Souls
+      (Dragonslayer), the og-raiments mod (D28). Mononofu is in Delta, remade.
+      Faces, hair, arms and low-chaos bodies: all of the original's models
+      are in Delta's parts tables; of the body models only `CS20` (Mononofu,
+      remade), `CS21` and `CS22` aren't.
+    * **The 20 Spirits' offerings** (items 600000–601900: Spirits'
+      Flamepike, Frostblade, Firearm, Stormfist, Flame Arrow, Stone Arrow,
+      Blazestone, Blightstone, Greatroot, Fulgurwood, Dragon fang, Wolf fang,
+      Heart, Flamebulb, Frostfluff, Storm Pinion, Storm Ward, Viviblossom,
+      Falconfeather, Stoneshield): the original's pre-order offerings, item
+      rows with skills 1600000–1601900 (`炎の剣（※特典用）`, "for the bonus").
+      Delta keeps their names in `item_param_text` (a few renamed: Icebrand,
+      Sparktree, Halebloom, Gravelshield; 601800 is "test") but has neither
+      the item rows nor the skill rows, so they can't be had. Correction:
+      earlier notes said Delta's item text lacked them.
+    * Sanguine Shot (and its Godly and Diabolic forms, items 100000/50/60):
+      the original's right-arm shot, replaced in Delta by Sanguine Cannon,
+      Angelshot and Demonshot. A mechanic changed, not content removed.
+    * Not missing: the other 51 offering names, 57 sigils, 8 souls and 154
+      character names that differ are the same ids renamed (Iron Pinwheel →
+      Iron Mill, Fire Giant's Arm → Firegiant's Arm, Effulgent Sigil →
+      Gleaming Sigil, Iron Maiden → Iron Virgin, Great Sorcerer → Great Seer).
+      Black Rites: all 14 in Delta. Quests: every quest and event (DLC) quest
+      of the original is in Delta; the 16 ids only the original has are
+      unused rows (`q_a0000`–`0009` "@No Data", and `q_d1902`–`q_d2003`,
+      empty duplicates of the Impure Blood and Knight of Vengeance chapters
+      that Delta has as `q_e05xx`/`q_e09xx`; Delta lists them only in
+      `old_quest_list.csv`, for imported saves).
 * **Japanese Voice-over Pack** [local, 2026-11-20]: a separate PSN add-on,
   not in 1.30's data and not in the entitlement table above.
   * Content IDs `UP9000-PCSA00152_00-SSS000CVN0000001` (US) and
