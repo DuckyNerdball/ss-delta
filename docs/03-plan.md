@@ -555,11 +555,15 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     drawn in Raiments, Portraiture and the hub, kept through a save and
     reload; built over another rePatch mod, rebuilt and removed again (the
     mod beneath restored exactly). US Delta, test folder.
-  * ☐ The original's pre-order Spirits' offerings (20 items): the only
-    other content the original has and Delta lacks (01-research, "What
-    only the original has", 2026-11-22). Delta keeps their names but not
-    their item and skill rows; restoring them would mean porting those
-    rows (and checking their effects), not looked into yet.
+  * ☑ The original's pre-order Spirits' offerings (20 items, D29):
+    Delta keeps their rows commented out; `[game] spirits_offerings`
+    (on, with `dlc`) switches them on with a packaged mod `ss-delta.exe`
+    makes from the installed game, and gives each once per save. Listed
+    NEW in Select Offerings with their names; Spirits' Flamepike, Wolf
+    fang and Heart cast in a try-out (weapon, beast arm, golem); kept
+    through a save and reload without being given again; the save loads
+    without them with every other offering unchanged; the setting off
+    deletes rePatch's copy. US game, test folder, 2026-11-22.
 
 * ☑ **Xbox button labels** (2026-11-20; research in
   [01-research](01-research.md#button-prompts-local-2026-11-20)).

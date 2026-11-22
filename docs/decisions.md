@@ -1344,3 +1344,69 @@ other mod of that archive. Now:
   original game, which are collaboration content of other companies'
   games (Nexus's guidelines on third-party content). The repository still
   holds only the tool.
+
+
+## D29 — The original game's Spirits' offerings: switched on by ss-delta from Delta's own tables (accepted, 2026-11-22)
+
+**Context:** the original Soul Sacrifice's 20 pre-order offerings
+(Spirits' Flamepike ... Spirits' Gravelshield, items 600000-601900) are
+the only other content of the original Delta can't give (01-research,
+"What only the original has"). They are copies of Delta's own offerings
+(same models, effects, motions and sounds; their own numbers), and Delta
+still has every row they need, commented out with a `;` in its own
+tables. The owner asked to unlock them, as they need nothing from the
+original game (2026-11-22), and then for a setting of `ss-delta.exe`
+rather than a mod the player makes, as for the Japan-only raiments.
+
+**Decision:**
+
+* `[game] spirits_offerings` (on by default; acts with `dlc`): before the
+  rePatch mods are read (a new front-end hook, `before_mods`, player 1
+  only), `ss-delta.exe` makes a packaged mod (D28 update 1) from the
+  installed game's own archives and installs it, or removes it when the
+  setting is off. It holds the commented-out rows of
+  `item_param_ply.csv` (20), `skill_param_ply.csv` (49),
+  `magic_eff_pack_param_ply.csv` (49), `magic_explode_param_ply.csv`
+  (44), `magic_gimmick_param_ply.csv` (12), `magic_bullet_param_ply.csv`
+  (5), `magic_crawl_param_ply.csv` (6), `arms_param.csv` (6) and
+  `protector_param.csv` (2), appended without the `;`. Fixes on the way,
+  so they match Delta's own offerings:
+  * the two fang arms name a punch-effect skill Delta removed (1601001,
+    1601101); Delta's own fang arms have 0 there, and so do these;
+  * arms rows with 0 in Delta's falcon columns take them from Delta's arm
+    with the same model, as the Spirit swords already have them;
+  * Spirits' Falconfeather is "test" in Delta's western item text: the
+    original's names in the seven western languages are put back
+    (`item_param_text_{us,ue,fr,ge,it,sp,bp}.msgt`; the names are in the
+    code, nothing is read from the original).
+  A package with an older version number is made again. Like any packaged
+  mod it is merged again when another mod (the Undub) replaces the
+  archive, and it needs Mods (rePatch) on.
+* With `dlc`, `ss-delta.exe` gives each offering once per save when the
+  game's tables have them: one of rank 0, marked NEW and obtained, in the
+  play block's offering stock, as an offering box's gift does
+  (`0x812f6ece`). The obtained bit marks it as given: it stays when the
+  offering is carried or used up, so it isn't given again.
+
+**Rejected:**
+
+* A script the player runs to make the mod (the first version, the same
+  day): the reason the original raiments need one, files only the
+  original game has, doesn't apply here.
+* Shipping the rows (Delta's data); writing the offerings into the save
+  image as well (the game writes the stock from the block when it saves,
+  and the image holds no record for them before).
+
+**Consequences:**
+
+* With the setting on, every install with `dlc` has a copy of
+  `archive_patch3` (72 MB) in `ux0/rePatch/<title>/`, as any packaged mod
+  makes; with it off (or `dlc` off) the copy is taken out again.
+* Without the rows, a save that has the offerings loads with every other
+  offering as before (the game matches the records by id); the 20 aren't
+  shown, and the next save drops them. Switched on again, they are given
+  again.
+* The packaged-mod front end now also drops, on removal, a table it had
+  taken from `tables_from` (here `protector_param.csv`, which only
+  `archive` holds) once no kept mod adds to it: before, the table stayed
+  in rePatch's archive and its copy was never deleted.

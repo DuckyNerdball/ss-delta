@@ -450,10 +450,24 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
   * At boot, before a save loads, the block holds leftovers (levels 63302 /
     30968, refused), then defaults that pass the checks for a moment, so
     the cheats can write there before the save replaces it (logged).
-  * The offering stock (r0ah): 840 entries of 0x2c bytes from `+0xb4`: an
-    offering id (`100010`, `100020` ...), four counts (`+0x4`..`+0x10`,
-    one per star rank) and four flags (`+0x14`..`+0x20`, 2 = owned). The
-    count's meaning (copies or uses) isn't checked; not used yet.
+  * **The offering stock** [local, 2026-11-22, corrected; first noted by
+    r0ah]: a count at `+0x84` (2196 in Delta 1.30, 2216 with the Spirits'
+    offerings switched on), then entries of 0x2c bytes from `+0x88`, one per item
+    row of the tables (`5000000` first, then `100010`, `100020` ...): the
+    id, four counts (`+0x4`..`+0x10`, copies, one per star rank, at most
+    99), four flag words (`+0x14`..`+0x20`: bit 1 obtained, bit 0 new) and
+    a word at `+0x28`, 0 to 989 for Delta's rows and 0x7fffffff for the
+    Spirits' offerings, which the list shows last (**hypothesis:** a sort
+    key). The block builds it from the item tables when the save is
+    applied, and matches the save's records by id. Adding one
+    (`0x812f3c30`, through `0x812f6ece(block, id, rank, n)` as an offering
+    box's gift calls it, `0x816b05ca`) raises the count and sets the
+    obtained bit, which stays when the offering is carried (count 0, moved
+    to the loadout: the first six 0xc-byte records from `+0x0`, id, rank,
+    flags). `0x812f6f8a` counts both.
+  * The save file keeps the stock as records of 0x24 bytes (id, counts,
+    flags) from image `+0xb4`, written from the block when the game saves:
+    a row the tables lack is dropped, one they gain is added.
   * Slayer points (r0ah): Avalon, Sanctuarium, Grim at `+0xe50b0`,
     `+0xe50b4`, `+0xe50b8` (u32; 310, 0, 0 in the test save). Not used yet.
 
@@ -756,7 +770,7 @@ numbers above:
     (Dragonslayer, text 3956) and the Japan-only PSO2 ARKS Armor (text 3954)
     have names in `d2a_text` but no costume rows and no models; for the
     original's pre-order Spirits' offerings see "What only the original
-    has" below (Delta keeps their names). Black Rite Angelus (an original-game
+    has" below (Delta keeps their names and, commented out, their rows). Black Rite Angelus (an original-game
     DLC) is `TABOO_06` in `taboo_param.csv`, the Sanctuarium faction's rite
     in Delta [web, TV Tropes], so it isn't missing.
   * **The original's collaboration raiments** [local, 2026-11-22; the EU
@@ -829,9 +843,55 @@ numbers above:
       Falconfeather, Stoneshield): the original's pre-order offerings, item
       rows with skills 1600000–1601900 (`炎の剣（※特典用）`, "for the bonus").
       Delta keeps their names in `item_param_text` (a few renamed: Icebrand,
-      Sparktree, Halebloom, Gravelshield; 601800 is "test") but has neither
-      the item rows nor the skill rows, so they can't be had. Correction:
+      Sparktree, Halebloom, Gravelshield; 601800 is "test"). Correction:
       earlier notes said Delta's item text lacked them.
+      * **Delta has their rows, commented out** [local, 2026-11-22]: `;600000`
+        … `;601900` in `item_param_ply.csv` (already filled in for Delta's
+        new columns `状態異常値`, `威力(属性値のみ)`), and `;`-rows in
+        `skill_param_ply` (49 of the original's 51), `magic_eff_pack_param_ply`
+        (49), `magic_explode_param_ply` (44), `magic_gimmick_param_ply` (12),
+        `magic_bullet_param_ply` (5), `magic_crawl_param_ply` (6),
+        `arms_param.csv` (`;ws1600000` …, 6) and `protector_param.csv` (2).
+        Missing: only `1601001` and `1601101`, the punch-effect rows of the
+        two fang arms (Delta dropped the regular arms' matching rows too).
+        Most rows are the original's plus Delta's padding columns; a few
+        were moved to Delta's versions of the regular spells: the root and
+        lightning crawl charge (gimmick params 1.3/3 → 0.7/2.3), Flamebulb
+        (5 → 35), Frostfluff (type 5 → 47, lifetime 6 → 30, Delta's Snowtuft).
+      * **They are copies of regular offerings, not new spells** [local,
+        2026-11-22; every row of each Spirit tree compared with the closest
+        regular row]: each skill row equals a regular Lv.1 skill except the
+        effect pack ID (same attack motion, cast time, controls); each
+        effect, bullet, crawl and gimmick row equals a regular row except the
+        damage and element numbers and the sub-skill IDs; the weapon and
+        armour rows use the regular models (`ws161_01`, `ws162_01`,
+        `ws171_01`, `ws173_01`, `ws141_01`, `ws142_01`, `pa243_01`,
+        `pa2401_01`). No `.efp`, model or sound file differs, except Spirits'
+        Stone Arrow's hit sound (`hit_general` instead of `hit_rock`). They
+        copy, in Delta's names: Imp/Devil Pitchfork (Flamepike), Swordsman
+        Icebrand, Firegiant's Arm, Stormgiant's Arm, Fire Djinn's Arrow (M,
+        four shots), Stone Arrow (M), Firedrake Egg, Leafdrake Egg, Great
+        Tree Root (Tri), Sparktree Root (Tri), Firedrake Fang (M), Blizzard
+        Wolf Fang (M), Stonefiend Entrails, Blaze Bulb, Snowtuft (M),
+        Stormbird Pinion (M), Lightning Amulet, Healing Bloom (M), Falcon
+        Feather (M), Gravelshield Fragment. Differences in play are numbers
+        only: damage between the Lv.1 and Lv.2 items, the fang arms' punch
+        knock-back (7 against 0.7), the Stonefiend's gimmick param 0 (500
+        against 7000), Healing Bloom's 15 s / radius 5 (13 s / 5.5), Falcon
+        Feather's param 1 (15 against 25 in the original, 70 in Delta). The
+        regular rows of Falcon Feather, the root crawls, Snowtuft and
+        Leafdrake Egg have effect slots Delta added (`EFF_mg209_20x`,
+        `EFF_mg303_200`, `EFF_mg300_200`, `EFF_mg311_200`, `EFF_mg323_204`)
+        that the Spirit rows leave empty.
+      * **Switched on** (D29, `[game] spirits_offerings`): with the rows
+        appended without the `;`, all
+        20 are in the offering stock (entries 990-1009) and Select
+        Offerings, sorted last; given in memory, Spirits' Flamepike (the
+        flaming pitchfork), Wolf fang (the ice arm, thrust and breath) and
+        Heart (the stone golem) cast in a try-out [test folder]. Delta's
+        `itembox_fixed.csv` still has the original's offering boxes
+        `CATALYST_01`-`_17` (19 of the 20; Spirits' Heart is in none), but
+        no entitlement table names them.
     * Sanguine Shot (and its Godly and Diabolic forms, items 100000/50/60):
       the original's right-arm shot, replaced in Delta by Sanguine Cannon,
       Angelshot and Demonshot. A mechanic changed, not content removed.

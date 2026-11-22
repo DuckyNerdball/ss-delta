@@ -91,6 +91,9 @@ save once ([game] dlc in ss-delta.ini; a copy of the previous file goes to
 ss-delta/save-backups). The ones PSN gave as gifts at Cassus (Soulbinder and
 other raiments, hoods, the Fox Sigil) appear in the loaded save, marked NEW,
 and so do the raiments only Japan had (Sylvan, Benkei; [game] japan_raiments).
+So do the original Soul Sacrifice's 20 pre-order offerings (Spirits' Flamepike
+and the rest; [game] spirits_offerings), which Delta keeps switched off: ss-delta
+switches them on in a copy of the game's patch archive in fs/ux0/rePatch.
 The original Soul Sacrifice's ARKS Armor and Dragonslayer can be added as a mod
 made from your own copy of that game (INSTALLING on the project's page).
 

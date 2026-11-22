@@ -4,6 +4,24 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### New
+
+* **The original game's Spirits' offerings**
+  ([#11](https://github.com/vita-recomps/ss-delta/issues/11)): the 20
+  pre-order offerings of the first *Soul Sacrifice* (Spirits' Flamepike
+  ... Spirits' Gravelshield). Delta still has them, switched off; ss-delta
+  switches them on and gives each once per save, with Add-ons (DLC) on
+  (`[game] spirits_offerings`, on by default). They look and play like
+  Delta's own offerings of the same kind. No copy of the original is
+  needed. See [INSTALLING](docs/INSTALLING.md).
+
+### Fixed
+
+* Removing a packaged mod that had added a table the game's patch archive
+  lacks left a copy of the archive in `fs/ux0/rePatch/`; it is deleted now.
+
 ## 0.4.3 (2026-11-22)
 
 ### Fixed

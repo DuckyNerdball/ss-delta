@@ -65,6 +65,7 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Add-ons (raiments, pacts) | ✅ | scripted | recorded in `system.bin` (D14); Healer, Beast, Easterner raiments shown as new. Add-on pacts: see quests |
 | Add-on gifts (Soulbinder, Fox, hoods, Fox Sigil ...) | ✅ | scripted | given in the loaded save as Cassus's Claim Gift would (D14 update 1, issue #11): Soulbinder, Fox, Mad Witch shown NEW in Raiments: Top; saved, reloaded, kept (test folder, US game, 2026-11-21) |
 | The original game's raiments (mod, `tools/og-raiments.py`) | ✅ | scripted | ARKS Armor and Dragonslayer from the EU original's 1.30: listed NEW, worn as top and bottom, drawn on Portraiture, saved and reloaded (D28; US game, test folder, 2026-11-22). Removing the mod with one worn: no body until another raiment is chosen (logged) |
+| The original game's Spirits' offerings (`[game] spirits_offerings`) | ✅ | scripted | all 20 given once per save, listed NEW in Select Offerings; Spirits' Flamepike, Wolf fang and Heart cast in a try-out; saved and reloaded without being given again; the save loads without them, other offerings unchanged; the setting off takes rePatch's copy out (D29; US game, test folder, 2026-11-22) |
 | Japan-only raiments (Benkei, Sylvan) | ✅ | scripted | `[game] japan_raiments` (issue #11): both listed NEW and drawn on the preview (test folder, US game, 2026-11-21) |
 
 ## Hub and Librom

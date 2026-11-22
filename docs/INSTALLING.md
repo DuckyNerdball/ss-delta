@@ -117,6 +117,22 @@ list); with another bottom, that bottom covers its legs. The
   `archive_patch3` in `fs/ux0/rePatch/`): remove it with this version's
   `--remove` before adding the new one.
 
+**The original game's Spirits' offerings.** The first *Soul Sacrifice*
+had 20 pre-order offerings (Spirits' Flamepike, Spirits' Icebrand ...
+Spirits' Gravelshield). Delta still has them, switched off, and ss-delta
+switches them on (`[game] spirits_offerings`, on by default, with Add-ons
+(DLC) on): each is given once in every save, at the end of Select
+Offerings, marked new. They look and play like Delta's own offerings of
+the same kind (Imp Pitchfork, Swordsman Icebrand, Firegiant's Arm ...),
+with their own numbers. Nothing of the original game is needed.
+
+* ss-delta makes a copy of the game's patch archive with them in
+  `fs/ux0/rePatch/` at the first start (it keeps the Undub's changes, and
+  the Undub installed later keeps them). Mods (rePatch) must be on.
+* Turned off, the copy is taken out at the next start. The game then
+  doesn't show them, and drops them from the save the next time it saves;
+  your other offerings stay as they are.
+
 Once the game is built, an add-on or a mod can be added on its own,
 without building the game again (it takes seconds):
 
