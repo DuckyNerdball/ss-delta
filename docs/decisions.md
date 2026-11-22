@@ -1312,3 +1312,35 @@ like the Undub (2026-11-22).
   the raiment list works. Writing the save image to fix it raced the
   game's own check of the file and stalled the load, so it is only
   reported.
+
+**Update 1 (2026-11-22): a packaged mod.** The owner wants to publish
+the mod outside the repository (Nexus Mods), as a file players add
+without touching folders. The first version was a whole `archive_patch3`:
+73.3 MB, of which 71.8 MB was Delta's own patch archive. It replaced the
+Undub's archive (a merged build per combination), and broke with any
+other mod of that archive. Now:
+
+* `og-raiments.py` makes a **packaged mod**, `ss-delta-og-raiments.zip`
+  (1.4 MB): the 27 models and textures and the 122 table rows, with an
+  `ss-delta-mod.json` (the format: BUILDING, "Packaged mods"). It installs
+  it with the front end, or writes it (`--out`).
+* The front end (`game-frontend/packaged_mods.cpp`, shared with utakata)
+  takes such a `.zip` through every path that adds a mod (the importer,
+  `--dump`, Android's Add an add-on, RecompLauncher; all reach
+  `--install-content`). It merges the package into the archive the game
+  reads, keeps it in `ux0/rePatch/<title>/ss-delta-mods/<id>/`, merges it
+  again when another mod replaces the archive (at install and at start),
+  and takes it out with `--remove-mod <id>`. Tested: the merged archive
+  equals the first version's member for member; with the Undub
+  installed before or after, the Undub's members stay, its voice file
+  among them; removed over the Undub, the Undub's archive is left exactly;
+  removed alone, rePatch's copy is deleted.
+* **Rejected:** a format of our own with its own extension (players and
+  Nexus know `.zip`; the manifest inside says what it is); shipping whole
+  archives (Delta's data in every download, and one mod per archive).
+* Removing one on Android has no button yet (Mods (rePatch) turns all
+  mods off).
+* What is uploaded is the owner's decision: the zip holds models from the
+  original game, which are collaboration content of other companies'
+  games (Nexus's guidelines on third-party content). The repository still
+  holds only the tool.

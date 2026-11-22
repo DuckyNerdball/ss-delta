@@ -22,8 +22,13 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   settings menu).
 * **The original game's raiments**, ARKS Armor and Dragonslayer, as a mod
   you make from your own copy of the first *Soul Sacrifice* (1.30):
-  `tools/og-raiments.py` in the repository builds and installs it
-  ([INSTALLING](docs/INSTALLING.md#what-you-need)).
+  `tools/og-raiments.py` in the repository makes it, a 1.4 MB `.zip`, and
+  installs it ([INSTALLING](docs/INSTALLING.md#what-you-need)).
+* **Packaged mods**: a `.zip` with an `ss-delta-mod.json` is added like
+  any mod (the importer, `--dump`, Android's Add an add-on), but merged
+  into the game's archive instead of replacing it, so it works with the
+  Undub installed before or after it. `--remove-mod <id>` takes it out
+  again.
 * **The logs of the last five runs are kept**: `ss-delta/vita3k.log` is
   the latest, `vita3k.1.log` to `vita3k.4.log` the runs before it. A
   report sent after the game was started again (RecompLauncher sends the

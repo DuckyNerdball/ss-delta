@@ -76,6 +76,15 @@ the other region's game, with no renaming. **Mods (rePatch)** on the
 settings menu's Game page (`[game] repatch` in `ss-delta.ini`) turns them
 off. To remove a mod, delete its folder in `fs/ux0/rePatch/`.
 
+**Packaged mods** are `.zip` files with an `ss-delta-mod.json` inside,
+such as the original game's raiments below. Add the `.zip` as it is,
+without unpacking it, the same way. Instead of replacing a whole archive,
+ss-delta merges a packaged mod into the archive the game reads, so it
+works together with rePatch mods like the Undub, installed before or
+after it. `ss-delta --remove-mod <id>` takes one out again (the log of the
+install names its id); deleting `fs/ux0/rePatch/` removes all mods. On
+Android there is no remove yet: Mods (rePatch) turns all mods off.
+
 **The original game's raiments.** The first *Soul Sacrifice* had two
 collaboration raiments that Delta never got: ARKS Armor (*Phantasy Star
 Online 2*) and Dragonslayer (*Ragnarok Odyssey ACE*). If you have the
@@ -89,20 +98,24 @@ folder, `og-raiments.py` and `lspk.py`, side by side:
 python og-raiments.py --original "<the original game>" --vita-fs "<ss-delta>/fs" --exe "<ss-delta>/ss-delta.exe"
 ```
 
-It reads the raiments' models from your copy of the original, builds the
-mod and installs it into `fs/ux0/rePatch/` (`--out <folder>` writes it to
-a folder instead, to add as a mod as above). Nothing from either game is
-in ss-delta; the mod is made on your computer. The two raiments then
-appear in Portraiture → Appearance → Raiments, marked new, with Add-ons
-(DLC) on. Wear one as both top and bottom (△ "Match with Above" in the
-bottom list); with another bottom, that bottom covers its legs. The
+It reads the raiments' models from your copy of the original, makes the
+mod, a packaged mod of about 1.5 MB, and installs it. With
+`--out <folder>` it writes `ss-delta-og-raiments.zip` there instead, to
+add later as above (on Android too). Nothing from either game is in
+ss-delta; the mod is made on your computer. The two raiments then appear
+in Portraiture → Appearance → Raiments, marked new, with Add-ons (DLC) on.
+Wear one as both top and bottom (△ "Match with Above" in the bottom
+list); with another bottom, that bottom covers its legs. The
 [gallery](GALLERY.md#from-the-original-game-mod) shows both.
 
-* Build it **after** the Undub, or again after installing the Undub: the
-  Undub replaces the same archive, and building over it keeps both.
-* `--remove` takes it out again. Put on another raiment first: a save
-  that wears one of the two shows no body without the mod until you
-  choose another raiment.
+* It works with the Undub installed before or after it.
+* `ss-delta --remove-mod og-raiments` (or `og-raiments.py --remove`)
+  takes it out again. Put on another raiment first: a save that wears one
+  of the two shows no body without the mod until you choose another
+  raiment.
+* A mod made by the first version of `og-raiments.py` (a whole
+  `archive_patch3` in `fs/ux0/rePatch/`): remove it with this version's
+  `--remove` before adding the new one.
 
 Once the game is built, an add-on or a mod can be added on its own,
 without building the game again (it takes seconds):
@@ -401,6 +414,7 @@ game: don't share it.
 | `--player <1-4>` | Ad Hoc Play: another player's copy |
 | `--title-id <id>` | with both versions installed: that one |
 | `--import-save <folder\|zip>`, `--export-save <folder>`, `--slot <1-3>` | saves, then quit |
+| `--remove-mod <id>` | take a packaged mod out again, then quit |
 | `--write-ini <file>` | write the default settings file there, then quit |
 
 On macOS the program inside the app takes them:

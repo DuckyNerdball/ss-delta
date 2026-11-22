@@ -132,13 +132,56 @@ own ([D17](decisions.md)):
 | Script | What |
 |---|---|
 | `tools/lspk.py` | list, extract and repack the game's LSPK archives (`.pkh`/`.pk`/`.pfs`) |
-| `tools/og-raiments.py` | the original game's raiments mod (D28), from the player's dumps of both games |
+| `tools/og-raiments.py` | the original game's raiments mod (D28), a [packaged mod](#packaged-mods) made from the player's dumps of both games; installs it, or writes the `.zip` (`--out`) |
 | `tools/questmaps.py` | the quest map list from `quest_param.csv` |
 | `tools/map-sweep.ps1` | screenshot every quest map through Stage Select (`-Frames`: at render resolution) |
 | `tools/devshell.ps1` | dot-source to load MSVC x64 and point CMake at Qt 6.11.0 (a fresh configure of the fork, `recomp/run-tests.ps1`) |
 | `tools/package4090.ps1` | build `dist/ss-delta-vita3k-test` (both Vita3K builds, the installed game, `run-matrix.bat`/`play.bat` from `tools/pkg4090/`) for testing on another PC |
 | `tools/deck-quest.sh` | on a Steam Deck: frame rate and APU power in a quest |
 | `game.json` | this game for the shared scripts: title, supported eboot, modules to recompile, the folder's README per platform |
+
+### Packaged mods
+
+A mod that adds to one of the game's archives instead of replacing it
+(the front end's `game-frontend/packaged_mods.h`; D28 update 1). It is a
+`.zip` (or a folder) with:
+
+* `ss-delta-mod.json`, the manifest:
+
+  ```json
+  {
+   "ss-delta-mod": 1,
+   "id": "og-raiments",
+   "name": "The original Soul Sacrifice's raiments: ARKS Armor and Dragonslayer",
+   "version": "1",
+   "titles": ["PCSA00152", "PCSF00532"],
+   "archive": "resource/data/pack/mount/retail/archive_patch3",
+   "tables_from": ["resource/data/pack/mount/retail/archive"],
+   "append": [
+    {"member": "resource/boot/costume_table.csv", "lines": "tables/costume_table.csv",
+     "conflicts": ["720,", "732,"]}
+   ],
+   "remove_note": "shown when it is removed"
+  }
+  ```
+
+* `files/<path in the archive>`: added to the archive, or replacing the
+  member of that path;
+* the `lines` files: lines (Shift JIS, `\r\n`) appended to that table in
+  the archive. A table the archive lacks is read from the first of
+  `tables_from` that has it. A line in it starting with one of
+  `conflicts` (rows another mod already added) stops the install.
+
+The front end merges it into the archive the game reads: the rePatch
+mod's (an undub's) or the game's own, written to `ux0/rePatch/<title>/`.
+The package itself is kept in `ux0/rePatch/<title>/ss-delta-mods/<id>/`
+(never served to the game). When another mod replaces that archive later,
+or it is deleted, the package is merged again (after an install, and when
+the game starts). `--remove-mod <id>` takes out its files (the game's own
+member put back where it had one) and its lines; when the archive left
+is the game's own, rePatch's copy is deleted. A package of the same id
+replaces the installed one. It runs only in ss-delta: nothing on a Vita
+reads the manifest.
 
 From the shared toolchain (`third_party/recomp/`, each script's docstring
 has its options):
