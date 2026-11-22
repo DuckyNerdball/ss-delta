@@ -979,8 +979,87 @@ numbers above:
     tapping skips a quest's opening (so does START).
   * Librom reacts to being touched ("Hey, that tickles. No touching!").
   * No rear-touch prompts were found. The eboot imports `sceTouchRead`,
-    `sceTouchSetSamplingState` and `sceTouchGetPanelInfo`. Which ports it
-    samples is not checked (**hypothesis:** the rear panel is unused).
+    `sceTouchSetSamplingState` and `sceTouchGetPanelInfo`. It samples both
+    panels (`0x8180fb02` reads ports 0 and 1). The rear panel is still
+    **hypothesis:** cosmetic only (Librom's `BK_BACK_TOUCH_*` reactions).
+* **Touch-only spots and the game's PS TV controls** (#12)
+  [local, 2026-11-22, static analysis of 1.30]:
+  * Not in the event scripts: the `resource/data/event/*_event_param.csv`
+    commands have no touch command. The touch waits are in code.
+  * The input chain: `sceTouchRead` goes into a 128-entry queue per panel
+    (`0x81d387c0`), then a gesture manager (`*0x81c9a7d4`), then a
+    dispatcher task (`*0x81c9881c`, update `0x81329d2a`). The dispatcher
+    passes gestures to registered listeners (base constructor
+    `0x813274ba`; fields `+0x48` enabled, `+0x4c` panel mask, virtual
+    `+0x30`) and answers "tapped inside a rectangle" (`0x8132a4dc`).
+  * `0x817e775a` is `sceKernelGetModel() & 0x20000`, i.e. "is a PS TV". It
+    is the eboot's only use of the model. Its 16 callers are where the
+    game behaves differently without a touchscreen. Seven of them have the
+    pattern "a tap in a rectangle, or (on a PS TV) a pad button"
+    (`0x812f1284`):
+    * PrisonEventOpening (`0x81721a7e`, `0x81722ae4`): the new-game book
+      grab, a 350×400 rectangle at the screen centre. The issue's case.
+    * PrisonEventAnotherEpisode (`0x81054cda`) and Prison, the hub
+      (`0x817374dc`, `0x81738474`).
+    * GestureMenuTask (`0x8133412a`, multiplayer gestures) and PlayerTask /
+      ControlChargeTabooMagic (`0x812f288e`, `0x8137e2fe`, the Black Rite).
+  * The other callers only branch on the model (**hypothesis:** they swap
+    the touch prompt for a button prompt): PrisonEventEther (`0x8171eeba`,
+    `0x8171f1da`, which, like Opening and AnotherEpisode, shows the finger
+    prompt `FingerUI` = `menu_018_004.d2b`), BookBormanShopTask, a Prison
+    menu list (`menu_018_014.d2b`), DeadFixUI and BookArEntryTask.
+  * So the story's touch waits are hub events (Opening, AnotherEpisode,
+    Ether, the hub itself), not cutscenes in quests.
+  * The pad buttons these checks take are the game's indices 8 and 9
+    (`0x812f05d0`: game bits `0x1000`, `0x2000`), which the pad read
+    (`0x8180e73e`, `sceCtrlReadBufferPositive2` port 0) makes from
+    `SCE_CTRL_L2` (`0x100`) and `SCE_CTRL_R2` (`0x200`): a DualShock's
+    triggers on a PS TV. In the extended functions a Vita's L/R are L1/R1
+    (`0x400`/`0x800`, game bits `0x40`/`0x80`), so a Vita never sends them.
+  * Vita3K's `pstv-mode` alone did nothing here: its `SceKernelModel` enum
+    was 0 and 1 (upstream and Vita3K-Plus too), while the SDK's values are
+    `0x10000` and `0x20000`, so `& 0x20000` never matched. Seen in a run
+    (the opening sat in state `0x436`, the PS TV check, with R2 reaching
+    the pad object); fixed in our fork.
+  * With the fix, `[game] pstv_mode` plays the new-game opening without
+    touch [checked in a run, 2026-11-22, test folder]: R2 pulls Librom out
+    of the bones (three pulls, the `+0x68` counter), ✕ advances the text,
+    the camera scene and "Go on, have a peek", and the game goes on into
+    the first quest. Seen on the way: on a PS TV the dialogue shows a ✕
+    prompt, and the camera scene before the prisoners' movie waits for ✕
+    (without PS TV mode it went on alone after about 160 s).
+  * The other spots [checked in runs, 2026-11-22, test folder; the events
+    started through a test-only patch of the event index the hub passes on
+    a load (`0x81735cc4`, `0x8173619a`, `0x8173647e`: `movs r1, #2`,
+    PrisonEventContinue, the factory `0x8172892c`'s index; 15
+    AnotherEpisode, 6 Ether) on the JIT, since the native eboot ignores a
+    code patch, and the PrisonCameraTask mode `+0x44` set to 6, which both
+    events wait for]:
+    * PrisonEventAnotherEpisode (after `q_e1304`): its wait takes a tap, ✕
+      (`pad +0x20 & *0x81de1e80`, `0x200`) on any model, and L2/R2 on a PS
+      TV. R2 and, without PS TV mode, ✕ open the book (the Red Hood
+      episode).
+    * PrisonEventEther (lacrima): a tap near the hand, button index 16
+      (`*0x81de1e80`, ✕) on any model, L2/R2 on a PS TV. R2 and, without
+      PS TV mode, ✕ give the lacrima.
+    * So of the story's finger prompts only the opening's grab is
+      touch-only on a Vita.
+    * Prison (hub, `0x817374dc`, `0x81738474`): the touch squashes the
+      cockroaches (`Cockroach`, `0x8170e2e4`) and turns the view; on a PS
+      TV L2/R2 at the screen centre. Cosmetic.
+    * Black Rite (`0x812f288e`): a tap in the lower-left 128×128 on any
+      model, plus L2 (index 8) on a PS TV, so with PS TV mode LT is the
+      Black Rite twice over (the `[touch]` binding and the game's L2), one
+      check. Not played (Stage Select's player had no rite to show).
+    * Blocked on a PS TV with system text 1225 ("You may not use this
+      feature under the present circumstances."): BookArEntryTask (AR, the
+      camera), a state of BookBormanShopTask whose Vita branch starts
+      `NearTask`, and entry 2 of the Network menu (PrisonMultiMenuTask; its
+      three shown entries, Play Online, Ad Hoc Play, Sorcerer Stats, still
+      open: **hypothesis** that entry 2 is near).
+    * Not played: GestureMenuTask (multiplayer gestures; it takes pad
+      buttons on any model) and DeadFixUI (influencing players while dead
+      in multiplayer; its PS TV branch draws something else).
 
 ### Rendering facts
 

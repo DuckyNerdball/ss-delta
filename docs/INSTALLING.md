@@ -335,6 +335,14 @@ installs only that.
 * **Touch:** the mouse (or trackpad) is the touchscreen: left button front,
   right button rear. The Black Rite icon (touch and hold) is also on F and on
   the gamepad's left trigger.
+* **Without touch (PS TV controls):** PS TV controls on the settings menu's
+  Game page (`pstv_mode = true` under `[game]`, read at start) run the game
+  as a PlayStation TV, which has no touchscreen. The one touch the story
+  needs, pulling Librom out of the bones at the start of a new game, then
+  takes L2 or R2: the gamepad's triggers, or U and O on the keyboard
+  (`l2`, `r2` under `[keyboard]`). The game's text prompts show ✕ instead
+  of touch. The Vita's "near" feature is unavailable then (it no longer
+  works anyway), and so is AR mode, which needs the camera.
 * **Frame rate:** 60 fps by default; `frame_rate = 30` under `[display]`
   gives the Vita's rate. Loading screens run at 30.
 * **Intro logos:** Skip intro logos on the settings menu's Game page
