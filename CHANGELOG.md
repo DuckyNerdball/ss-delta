@@ -29,7 +29,9 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   Blank Page has eight slots for created pact pages, and only three are
   open. The other five were unlocked with Memory Clods, bought on the
   PlayStation Store. With Add-ons (DLC) on, ss-delta now unlocks them in
-  the loaded save, and the game keeps them when it saves.
+  the loaded save, and the game keeps them when it saves. "Sacrifice
+  memory", which made a page with a Memory Clod instead of an Offering
+  (with rewards you don't own yet), works too.
 
 ### Fixed
 

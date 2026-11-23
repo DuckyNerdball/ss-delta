@@ -555,7 +555,11 @@ check sets the save's slot mask (`datag000N.bin` `0xc2508`) to `0xff`
 (01-research, "Blank Page slots"). No separate switch: Memory Clods were
 paid PSN content like the add-ons, and the slots are empty until the
 player makes a page. The game keeps the mask when it saves, so turning
-`dlc` off later leaves the slots open.
+`dlc` off later leaves the slots open. Clods also paid for a pact page in
+place of an Offering ("Sacrifice memory"). That spend is a network task that
+never completes offline; with `dlc` on the front end marks a running spend
+as paid (its `+0x48`), so the page is made as if a clod had been spent.
+Nothing is added to the save beyond what the game writes for the page.
 
 ## D15 — Ad hoc play uses Vita3K's ad hoc support; copies on one PC take 127.0.0.N (accepted, 2026-10-12)
 

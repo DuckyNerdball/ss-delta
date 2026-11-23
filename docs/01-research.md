@@ -1078,11 +1078,58 @@ numbers above:
     Offering), and the game's auto-save wrote `0xff` to the `.bin` and the
     `.bak` [test folder, story-complete save]. `[game] dlc` now sets it (D14
     update 2).
-  * Clods also paid for a page in place of an Offering ("Sacrifice memory"
-    on the create screen). That path has its own reward rules (2211–2221:
-    accessories not yet owned, then a voice, then Rumor Notes) and stays
-    locked. Where the clod count comes from (the eboot imports
-    `sceNpAuthGetEntitlementById` and `sceNpTus` variables) is not traced.
+  * Erasing a page (□ on the slot list) works on the new slots too: a page
+    made in slot 4 and erased read "Blank" again [test folder].
+  * **"Sacrifice memory"** (Create page → difficulty → the right-hand
+    choice) made a page with one Memory Clod in place of an Offering, with
+    its own reward rules (2211–2221: accessories not yet owned, then a voice,
+    then Rumor Notes). Every clod spend is a network task: `0x81278238`
+    makes it from a request (kind, two system texts, the clods needed),
+    `0x812782f4` runs it (vtable `0x81c5d004`, at `*0x81c953d0` while it
+    lives). `+0x44` is its state (`tbh` at `0x81278364`, 14 states),
+    `+0x48` is 1 once the clods are spent, which only state 11
+    (`0x81278412`) writes, `+0x54` 1 for a page and 3 for a slot (the clods
+    needed, **hypothesis**: texts 2006 and 2011 show such a count),
+    `+0x58`/`+0x5c` the
+    texts of its dialogs (2007 "Insufficient Memory Clods" for a page and
+    for a slot), `+0x60` 1 for the store page (START, "Add memory", text
+    2004). Requests: `0x81021afe` (create screen, kind 1), `0x81024ff2`
+    (slot unlock, kind 3), `0x810253c0` (store page). Offline it ends
+    without `+0x48`. The create screen waits while the task lives and takes
+    `+0x48` = 1 as paid (`0x81021838`), then makes the page and saves.
+    `[game] dlc` now writes the 1 while a spend runs (not for the store
+    page): a page was made this way, saved, its three pacts listed and
+    played [test folder, 2026-11-23]. Where the clod count itself comes
+    from (`sceNpAuthGetEntitlementById`, `sceNpTus` variables) is still not
+    traced; nothing needs it now.
+  * **The bosses a page can roll** are `boot/white_page_boss.csv`
+    (`archive_patch3`): one row per boss, with its element, whether it pairs
+    in a Gemini pact, its own map (`ST20A` Hansel & Gretel, `ST16A`
+    Leviathan, `ST17C` Magusar's forms), unlock columns (after the first
+    clear, after the last chapter, after a quest: `q_e0273` for Terrwyn),
+    the name text (`whitepage_quest_name_text`, e.g. 30430 "Candy Kids"),
+    the maps it fits and its music. Chimera (`ch7512`), the Pied Piper of
+    Hamelin (`ch7112`), Terrwyn (`ch7412`) and Hansel & Gretel (`ch7302`),
+    which players report as met only through Blank Pages, are rows there.
+    Each was forced as the only rollable boss (a loose copy of the table
+    with `PackFileFirst false`, test folder only) and played in a page made
+    with Sacrifice memory: Terrwyn in Noah's Desert East, the Pied Piper on
+    Leviathan's 2nd floor, Hansel & Gretel at the Gingerbread House (two
+    bodies sharing 14,500–17,400 HP), Chimera in the Ruins of Tartarus East
+    (18,000 HP). Each entered, fought, fell, was sacrificed, and its pact
+    was stamped Eliminated [2026-11-23]. A table with only those four rows
+    crashed the page's creation (a read at `0x400000000` in libc): the game
+    expects the other rows.
+  * **Co-op** [test folder, players 3 and 4, 2026-11-23]: Ad Hoc Play's
+    Select Quest has a **Blank Page** tab (top right of the Pacts index)
+    that lists the host's own pages. A pact above the room's difficulty cap
+    shows "Difficulty cap" and can't be picked; this save allowed rooms up
+    to 10 (15 needs a later chapter). The host's Normal page ("Giant Bird
+    in Ruins", Griffin) was picked: both lobbies showed it, both entered
+    the quest together, each showed the other's sorcerer, and both reached
+    the results (the Griffin's HP is scaled for the party: 54,400). Online
+    co-op (Play Online) needs PSN, which neither the game's servers nor
+    Vita3K provide: offline it returns to the menu (patch 0036).
 * **Japanese Voice-over Pack** [local, 2026-11-20]: a separate PSN add-on,
   not in 1.30's data and not in the entitlement table above.
   * Content IDs `UP9000-PCSA00152_00-SSS000CVN0000001` (US) and
