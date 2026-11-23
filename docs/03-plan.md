@@ -564,6 +564,18 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     through a save and reload without being given again; the save loads
     without them with every other offering unchanged; the setting off
     deletes rePatch's copy. US game, test folder, 2026-11-22.
+  * ☑ Sortiara as an ally (D31): `[game] sortiara_ally` (off by default)
+    adds her to the roster once a save. Listed NEW in Select Allies with her
+    portrait, details and six offerings; she fought in a Phantom Quest;
+    the game saved her and she was still an ally after a reload with the
+    setting off (test folder, story-complete save, 2026-11-23). Still to
+    check: her falling and Undo Death, affinity growth, a story quest she is
+    already in.
+  * ☑ A save that never stored the gifts failed to load with `dlc`
+    ("Failed to load save data."): the grant wrote into the image before the
+    game's checksum check. It now keeps the checksum right (01-research,
+    "Failed to load save data." with the add-on gifts). The story-complete
+    test save loads with `dlc` on, gifts and all (2026-11-23).
 
 * ☑ **Xbox button labels** (2026-11-20; research in
   [01-research](01-research.md#button-prompts-local-2026-11-20)).

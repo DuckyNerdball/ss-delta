@@ -33,8 +33,21 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   memory", which made a page with a Memory Clod instead of an Offering
   (with rewards you don't own yet), works too.
 
+* **Sortiara as an ally**: Sortiara, who fights beside you in the early
+  story, can join your allies (`[game] sortiara_ally`, off by default; the
+  settings menu's Game page). The game has everything she needs as an ally
+  (her offerings, voice and portrait) but never adds her. She is added once
+  per save, listed NEW in Portraiture > Allies, and the game keeps her when
+  it saves.
+
 ### Fixed
 
+* **"Failed to load save data." with Add-ons (DLC) on** (since 0.4.2): a
+  save that was never saved with the add-on gifts in it (an imported Vita
+  save, for example) could fail to load. The gifts were written into the
+  save while the game's "Loading complete" dialog was up, and the game's
+  own check of the file then failed. They are now given without breaking
+  that check.
 * **Blitz offerings at 60 fps**
   ([#14](https://github.com/vita-recomps/ss-delta/issues/14)): after a hit,
   a Blitz offering's push-back moved the caster a fixed step every frame,

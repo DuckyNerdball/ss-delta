@@ -1490,3 +1490,39 @@ rather than a mod the player makes, as for the Japan-only raiments.
   with `aot_module_has_feature`, for a module whose native code is
   checked. With `loading_race` the 30 fps loading screens are dropped;
   without it (an eboot built before, the JIT) they stay.
+
+## D31 — Sortiara as an ally: a setting of `ss-delta.exe` that adds her to the roster (accepted, 2026-11-23)
+
+**Context:** the owner asked whether Sortiara, who fights beside the
+player in the early story quests, could become a normal ally as an
+optional built-in mod. Her data is complete (`ch9000_06`: model, AI,
+offerings, portrait, voice, name, a variant), but no row of
+`boot/member_add_list.csv` names her, so no quest clear adds her
+(01-research, "Sortiara as an ally"). Setting her roster flag in memory
+put her in Select Allies, and she fought in a Phantom Quest.
+
+**Decision:**
+
+* `[game] sortiara_ally` (off by default, live in the settings menu):
+  while it is on, `ss-delta.exe` sets her roster entry in the play block
+  as the game's own add does (`0x812f737e`: flags new and ally, affinity
+  kept within 0..200). The game writes it into the save.
+* Once a save: only while she is neither an ally nor fallen (flags bits
+  1–3 clear), so a fall or a sacrifice stays.
+* Off doesn't take her away (she may be in an ally slot).
+
+**Rejected:**
+
+* A packaged mod with her row in `member_add_list.csv`: the game's own
+  path, with its "joined" notice, but only at the named quest's clear
+  (saves past it would have to replay it). It also needs a copy of
+  `archive_patch3` and Mods (rePatch) on.
+* Writing her into the save image: the game copies the block into the
+  image when it saves, and a write into the image can fail the load's
+  checksum check (01-research, "Failed to load save data.").
+
+**Consequences:**
+
+* It works on native code and the JIT alike (data only, no code change).
+* Not yet checked: her falling and Undo Death, affinity growth, her variant,
+  a story quest she is already in, a new game before her chapter.

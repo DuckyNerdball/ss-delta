@@ -658,6 +658,72 @@ Why the quest-start loading screen never ended at 60 fps (02-baseline,
   the id in the player's slot (`+0x1d0 + 4 × slot`) during a quest doesn't
   change the skill.
 
+### Sortiara as an ally [local, 2026-11-23]
+
+* **The data is complete.** Sortiara is `ch9000_06` (`ニミュエ`, Nimue):
+  * `chara_id_table.csv` (model `np006_bs00_00`, params `!npc001` as Magusar's `ch9000_00`, AI `np006`,
+    voice `npc_voice_06`, intro cameras `CAM--_EV_INTORO-NIM_0n`);
+  * `npc_param.csv` `np006` (six offerings);
+  * `member_list.csv` (portrait `menu_005_120`);
+  * `member_variety_list.csv` (variant `ch9004_60`);
+  * 22 battle lines in `npc_voice_param.csv`, as many as the other story allies;
+  * "Sortiara" in `chara_name_text`.
+
+  `ch9004_60`/`_61` are her story-quest versions (`q_e01xx` lines), `ch9102_*` her boss forms.
+* **Missing: a row in `boot/member_add_list.csv`** (`archive` only, 18 rows: chara id, the quest whose
+  clear adds the member, a flag, a comment). The loader is `0x817acd54`: table `*0x81c9a39c`, 0x24-byte
+  entries {id[16], quest[16], int}, count `*0x81d315f4`. The trial build reads `member_add_list_trial.csv`.
+  At a quest clear, `0x812b031e` looks up the quest (`0x817acf84`). If the member isn't in the roster yet
+  (`0x812f795a`), `0x812f737e` adds them. A nonzero third column also shows a notice (`0x817429ee`).
+  Rows with 0 there (Sympatha, Bowman, Maisie, ...) still join.
+* **The roster** is in the play block (`*0x81c98618`): count `+0x5c31c` (495, `member_list.csv`), 0x1c-byte
+  entries from `+0x5c320`: {member id, affinity, 0, 0, a value (-1 for unmet), flags, `member_list` record}.
+  The member id is `atoi(id+2) × 100 + atoi(id+7)`, so Sortiara is 900006, index 6. Flags bit 1 (2) =
+  selectable ally; the add sets bits 0 and 1 (3), clamps affinity to 0..200, zeroes `+0x8`/`+0xc`. The save
+  keeps 0x18-byte records from file offset `0x4c360` (Sortiara `0x4c3f0`). Both test saves hold
+  affinity (6 early, 12 story-complete) and the value 3 for her, with flags 0.
+* **Tested by hand first** (test folder, story-complete save, flags set to 3 in memory with `memwrite`,
+  nothing saved):
+  * Select Allies lists "Sortiara – Dark Arm III – C", marked NEW.
+  * Her details page shows "The Mad Sorceress", Avalon, Affinity C, the six `np006` offerings, Give
+    Offering and Undo Death.
+  * In a Phantom Quest (Croaking Fiends in the Forest) she spawns with her intro camera, follows and fights.
+* **Flags:**
+  * Death and sacrifice set bits 2 and 3 over bit 1 (`0x812f74e0` ff.); `0x812f764c` clears them again.
+    None of the member accessors (`0x812f7210`–`0x812f7d3e`) clears bit 1.
+  * So `[game] sortiara_ally` (D31) adds her only while bits 1–3 are all clear, which makes it once a save.
+* **Tested with `sortiara_ally`** (test folder, story-complete save):
+  * She joined with the affinity of the save (12).
+  * The game wrote her into the file when it saved: record `{900006, 0, 12, 0, 3, 3}`.
+  * The file loaded again with the setting off, and she was still an ally.
+* **Not checked yet:**
+  * affinity growth and her `ch9004_60` variant;
+  * her falling, Save/Sacrifice and Undo Death;
+  * picking her for a story quest in which she already appears;
+  * a new game before her chapter, where her record may still be unmet (-1);
+  * Ad Hoc Play with a peer without the setting (the member id is in every copy's tables, so probably
+    harmless: **hypothesis**).
+
+### "Failed to load save data." with the add-on gifts [local, 2026-11-23]
+
+* **The save's checksum:** `+0x1c` of the file holds CRC-32/BZIP2 (`0x81803dc2`) of all 0xef0e0 bytes,
+  with `+0x1c` taken as 0, whenever `+0x18` is 0x22. `0x8178322a` sets it before the file is written.
+* **The check:** a load reads the file into the image (`*0x81c9a160`) and shows "Loading complete". Once
+  the player confirms, `0x8178ab88` checks it with `0x81783248`, which zeroes `+0x1c` and doesn't put it
+  back (seen: the image's `+0x1c` is 0 in the hub).
+* **The cause:** `[game] dlc`'s gift grant (`grant_addon_gifts`, twice a second) gave its gifts in the
+  image while that dialog was up. The check then failed: "Failed to load save data.", and back to the
+  title. It hits every save that was never written with the gifts in it: here the story-complete save
+  (ss-delta 0.5.0, the test folder; it loaded with `dlc = false`). A save that already had them (the
+  test folder's slot 1) wrote nothing and loaded.
+* **Fixed in the fork:**
+  * The grant leaves an image alone while its checksum is set but doesn't match: the game is still
+    filling or writing it.
+  * Over an image whose checksum matches (a file just read, or just written), it writes and then sets the
+    checksum again.
+  * Tested: the dialog was left up 12 s, the image's CRC matched after the gifts were given, the save
+    loaded, and after an in-game save the file held the gifts with a valid checksum.
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |

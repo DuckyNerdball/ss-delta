@@ -90,6 +90,8 @@ and the rest; [game] spirits_offerings), which Delta keeps switched off: ss-delt
 switches them on in a copy of the game's patch archive in fs\ux0\rePatch.
 The original Soul Sacrifice's ARKS Armor and Dragonslayer can be added as a mod
 made from your own copy of that game (INSTALLING on the project's page).
+Sortiara, who fights beside you in the early story, can join your allies:
+[game] sortiara_ally = true (off by default). The game keeps her once it saves.
 
 The Japanese Voice-over Pack is a separate add-on (the one for your
 version, US or EU). If you have it (a decrypted folder or .zip, or its .pkg
