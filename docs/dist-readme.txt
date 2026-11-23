@@ -3,9 +3,8 @@ ss-delta: Soul Sacrifice Delta (US PCSA00152 or EU PCSF00532, 1.30) on PC.
 Start ss-delta.exe. The first time, it builds the game from your own dump: a
 window asks for it (a folder, .zip or .vpk of the game with its 1.30 update, or
 the PSN .pkg files with their licence), downloads the PS Vita firmware from
-Sony and a compiler (about 650 MB; accept Microsoft's licence for the C++
-runtime and Windows SDK it uses), installs the game and compiles its code on
-this PC, which takes a few minutes. Play then starts the game, and from then on
+Sony (about 180 MB; the compiler is in setup/toolchain), installs the game
+and compiles its code on this PC, which takes a few minutes. Play then starts the game, and from then on
 ss-delta.exe goes straight to it. Windows may warn the first time ("More info",
 "Run anyway"): ss-delta.exe isn't signed.
 
@@ -15,8 +14,8 @@ The downloads are deleted once the game is built; delete the folder and the
 game is gone. Nothing of the game leaves your PC.
 
 Command line (ss-delta.exe --help lists it all): --install opens the importer
-again (another dump, an update); --dump <file> builds without the window (add
---accept-microsoft-license); --fullscreen or --windowed; --set section.key=value
+again (another dump, an update); --dump <file> builds without the window;
+--fullscreen or --windowed; --set section.key=value
 sets any setting of ss-delta.ini for one run; --game <folder> plays the game in
 another folder.
 

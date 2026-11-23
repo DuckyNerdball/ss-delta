@@ -4,6 +4,31 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### New
+
+* **Building without internet**: `--download-only <folder>` saves
+  everything the first build downloads (the firmware and the compiler),
+  and a build then takes them from that folder (`--offline <folder>`, the
+  importer's "Downloaded files" row, or a folder named `offline` in the
+  game's folder) instead of the internet. Firmware PUPs you already have
+  work too, whatever their names. See
+  [INSTALLING](docs/INSTALLING.md#without-internet).
+
+### Changed
+
+* **The compiler comes with the release; no Microsoft licence.** The
+  game's code is now compiled with zig on Windows too, as on Linux and
+  macOS, and each release carries it: the first build downloads only the
+  PS Vita firmware (about 180 MB; Windows downloaded 650 MB before), and
+  there is no Microsoft licence to accept. `--accept-microsoft-license`
+  is still accepted and does nothing. The release is about 100 MB larger
+  (Linux and macOS 55 MB).
+* **Fallback downloads**: when Sony's server (or ziglang.org) doesn't
+  answer, the setup takes the same files from the Wayback Machine's
+  copies, checked by SHA-256.
+
 ## 0.5.0 (2026-11-23)
 
 ### New

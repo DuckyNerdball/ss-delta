@@ -180,9 +180,6 @@ as `C:\Program Files`).
    (it isn't signed with a publisher's certificate): click "More info", then
    "Run anyway".
 3. The importer opens: see [the first start](#the-first-start-building-the-game).
-   On Windows, also tick that you accept Microsoft's licence for the C++
-   runtime and Windows SDK the compiler uses (it downloads them from
-   Microsoft).
 
 The importer can put a shortcut on the desktop.
 
@@ -313,9 +310,8 @@ The importer's window asks for your dump:
 
 Then **Build**. The importer:
 
-* downloads the PS Vita firmware from Sony and a compiler (Windows: about
-  650 MB, LLVM's clang with Microsoft's C++ runtime and SDK; Linux and
-  macOS: about 240 MB, zig);
+* downloads the PS Vita firmware from Sony (about 180 MB; the compiler,
+  zig, comes with the release);
 * installs the game into the folder, starts it once unseen to read its code,
   translates that code to C++ and compiles it on your computer;
 * deletes the downloads and its work files.
@@ -327,8 +323,8 @@ straight to it.
 Without the window (for scripts and launchers):
 
 ```
-ss-delta.exe --dump "<your dump>" --accept-microsoft-license      (Windows)
-./ss-delta.x86_64 --dump "<your dump>"                            (Linux)
+ss-delta.exe --dump "<your dump>"           (Windows)
+./ss-delta.x86_64 --dump "<your dump>"      (Linux)
 ```
 
 `--build-only` builds and quits instead of playing, and `--progress` adds
@@ -341,21 +337,21 @@ reinstall, or a time when a download link no longer works). Once, with
 internet:
 
 ```
-ss-delta.exe --download-only "<folder>" --accept-microsoft-license   (Windows)
-./ss-delta.x86_64 --download-only "<folder>"                         (Linux)
+ss-delta.exe --download-only "<folder>"           (Windows)
+./ss-delta.x86_64 --download-only "<folder>"      (Linux)
 ```
 
-This saves the firmware and the compiler in that folder (Windows about
-450 MB, Linux and macOS about 240 MB), with a list of them
+This saves the firmware in that folder (about 180 MB), with a list
 (`offline.json`), and builds nothing. `--for windows,linux,macos,android`
-(or `all`) saves what those platforms need too. Then either put the
+(or `all`) saves what those platforms need too (their compiler, adb for
+Android). Then either put the
 folder in the game's folder as `offline`, choose it in the importer's
 "Downloaded files" row, or pass `--offline "<folder>"` with `--dump`.
 Files are recognised by their size and SHA-256, whatever their names, so a
 folder holding the firmware PUPs you already have (`PSVUPDAT.PUP`,
 `PSP2UPDAT.PUP`) works too; anything not found there is downloaded as
-usual. The firmware and Microsoft's files are under their owners'
-licences: keep the folder for yourself.
+usual. The firmware is under Sony's licence: keep the folder for
+yourself.
 
 **RecompLauncher:** each release carries a `recomplauncher.json`, so
 [RecompLauncher](https://recomplauncher.com/game/ss-delta) can install the game, build
@@ -472,7 +468,6 @@ game: don't share it.
 | `--install` | open the importer again (another dump, an update), then play |
 | `--dump <file> [--license <work.bin\|.rif> \| --zrif <zRIF>]` | build from this dump without the window (repeat for the update and add-ons; also `--dump=<file>`), then play. A `.pkg` takes the licence beside it. With the game built, add-ons alone are installed without building again |
 | `--build-only` | build if needed (or with `--install` / `--dump`), then quit |
-| `--accept-microsoft-license` | Windows, with `--dump`: accept Microsoft's licence for the compiler's runtime and SDK |
 | `--shortcut`, `--steam` | with `--dump`: a desktop shortcut, menu entry or Applications copy; add the game to Steam (Linux) |
 | `--cache <folder>`, `--jobs <n>` | with `--dump`: keep the downloads there for next time; compile with n jobs |
 | `--offline <folder\|file>` | take the downloads from there first (any name, matched by size and SHA-256; repeatable). The game folder's `offline` is used unasked ([without internet](#without-internet)) |

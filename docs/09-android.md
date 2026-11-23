@@ -541,8 +541,11 @@ ST03A at 59.9 fps on Turnip.
 **The kit** (`third_party/recomp`):
 
 * `toolchain.py`: the Android branch of the zig build;
-  `toolchain-android-windows.json` pins zig for Windows (96 MB, SHA-256);
+  `toolchain-android-windows.json` pinned zig for Windows (96 MB, SHA-256);
   fetch unpacks zips too. Linux and macOS use their own lock file's zig.
+  Since 2026-11-23 the Windows PC's modules are built with zig too
+  (03-plan, installer future-proofing E): `toolchain-windows.json` is that
+  zig, and every platform's setup uses its own lock file's zig for Android.
 * `build-recomp.py --android --toolchain <dir>` → `build/recomp-android-zig`.
 * `install-game.py --android <dir>`: after the PC's modules, Android's, into
   `<out>/android/`.

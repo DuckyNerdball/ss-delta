@@ -1526,3 +1526,58 @@ put her in Select Allies, and she fought in a Phantom Quest.
 * It works on native code and the JIT alike (data only, no code change).
 * Not yet checked: her falling and Undo Death, affinity growth, her variant,
   a story quest she is already in, a new game before her chapter.
+
+## D32 — Players' compiler: zig on every platform, carried in the release (accepted, 2026-11-23)
+
+**Context:** the owner asked for a setup that keeps working when a
+download link dies, and without a network (03-plan, "Installer
+future-proofing"). On Windows the setup downloaded 447 MB from Microsoft
+and GitHub (D18: llvm-mingw's clang-cl with Microsoft's C++ runtime and
+Windows SDK, which the player had to accept and nobody may redistribute).
+zig was already the compiler on Linux and macOS (D20, D21) and, on
+Windows, for Android's modules (D27).
+
+**Decision:**
+
+* The Windows modules are built with zig for `x86_64-windows-gnu`
+  (MinGW-w64's headers; the DLLs call Windows' own UCRT), loaded by the
+  MSVC-built front end through `aot_abi.h`'s C interface. The kit's
+  clang-cl path and its Microsoft lock file are gone (git history keeps
+  them); `toolchain-windows.json` is zig. `--accept-microsoft-license` is
+  accepted and ignored, for launchers that still pass it.
+* Every release carries its platform's pinned zig in `setup/toolchain`
+  (make-setup.py; MIT, its licence beside it). A player's setup then
+  downloads only Sony's firmware (and adb for Android).
+* Every download keeps a fallback: lock entries and the firmware list
+  name mirrors (the Wayback Machine's copies, at snapshots checked to be
+  the pinned file), and a weekly workflow checks every URL and mirror.
+
+**Checked:** the ten modules built in 10 min (as with clang-cl); each
+exports only its two entry points. They match guest memory and run as
+the MSVC-built ones do: the title menu, then quest 2 (ST03A) walked and
+fought through, at the same frame rate (59.3 against 59.5 fps), with
+33,032 escapes (the fork's C++ `throw` unwinding through the modules on
+Windows' SEH tables). The maths: zig's software `fmaf` (the baseline CPU
+has no FMA) against UCRT's gave the same result in 60 million cases but
+16 `inf × 0 + NaN` cases, which differ only in the NaN's sign and never
+reach `fmaf` (`neon.h` returns before it); `sqrt` is `sqrtss` against
+UCRT's `sqrt`, both correctly rounded, and generated code passes its
+result through `process_nans`.
+
+**Rejected:**
+
+* Keeping clang-cl with a mirror of Microsoft's files: they can't be
+  redistributed, so no mirror of ours could hold them.
+* Trimming zig's headers to the targets used: 34 MB of 399 MB unpacked,
+  a few MB in the archive.
+
+**Consequences:**
+
+* Windows' first build downloads 182 MB (the firmware) instead of
+  650 MB, with no licence to accept; the release grows by zig's ~100 MB
+  (Linux and macOS ~55 MB).
+* A release plus the firmware PUPs (which many players already have from
+  Vita3K) builds the game without a network.
+* A front end change that needs C++ types or exceptions across the
+  module boundary would now meet two C++ runtimes: `aot_abi.h` stays a C
+  interface.

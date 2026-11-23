@@ -43,17 +43,7 @@
     "label": "Building the game from your dump: the PS Vita firmware from Sony and a compiler are downloaded, and the game's code is compiled on this PC",
     "timeout": 3600,
     "version": "v0.5.0",
-    "options": [
-      {
-        "id": "microsoft",
-        "label": "Accept Microsoft's licence for the compiler's C++ runtime and Windows SDK",
-        "note": "Downloaded from Microsoft to compile the game's code on this PC.",
-        "args": ["--accept-microsoft-license"],
-        "os": ["windows"],
-        "license": { "name": "Visual Studio Build Tools licence", "url": "https://go.microsoft.com/fwlink/?LinkId=2179911" },
-        "required": true
-      }
-    ]
+    "options": []
   },
   "config": [
     {

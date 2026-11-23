@@ -1205,11 +1205,11 @@ port needs no JIT (D11, `VITA3K_DYNARMIC=OFF`).
 **Exit:** with an iPad or iPhone, a PC or Mac and their own dump, a
 player sideloads their own IPA and gets to a quest on native code.
 
-## Installer future-proofing: offline installs (M) ◐
+## Installer future-proofing: offline installs (M) ☑
 
 The owner asked on 2026-11-23: the setup must keep working when a
-download link dies, and work without a network. Today a player's setup
-downloads (kit `setup.py`):
+download link dies, and work without a network. Before this work a
+player's setup downloaded (kit `setup.py`):
 
 | What | From | Size | Redistributable? |
 |---|---|---|---|
@@ -1259,29 +1259,58 @@ no fallback.
     booted to the title at 60 fps on native code; `ss-delta.exe
     --download-only` filled a second bundle from the first, offline.
     Linux and macOS not run yet (the same code paths, zig's lock).
-* ☐ **C. Fallback URLs.** Lock entries take `urls: [...]`, tried in
-  order; the hash makes any mirror safe. The firmware: the Wayback
-  Machine has both PUP URLs (snapshots 2026-07-24 and 2026-02-27, HTTP
-  200; the raw bytes from `…/web/<timestamp>id_/<url>`). **Hypothesis:**
-  the snapshots are the whole files (hashes not checked yet). llvm-mingw
-  and zig: a copy as an asset of our own release.
-* ☐ **D. Bundle what may be bundled.** zig (Linux, macOS, Android) and
-  llvm-mingw inside the release archive (+50–90 MB a platform, more for
-  llvm-mingw): then only Sony's firmware is downloaded outside Windows.
-* ☐ **E. No Microsoft download on Windows** (experiment). The modules
-  for llvm-mingw's or zig's `x86_64-windows-gnu`, which need no
-  Microsoft headers or libraries. **Hypothesis:** possible because
-  `aot_abi.h` is a C interface (plain structs, an `extern "C"` export);
-  needs no C++ types or exceptions crossing into the MSVC-built exe, and
-  bit-identical maths (both use `ucrtbase.dll`). With D, only the
-  firmware is left to download.
-* ☐ **F. A weekly link check.** A scheduled workflow sends a HEAD request
-  to every pinned URL (the lock files, `fetch-firmware.py`) and opens an
-  issue when one stops answering 200 or changes size.
+* ☑ **C. Fallback URLs** (2026-11-23). Lock entries take `mirrors`
+  (kit `toolchain.obtain`), the firmware `MIRRORS` (`fetch-firmware.py`),
+  tried in order after the URL; a copy whose SHA-256 is wrong goes on to
+  the next, and the error lists every URL. The mirrors are the Wayback
+  Machine's raw copies (`https://web.archive.org/web/<timestamp>id_/<url>`)
+  at snapshots whose SHA-1 (Wayback's CDX index) is the pinned file's:
+  every PSVUPDAT snapshot with HTTP 200 is the file; PSP2UPDAT's
+  2022-07-07 and 2025-07-15 are, but its newest (2026-02-27) is another
+  file, so a mirror names a checked timestamp, never the newest. Two a
+  file for the PUPs and the three zigs; PSP2UPDAT's 2025-07-15 copy and
+  the Linux and macOS zigs were downloaded and their SHA-256 checked.
+  With Sony's host made unreachable, `fetch-firmware.py` took PSP2UPDAT
+  from Wayback. adb has no copy there (left: an archived copy, or a
+  mirror of our own; Google's licence forbids redistributing it).
+* ☑ **D. The compiler in the release** (2026-11-23). `make-setup.py`
+  puts the platform's pinned zig into `setup/toolchain` (as `toolchain.py
+  fetch` unpacks it, its MIT licence beside it); `setup.py` uses it when
+  its version is the lock file's, else downloads as before. A player's
+  setup then downloads only the firmware (and adb for Android);
+  `--download-only` leaves out a compiler the release carries. The
+  release grows by zig's archive (Windows ~100 MB, Linux and macOS
+  ~55 MB). Not trimmed: the headers of unused targets are 34 MB of
+  399 MB unpacked (zig.exe alone is 181 MB).
+* ☑ **E. No Microsoft download on Windows** (2026-11-23, D32). The
+  modules are built by zig for `x86_64-windows-gnu`: no Microsoft headers
+  or libraries, nothing for the player to accept. The kit's clang-cl path,
+  `toolchain-android-windows.json` and the Microsoft lock file are gone;
+  `toolchain-windows.json` is zig, which builds Android's modules too.
+  * Built: all ten modules in 10 min (as with clang-cl); each exports only
+    its two entry points and imports only Windows' UCRT and kernel32.
+  * Run: `ss-delta.exe` loads them, they match guest memory; the title
+    menu, then quest 2 (ST03A) walked and fought through, as with the
+    MSVC-built modules: 59.3 against 59.5 fps, 33,032 escapes (the fork's
+    C++ `throw` through generated frames, unwound on the modules' SEH
+    tables).
+  * Maths: zig's software `fmaf` against UCRT's, 60 million cases (edge
+    values, random bits, near-cancellation): equal but for 16 `inf × 0 +
+    NaN` cases that differ in the NaN's sign, which `neon.h`'s callers
+    return before reaching. `sqrt` is `sqrtss` (UCRT's is correctly
+    rounded too), its result through `process_nans`.
+* ☑ **F. A weekly link check** (2026-11-23). `offline.py --check-urls`
+  sends a HEAD request to every pinned URL and mirror (`offline.pinned()`)
+  and fails when one stops answering 200 at the pinned size;
+  `.github/workflows/links.yml` runs it every Monday (and by hand), checks
+  a failure again 10 minutes later, then opens an issue or comments on the
+  open one. By hand 2026-11-23: 14 of 14 answer.
 
 **Exit:** with an offline bundle made once (B) and no network, a fresh
 release folder on a fresh computer builds the game from the player's
 dump; and a dead primary URL is found by F before players report it.
+Met on Windows 2026-11-23 (a fresh release with zig inside and the
+firmware from a bundle, network blocked); Linux and macOS not run yet.
 
 ## Later (deferred)
 
@@ -1309,4 +1338,4 @@ dump; and a dead primary URL is found by F before players report it.
 | R7 | Frame-locked game logic | no 60 fps | treat 60 fps as optional; logic steps by frame time, loading screens kept at 30 ([D16](decisions.md)) |
 | R8 | GPL (Vita3K) | the runtime can't be relicensed | private, non-distributed project ([D2](decisions.md)); keep the recompiler tool separate |
 | R9 | First Vita recomp: no prior art to copy | slower progress | borrow patterns from PSP recompilers (Yakumo's psprecomp fallback), N64Recomp/XenonRecomp (lookup tables), 3dsrecomp (verify mode) |
-| R10 | A download the setup needs disappears (Sony's update servers, Microsoft's payload URLs, ziglang.org, GitHub) | new players can't build the game | offline files matched by hash, offline bundles, fallback URLs, a link check ("Installer future-proofing") |
+| R10 | A download the setup needs disappears (Sony's update servers, ziglang.org, Google's adb) | new players can't build the game | offline files matched by hash, offline bundles, fallback URLs, a link check ("Installer future-proofing") |
