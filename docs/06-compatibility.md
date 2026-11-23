@@ -78,7 +78,7 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Right Arm: sigils | ✅ | scripted | Carve Sigil: a sigil carved, the arm's boosts change; Rewrite Lv, Essences, Rite of Transmutation open |
 | Bazaar Ledger: Carnatux, Cassus (gifts) | ✅ | scripted | a raiment traded at Carnatux ("New raiment acquired", the offering count drops); Cassus's gifts (Phase 8) |
 | Lore, Postscript | ✅ | scripted | 100% save: Lore's categories and entries, Postscript pages |
-| Blank Page (created pacts) | ✅ | scripted | pact pages render |
+| Blank Page (created pacts) | ✅ | scripted | pact pages render. All 8 slots with `[game] dlc` (five needed Memory Clods, issue #15): listed Blank, a page made in slot 4, kept by the save (test folder, story-complete save, 2026-11-23) |
 | Log & Settings: Save, Options | ✅ | scripted | Color Space set to Wide, saved, kept after a restart (stored in `system.bin` +0x21c); all six option pages open |
 | Network: Play Online | ✅ | scripted | offline, Play Online returns to the menu (it waited at "Connecting..." forever before patch 0036) |
 | Ad Hoc Play: Create Room, Search for Room, join | ✅ | scripted | two copies on one PC (`--player 2` and `3`, 2026-10-12, NativeCPU): the search lists the host's room, the client joins, both rooms show both sorcerers (plan Phase 10) |

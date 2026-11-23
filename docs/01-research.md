@@ -1060,6 +1060,29 @@ numbers above:
       empty duplicates of the Impure Blood and Knight of Vengeance chapters
       that Delta has as `q_e05xx`/`q_e09xx`; Delta lists them only in
       `old_quest_list.csv`, for imported saves).
+* **Blank Page slots (Memory Clods)** [local, verified in runs 2026-11-23,
+  GitHub issue #15]:
+  * Blank Page is on Librom's own menu (Read Journal, Talk to Librom, Blank
+    Page, Network), not on the hub's. Its screen (`0x810248c8`) has **8
+    slots**: three on the left page and five under "Psychic link" on the
+    right, which are inked out while locked.
+  * Unlocked slots are a bitmask, bit n for slot n: a u32 at `*0x81c9a160 +
+    0xc075c` (`0x81789d02`) `+ 0x1da0 + 0xc`, i.e. **file offset `0xc2508`
+    of `datag000N.bin`**. Every save seen has `0x7`, including the
+    story-complete one. `0x81024158` offers the unlock for a locked slot
+    below 8 (text 10062400, "Progress is automatically saved when unlocking
+    a new blank page"). On Yes, `0x81024c14` sets the bit and saves.
+  * The other five needed **Memory Clods**, a PlayStation Store consumable
+    (`system_text` 2004–2012). With the mask set to `0xff` in memory, all 8
+    slots read "Blank", a pact page was made in slot 4 (Normal, an
+    Offering), and the game's auto-save wrote `0xff` to the `.bin` and the
+    `.bak` [test folder, story-complete save]. `[game] dlc` now sets it (D14
+    update 2).
+  * Clods also paid for a page in place of an Offering ("Sacrifice memory"
+    on the create screen). That path has its own reward rules (2211–2221:
+    accessories not yet owned, then a voice, then Rumor Notes) and stays
+    locked. Where the clod count comes from (the eboot imports
+    `sceNpAuthGetEntitlementById` and `sceNpTus` variables) is not traced.
 * **Japanese Voice-over Pack** [local, 2026-11-20]: a separate PSN add-on,
   not in 1.30's data and not in the entitlement table above.
   * Content IDs `UP9000-PCSA00152_00-SSS000CVN0000001` (US) and

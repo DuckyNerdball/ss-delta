@@ -17,6 +17,20 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   Delta's own offerings of the same kind. No copy of the original is
   needed. See [INSTALLING](docs/INSTALLING.md).
 
+* **PS TV controls** ([#12](https://github.com/vita-recomps/ss-delta/issues/12)):
+  `[game] pstv_mode` (the settings menu's Game page) runs the game as a
+  PlayStation TV, which has no touchscreen. The one touch the story
+  needs, pulling Librom out of the bones at the start of a new game, then
+  takes L2 or R2 (the gamepad's triggers, U and O on the keyboard). AR
+  mode and "near" are unavailable then.
+
+* **All eight Blank Page slots**
+  ([#15](https://github.com/vita-recomps/ss-delta/issues/15)): Librom's
+  Blank Page has eight slots for created pact pages, and only three are
+  open. The other five were unlocked with Memory Clods, bought on the
+  PlayStation Store. With Add-ons (DLC) on, ss-delta now unlocks them in
+  the loaded save, and the game keeps them when it saves.
+
 ### Fixed
 
 * **Games copied straight off a Vita**

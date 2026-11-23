@@ -548,6 +548,15 @@ all twelve rows) and Benkei (`costume_table.csv` row 168, in no box; its
 colour A, as for Necky). Where Benkei was given in Japan isn't known;
 its model and name are complete in the data.
 
+**Update 2 (2026-11-23, GitHub issue #15):** Blank Page has 8 slots. Three
+are open in every save, and the other five were unlocked with Memory
+Clods, a PlayStation Store consumable. With `dlc` on, the same per-tick
+check sets the save's slot mask (`datag000N.bin` `0xc2508`) to `0xff`
+(01-research, "Blank Page slots"). No separate switch: Memory Clods were
+paid PSN content like the add-ons, and the slots are empty until the
+player makes a page. The game keeps the mask when it saves, so turning
+`dlc` off later leaves the slots open.
+
 ## D15 — Ad hoc play uses Vita3K's ad hoc support; copies on one PC take 127.0.0.N (accepted, 2026-10-12)
 
 **Context:**
