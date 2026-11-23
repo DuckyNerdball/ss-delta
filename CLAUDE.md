@@ -83,7 +83,9 @@ notes, kept in a private repo.
   before launching the fork. The libraries are generated at their load
   addresses (docs/05-recompiler.md, which also lists the other `SSD_AOT_*`
   switches). A regenerated module that changes `aot_abi.h` needs a fork
-  rebuild.
+  rebuild. The eboot is generated with `--overrides overrides/eboot.json`
+  (fixes to the game's code, D30; `game.json` `recomp_overrides`, which
+  the install scripts pass on): leave it out and the Blitz fix (#14) is gone.
 - `ss-delta.exe` (Phase 6, [D10](docs/decisions.md)) is built next to
   `Vita3K.exe` in `build/vita3k/bin/RelWithDebInfo/`. It reads
   `ss-delta.ini` there (set `vita_fs` and `recompiled` for this machine)

@@ -114,6 +114,33 @@ Every guest function becomes `void f_<address>(GuestContext *ctx)`.
   with `RECOMP_COUNT_INSNS` (the default) add `n` to `ctx->insns` for the
   fork's counters.
 
+### Overrides (D30)
+
+`recompile.py --overrides <json>` replaces the translation of single
+instructions with the project's own C++, to fix the game's code without
+changing its bytes ([D30](decisions.md)). `game.json`'s `recomp_overrides`
+names the file per module (`overrides/eboot.json` for the eboot);
+`install-game.py` and `android-setup.py` pass it on, and `make-setup.py`
+ships it with a release. By hand:
+
+```
+python -I third_party/recomp/recomp/recompile.py extracted/elf/eboot.elf generated/eboot --overrides overrides/eboot.json
+```
+
+* An entry gives the address, the instruction as the disassembly prints it
+  (`insn`, checked: other code there stops the recompiler), the C++ lines
+  (`code`, on `ctx` as the generated code is) and `why` (in the comment).
+  Only plain instructions qualify: no branches or calls, and no flags that
+  later code reads.
+* `prelude` (includes, `inline thread_local` variables the entries share)
+  goes at the top of each bucket that holds an override, so the other
+  buckets stay as they were for incremental builds.
+* The code hash doesn't change (the bytes are the game's), so the native
+  code still loads for the same eboot. The JIT runs the original code: a
+  function without native code doesn't get the fix.
+* `report.txt` counts the overrides; every entry must land in a recompiled
+  function, or nothing is written.
+
 ## Coverage (1.30)
 
 Native code covers every function of the four modules: Thumb, NEON (see

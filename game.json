@@ -28,6 +28,9 @@
   "load_bases": {
     "adhoc_matching": "80757000"
   },
+  "recomp_overrides": {
+    "eboot": "overrides/eboot.json"
+  },
   "dump_seconds": 45,
   "dist_readme": "docs/dist-readme.txt",
   "dist_readme_linux": "docs/dist-readme-linux.txt",

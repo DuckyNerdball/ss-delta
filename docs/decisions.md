@@ -1410,3 +1410,54 @@ rather than a mod the player makes, as for the Japan-only raiments.
   taken from `tables_from` (here `protector_param.csv`, which only
   `archive` holds) once no kept mod adds to it: before, the table stayed
   in rePatch's archive and its copy was never deleted.
+
+## D30 — Fixes to the game's code as recompiler overrides; the Blitz offerings at 60 fps (accepted, 2026-11-23)
+
+**Context:**
+
+* GitHub issue #14: at 60 fps a Blitz offering throws the player back
+  about 1.7 times as far after a hit (19.7 units against 11.6 at 30), so
+  the next cast of the chain falls short. The offerings' controller
+  (`0x8153f206`) moves its caster by a fixed step a frame (speed and
+  distance counted a frame, the movers `0x8136e29e`/`0x8136eeca` called
+  with a scale of 1.0), while the push-back lasts a time in seconds
+  (01-research, "Blitz offerings at 60 fps").
+* D16 kept loading screens at 30 fps from the front end, because the
+  game's own code couldn't be changed without losing the native code: a
+  patch to the code makes the code hash differ, so the recompiled module
+  isn't loaded. Doing the same here (30 fps while the player is in the
+  Blitz state) would drop the frame rate for a second at every cast.
+
+**Decision:**
+
+* The recompiler takes a game project's overrides (`recompile.py
+  --overrides`, `game.json` `recomp_overrides`; 05-recompiler,
+  "Overrides"): the C++ of single plain instructions is replaced, each
+  entry checked against the instruction it expects. The game's bytes stay
+  as they are, so the code hash and the JIT's view are unchanged.
+  `install-game.py` and `android-setup.py` pass the file, `make-setup.py`
+  ships it.
+* `overrides/eboot.json` makes the Blitz controller's per-frame steps
+  follow the frame time: with k = 30 × the controller's frame time (at
+  most 1), the rush's speed gain and distance, the movers' scale and the
+  vertical gain (k²) and a per-frame decay (0.1^k) are scaled. At 30 fps
+  nothing changes; below 30 fps the steps stay as the game made them, as
+  on the Vita.
+
+**Rejected:**
+
+* 30 fps while a Blitz runs (the front end, as D16): every cast would
+  stutter, and the owner asked for the code to be fixed.
+* Fixing the controller to count frames (its frame time fixed at 1/30):
+  distances right, but every Blitz would play twice as fast at 60 fps.
+* Patching the eboot's bytes: the native code would no longer load.
+
+**Consequences:**
+
+* The kit change is shared with utakata; without an overrides file the
+  recompiler's output is as before (`report.txt` gains an `overrides:`
+  line).
+* The fix lives in the native code only: with `[recompiled] enabled =
+  false` (everything on the JIT) the Blitz behaves as before.
+* Players get it when the setup builds the game again from their dump
+  (an update through RecompLauncher, or `--install`).

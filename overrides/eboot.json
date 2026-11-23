@@ -1,0 +1,56 @@
+{
+  "_comment": "Fixes to the 1.30 eboot's code, applied by the recompiler (third_party/recomp/recomp/recompile.py --overrides; game.json recomp_overrides). The game's bytes stay as they are; the JIT runs the original code. docs/decisions.md D30, docs/01-research.md 'Blitz offerings at 60 fps'.",
+  "prelude": [
+    "#include <cmath>",
+    "namespace armrecomp {",
+    "// GitHub issue #14: the Blitz offerings' controller (0x8153f206) moves its caster by a fixed step a frame,",
+    "// made for 30 fps. k is the frame's share of a 30 fps frame (30 x its frame time), at most 1: below",
+    "// 30 fps the steps stay as the game made them, as on the Vita",
+    "inline thread_local float ssd_blitz_k = 1.0f;",
+    "}"
+  ],
+  "overrides": [
+    {
+      "address": "8153f214",
+      "insn": "vmov.f32 s18, s0",
+      "code": [
+        "ctx->vfp.s[18] = ctx->vfp.s[0];",
+        "{ const float k = ctx->vfp.f[0] * 30.0f; ssd_blitz_k = k > 0.0f ? (k < 1.0f ? k : 1.0f) : 0.0f; }"
+      ],
+      "why": "Blitz: k from the controller's frame time (#14)"
+    },
+    {
+      "address": "8153f2c8",
+      "insn": "vadd.f32 s1, s1, s0",
+      "code": ["ctx->vfp.f[1] = fp_add(ctx->vfp.f[1], fp_mul(ctx->vfp.f[0], ssd_blitz_k));"],
+      "why": "Blitz rush: speed gains 0.7 a 30 fps frame (#14)"
+    },
+    {
+      "address": "8153f308",
+      "insn": "vadd.f32 s0, s0, s1",
+      "code": ["ctx->vfp.f[0] = fp_add(ctx->vfp.f[0], fp_mul(ctx->vfp.f[1], ssd_blitz_k));"],
+      "why": "Blitz rush: the distance covered, which ends the rush (#14)"
+    },
+    {
+      "address": "8153f31a",
+      "insn": "vmov.f32 s2, #1.000000e+00",
+      "code": ["ctx->vfp.f[2] = ssd_blitz_k;"],
+      "why": "Blitz rush: the step's scale (#14)"
+    },
+    {
+      "address": "8153f38c",
+      "insn": "vmov.f32 s2, #1.000000e+00",
+      "code": [
+        "ctx->vfp.f[2] = ssd_blitz_k;",
+        "ctx->vfp.f[3] = fp_mul(ctx->vfp.f[3], ssd_blitz_k * ssd_blitz_k);"
+      ],
+      "why": "Blitz glide, push-back and fall: the step's scale, and the vertical speed's gain a frame (#14)"
+    },
+    {
+      "address": "8153f4ea",
+      "insn": "vmul.f32 s0, s0, s4",
+      "code": ["ctx->vfp.f[0] = fp_mul(ctx->vfp.f[0], 1.0f - std::pow(0.1f, ssd_blitz_k));"],
+      "why": "Blitz: a factor that falls to a tenth each 30 fps frame (#14)"
+    }
+  ]
+}

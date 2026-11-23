@@ -551,6 +551,82 @@ the start of the turn doesn't count.
 * **Hypothesis:** the pitch uses the same table (the compass shows only
   the yaw; the pitch wasn't measured).
 
+### Blitz offerings at 60 fps [local, 2026-11-23; GitHub issue #14]
+
+Reported: at 60 fps a Blitz offering pushes the player farther back on a
+hit, so the next cast of the chain doesn't connect; at 30 it works.
+
+* **What they are.** The offerings whose text says "aerial blitz" or
+  "low-altitude blitz" (the bird pinions, Traitor's Horn, Flamehag's Red
+  Rag, Traitor's Icy Wax, Everyoung Hardwing, and their + forms) have
+  magic system 14 in `boot/item_param_ply.csv`. Their skill is a
+  `magic_gimmick_param_ply.csv` record of type 9 (`タックル`, tackle) with two
+  `magic_explode_param_ply.csv` sub-skills, the hit and the hit chained
+  from armour (`鎧連携ヒット`, knockback 2 and 20). The player's motions are
+  `PC000_IM_RUSH------_*` (indices 0x157-0x163 of the motion name table
+  at `0x81c957e8`); `HT_*` is the bounce after a hit (`衝突落下着地`).
+* **The motion steps per frame, not per second** (Firebird Pinion+,
+  ST03A, the same cast at 30 and at 60, the position sampled every
+  host tick). The player moves by the vector at player `+0x13d8` (x, y, z)
+  each game frame: 0.69, then 1.2803 forward and 0.2257 up for 8 frames
+  (the rush), then 0.4333 forward with `+0x13fc` falling by 0.0300 every
+  frame (gravity). The positions were the same frame for frame at both
+  rates, so at 60 the rush took 100 ms instead of 212 ms. Walking, by
+  contrast, steps by the frame time. Against a wall, or after a miss, the
+  path ends on landing, so the distance is the same at both rates.
+* The player's state at `+0x16f4` (previous at `+0x16f8`; set by
+  `0x81370d4a`) is 0x2c during the cast, 0x3b during the rush and the
+  air phase and 0x3e on landing. State 0x3b is set as an immediate only in
+  `0x8153bbc2` and `0x8153f206`, an object whose `+0xc` is the caster: it
+  takes the frame time in `s0`, keeps a phase at `+0x4c` (0-8, `tbh` at
+  `0x8153f256`; 1 is the rush, and a hit check `0x8153e46a` moves it to 3)
+  and counts some of its timers in seconds (`+0x9c` minus the frame time,
+  `+0x188` against `+0x18c`). **Hypothesis:** this is the type-9 gimmick's
+  controller.
+* **The push-back after a hit, measured** (Stage Select quest 318,
+  `q_g0001` on `SE01A`: the offering test arena, with one rat-like enemy;
+  the enemy held at a fixed spot 7 units ahead of the spawn by writing its
+  `+0x650`/`+0x1360` every host tick; lock-on held with L). The rush
+  reaches the enemy after 4 frames; the player is then thrown straight
+  back at a constant height (1.53) by 0.433 a frame for about a second:
+  * 60 fps: 19.7 units in 934 ms; the next cast (rush 11 units plus the
+    glide) lands 4 units short of the enemy;
+  * 30 fps: 11.6 units in 1024 ms; the next cast passes the enemy's spot.
+
+  So the push lasts a time but moves per frame: about 1.7 times as far at
+  60 fps, which is the reported bug.
+* **The controller's per-frame steps** (`0x8153f206`, frame time in `s0`):
+  phase 1 (the rush) adds 0.7 a frame to a speed at `+0x128` (at most 1.3)
+  and the speed to a distance at `+0x124` that ends the rush, then calls
+  the mover `0x8136e29e(chara, dir, dt, scale 1.0)`; phases 3, 5, 7 and 8
+  (glide, push-back, fall) call `0x8136eeca(chara, chara+0x1370, dt,
+  speed, scale 1.0, s3)` at `0x8153f398`, speed being `+0x128` / 3 (phase
+  7) or a timer at `+0x148` counted down in seconds (3, 5, 8). Both movers
+  step horizontally by speed × scale a frame (the frame time only turns
+  the character) and add `s3` × a gravity vector to a velocity at
+  `chara+0x13f8` each frame, which they add to the position as it is.
+  Phase 8 shrinks a factor at `+0x6c` to a tenth each frame.
+* **Fixed (D30):** recompiler overrides (`overrides/eboot.json`) scale those
+  steps by k = 30 × the controller's frame time (at most 1). With the fix,
+  at 60 fps the rush steps 0.65 a frame and the push 0.217, and the paths
+  follow the 30 fps ones in time: the wall cast within 0.5 units; after a
+  hit, pushed back 12.4 units (three runs: 12.37, 12.52, 12.37) against
+  11.4 at 30 fps (11.41, 11.44, 11.43), from 19.7 before. What is left: at
+  60 the finer steps meet the enemy about 0.5 units earlier, and the push
+  at 30 runs at 0.416 a frame (1.25 / 3, the speed one 0.05 lower on the
+  hit frame), against 0.434 at 60. At 30 fps the steps are as before,
+  frame for frame. The arena's enemy staggers an idle
+  player (states 0x11, 0x12, 0x18) and keeps the cast from starting; the
+  dev key `InvincibleMode true` in `config.ini` didn't stop that.
+* Getting a Blitz into a Stage Select quest: its loadout is the
+  `opevent_reset` set of `boot/magic_setting.csv` (102000, 170000,
+  100010), copied into the save data (`*0x81c98618`) and five other copies
+  before the quest starts. Writing the offering id into all six copies
+  (at `0x83b3e218`, `0x83cbb0b8`, `0x83cbd73c`, `0x83cbddc8`,
+  `0x83cbe454`, `0x83cbeae0` in that boot) from the menu works; changing
+  the id in the player's slot (`+0x1d0 + 4 × slot`) during a quest doesn't
+  change the skill.
+
 ### The bundled modules
 
 | Module | Code | Exports | Imports | Port plan |
@@ -669,6 +745,11 @@ numbers above:
   `archive_patch3`, ≥ 0x114: `_patch2`, ≥ 0x10a: `_patch1`, ≥ 0x101:
   `_patch0`). So `archive_patch1` isn't a usable extra slot on 1.30, and a
   mod has to replace `archive_patch3`, as the Undub does.
+  * With `PackFileFirst false` (`[boot_config]` in `ss-delta.ini`) a loose
+    `resource/boot/magic_setting.csv` *was* read [local, 2026-11-23]: its
+    changed `opevent_reset` row showed up in the parsed table in memory.
+    So boot tables can load loose with that key (as `chara_param.csv` did,
+    Assets above); the 2026-11-22 test ran without it (**hypothesis**).
 * **LSPK archives** [local, 2026-11-22]: `.pkh` is a big-endian count, then
   16-byte entries (path hash, offset, size, compressed size or 0 if stored)
   sorted by hash; `.pk` members start at 16-byte offsets, zlib-compressed.
