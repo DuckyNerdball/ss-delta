@@ -33,6 +33,19 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### Fixed
 
+* **Blitz offerings at 60 fps**
+  ([#14](https://github.com/vita-recomps/ss-delta/issues/14)): after a hit,
+  a Blitz offering's push-back moved the caster a fixed step every frame,
+  so at 60 fps it threw you almost twice as far as on the Vita and the
+  next cast of a chain fell short. The steps now follow the frame time, so
+  60 fps plays like 30.
+* **Loading screens run at 60 fps.** The quest-start loading screen could
+  hang at 60 fps, so loading screens were kept at 30 (`frame_rate`). The
+  hang was a race in the game: the loader can finish before the screen's
+  opening animation ends, and its looping animation then never stops. This
+  is fixed in the recompiled code, so loading screens now run at the set
+  rate. A game built before this update still loads at 30 until it is
+  built again.
 * **Games copied straight off a Vita**
   ([#13](https://github.com/vita-recomps/ss-delta/issues/13)): their
   folders carry the PSN account's own licence, usable only on that Vita,

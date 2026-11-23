@@ -76,9 +76,10 @@ Compared with running the game in Vita3K:
   the JIT. Each module is checked against the game in memory before its
   native code runs.
 * **60 fps.** The game runs at 60 fps by default and keeps its speed:
-  ss-delta changes its frame pacing (data in memory, no code patch) and
-  drops to 30 fps only on loading screens, which never finish at 60
-  ([D16](docs/decisions.md)). `frame_rate = 30` gives the Vita's rate.
+  ss-delta changes its frame pacing (data in memory) and fixes the two
+  places in the game's code that assumed 30 (Blitz offerings, a race on
+  loading screens; [D16](docs/decisions.md), [D30](docs/decisions.md)).
+  `frame_rate = 30` gives the Vita's rate.
 * **Full-resolution 3D.** On a Vita the game draws its 3D at 720×408 and
   stretches it. ss-delta uses the game's own 960×544 mode, times the
   resolution multiplier: 1920×1088 at scale 2 ([D13](docs/decisions.md)).
