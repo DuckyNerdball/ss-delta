@@ -615,7 +615,38 @@ hit, so the next cast of the chain doesn't connect; at 30 it works.
   60 the finer steps meet the enemy about 0.5 units earlier, and the push
   at 30 runs at 0.416 a frame (1.25 / 3, the speed one 0.05 lower on the
   hit frame), against 0.434 at 60. At 30 fps the steps are as before,
-  frame for frame. The arena's enemy staggers an idle
+  frame for frame.
+
+### The loading screen at 60 fps [local, 2026-11-23]
+
+Why the quest-start loading screen never ended at 60 fps (02-baseline,
+"60 fps: the loading screen"; D16 kept loading screens at 30 for it).
+
+* **The routine that ends it:** `0x812b50ce` (on the NowLoadingTask, `r5`)
+  clears the loop bit (bit 2 of `+0x294`) of the animation at `+0x9c` and
+  stops five sub-objects (`+0xb0`, 0x30 apart). Callers: `0x812ed4ba`,
+  `0x812f00b8` and `0x81711c4e` (the last waits for the task's state 3).
+  The quest manager is the singleton `*0x81c985e0` (vtable `0x81c5fa58`,
+  update `0x812ef38c`, state at `+0xe364`); the quest loader is
+  `*0x81c998b0` (state at `+4`, updated by `0x8165f9ea` with the frame
+  time).
+* **What goes wrong** (ST03A from Stage Select, the states logged every
+  host tick): at 30 fps the screen's opening (state 2) ends at 19.95 s and
+  starts `roading_loop` with the loop bit set (state 3, `0x812b5984`:
+  `play(anim, "roading_loop", 1.0, loop = 1)`); the loader reaches 7 at
+  20.44 s and the loop bit is cleared, so the loop plays to its end
+  (state 5 at 22.6 s, idle at 26.1 s). At 60 fps the loader works a step a
+  frame and reaches 7 at 19.85 s, while the opening still plays (it lasts
+  1.3 s at either rate): the loop bit is cleared before the loop starts,
+  the loop starts with it set, and nothing clears it again. A race, not a
+  frame-time check; frames shorter than about 1/45 s make the loader win.
+* **Fixed (D30):** overrides note a finish that comes in state 2
+  (`0x812b50e0`), start the loop without looping then (`0x812b5984`), and
+  forget the note on a reset (`0x812b4d80`). At 60 fps without the front
+  end's 30 fps switch: ST03A's screen goes 2 → 3 (no loop) → 5 → 0 at the
+  same times as at 30 fps (3 at 20.12 s, 5 at 22.75 s, idle at 26.27 s),
+  and eight more Stage Select quests (0, 6, 13, 49, 97, 173, 283, 317)
+  load the same way. The arena's enemy staggers an idle
   player (states 0x11, 0x12, 0x18) and keeps the cast from starting; the
   dev key `InvincibleMode true` in `config.ini` didn't stop that.
 * Getting a Blitz into a Stage Select quest: its loadout is the

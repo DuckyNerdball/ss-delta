@@ -1,5 +1,6 @@
 {
-  "_comment": "Fixes to the 1.30 eboot's code, applied by the recompiler (third_party/recomp/recomp/recompile.py --overrides; game.json recomp_overrides). The game's bytes stay as they are; the JIT runs the original code. docs/decisions.md D30, docs/01-research.md 'Blitz offerings at 60 fps'.",
+  "_comment": "Fixes to the 1.30 eboot's code, applied by the recompiler (third_party/recomp/recomp/recompile.py --overrides; game.json recomp_overrides). The game's bytes stay as they are; the JIT runs the original code. docs/decisions.md D30, docs/01-research.md 'Blitz offerings at 60 fps' and 'The loading screen at 60 fps'.",
+  "features": ["blitz_frame_time", "loading_race"],
   "prelude": [
     "#include <cmath>",
     "namespace armrecomp {",
@@ -7,6 +8,10 @@
     "// made for 30 fps. k is the frame's share of a 30 fps frame (30 x its frame time), at most 1: below",
     "// 30 fps the steps stay as the game made them, as on the Vita",
     "inline thread_local float ssd_blitz_k = 1.0f;",
+    "// The loading screen (NowLoadingTask, *0x81c9603c): the loader ends its looping animation once",
+    "// (0x812b50ce), and at 60 fps the loader can get there while the opening still plays (state 2),",
+    "// before the loop starts: the loop then never ends. The task finished early, its loop plays once",
+    "inline uint32_t ssd_loading_finished_early = 0;",
     "}"
   ],
   "overrides": [
@@ -51,6 +56,33 @@
       "insn": "vmul.f32 s0, s0, s4",
       "code": ["ctx->vfp.f[0] = fp_mul(ctx->vfp.f[0], 1.0f - std::pow(0.1f, ssd_blitz_k));"],
       "why": "Blitz: a factor that falls to a tenth each 30 fps frame (#14)"
+    },
+    {
+      "address": "812b50e0",
+      "insn": "movs r4, #5",
+      "code": [
+        "ctx->r[4] = 5u;",
+        "if (rd32(ctx->r[5] + 0xa4u) == 2u) ssd_loading_finished_early = ctx->r[5];"
+      ],
+      "why": "loading screen: told to finish while its opening still plays (D16)"
+    },
+    {
+      "address": "812b5984",
+      "insn": "movs r2, #1",
+      "code": [
+        "ctx->r[2] = ssd_loading_finished_early == ctx->r[4] ? 0u : 1u;",
+        "ssd_loading_finished_early = 0;"
+      ],
+      "why": "loading screen: roading_loop starts without looping if the loader is done (D16)"
+    },
+    {
+      "address": "812b4d80",
+      "insn": "movs r1, #0",
+      "code": [
+        "ctx->r[1] = 0u;",
+        "ssd_loading_finished_early = 0;"
+      ],
+      "why": "loading screen reset: forget an early finish (D16)"
     }
   ]
 }

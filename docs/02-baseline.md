@@ -1130,6 +1130,13 @@ clears it was not found (not the animation's own code, nor its keyframe
 events, which are sound cues). **Hypothesis:** the loader's "done" signal
 is the frame-time-dependent check above.
 
+**Update (2026-11-23): found and fixed in the game's code.** The loader can
+finish while the screen's opening still plays, before the loop starts, and
+the one call that ends the loop is then lost (01-research, "The loading
+screen at 60 fps"). Recompiler overrides fix that (D30); with an eboot
+that has them, loading screens run at the set rate, and the 30 fps switch
+below is only kept for an eboot without them.
+
 **The fix (fork patch 0041).** `[display] frame_rate = 60` sets the frame
 timer and flip threshold every frame: 60, but 30 while the loading task is
 in state 2, 3 or 5. The first version used "state ≠ 0" and stayed at 30

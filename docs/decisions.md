@@ -639,6 +639,12 @@ its model and name are complete in the data.
 * If another screen depends on the frame time the same way, it hangs at 60
   in a way the scripted checks didn't reach; switching back to 30 is the
   workaround.
+* Update (2026-11-23): the cause was found, a race between the loader and
+  the screen's opening (01-research, "The loading screen at 60 fps"), and
+  fixed in the recompiled eboot ([D30](#d30--fixes-to-the-games-code-as-recompiler-overrides-the-blitz-offerings-at-60-fps-accepted-2026-11-23)).
+  The front end now keeps loading screens at the set rate when the eboot's
+  native code reports the fix (`loading_race`), and falls back to the
+  30 fps switch only for an eboot without it (built before, or on the JIT).
 
 ## D17 — The toolchain is shared with shinobido-2 through git submodules (accepted, 2026-10-13)
 
@@ -1461,3 +1467,13 @@ rather than a mod the player makes, as for the Japan-only raiments.
   false` (everything on the JIT) the Blitz behaves as before.
 * Players get it when the setup builds the game again from their dump
   (an update through RecompLauncher, or `--install`).
+* Update (the same day): the loading-screen race of D16 is fixed the same
+  way (three overrides around `0x812b50ce`, 01-research "The loading
+  screen at 60 fps"). So that the front end can tell an eboot with the fix
+  from one built before it (the code hash is the same), the overrides name
+  `features` (`blitz_frame_time`, `loading_race`), which the module reports
+  through a second, optional export (`armrecomp_aot_features`, aot_abi.h;
+  no ABI version change, older modules just lack it) and the fork asks
+  with `aot_module_has_feature`, for a module whose native code is
+  checked. With `loading_race` the 30 fps loading screens are dropped;
+  without it (an eboot built before, the JIT) they stay.

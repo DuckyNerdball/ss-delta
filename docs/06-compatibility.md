@@ -49,7 +49,7 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Mouse as the touchscreen | ✅ | user | title, name entry |
 | Black Rite on a key / trigger (`[touch]`) | ✅ | user | left trigger, in a fight (2026-10-12) |
 | F11 / Alt+Enter fullscreen, F12 screenshot | ✅ | scripted | screenshots at render resolution |
-| 60 fps (`[display] frame_rate`, default 60) | ✅ | scripted, user | patch 0041 (D16): all 50 maps, an idle fight's timing as at 30, hub → journal → story quest → results → hub; loading screens run at 30. 54–57 fps on the Radeon 760M. The owner played at 60, alone and in Ad Hoc Play (2026-10-13); default since patch 0042 |
+| 60 fps (`[display] frame_rate`, default 60) | ✅ | scripted, user | patch 0041 (D16): all 50 maps, an idle fight's timing as at 30, hub → journal → story quest → results → hub; loading screens ran at 30 until the game's own race was fixed in the recompiled eboot (D30, 2026-11-23: 9 Stage Select quests at 60). 54–57 fps on the Radeon 760M. The owner played at 60, alone and in Ad Hoc Play (2026-10-13); default since patch 0042 |
 | Xbox button labels (`[game] button_labels`) | ✅ | user, scripted | 2026-11-20, the owner: the icons and `auto` work in play and in the journal, its tutorial pictures (Lore > Tactical advice) included. Scripted: the hub and dialogue prompts (A), a quest's Offerings and set switch (B, Y, X, RB); switched while the game runs (an 8-second toggle in a test build) both ways; the font page with the text's ○ △ □ redrawn at boot, its digits unchanged. the font glyphs checked with `--button-labels-test`; the △ text not yet seen in play |
 | Offline: no network use | ✅ | scripted | Phase 6; the network check dialog ends as cancelled offline (patch 0036) |
 
