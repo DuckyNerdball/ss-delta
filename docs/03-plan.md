@@ -1205,6 +1205,84 @@ port needs no JIT (D11, `VITA3K_DYNARMIC=OFF`).
 **Exit:** with an iPad or iPhone, a PC or Mac and their own dump, a
 player sideloads their own IPA and gets to a quest on native code.
 
+## Installer future-proofing: offline installs (M) ◐
+
+The owner asked on 2026-11-23: the setup must keep working when a
+download link dies, and work without a network. Today a player's setup
+downloads (kit `setup.py`):
+
+| What | From | Size | Redistributable? |
+|---|---|---|---|
+| Firmware 3.74, `PSVUPDAT.PUP` + `PSP2UPDAT.PUP` (`fetch-firmware.py`) | Sony's `dus01.*.update.playstation.net` | 182 MB | no (Sony's, D2/D18) |
+| Windows compiler (`toolchain-windows.json`): Microsoft's C++ runtime and Windows SDK, 37 payloads | `download.visualstudio.microsoft.com` | 447 MB with llvm-mingw | no (Build Tools licence) |
+| … llvm-mingw | a GitHub release | (above) | yes |
+| Linux and macOS compiler: zig (`toolchain-{linux,macos}.json`) | ziglang.org | 52 MB | yes (MIT) |
+| Android modules from Windows: zig (`toolchain-android-windows.json`) | ziglang.org | 95 MB | yes |
+| Android: adb (`android-tools.json`) | dl.google.com | ~7 MB | no (Android SDK licence) |
+
+Python, Tk and the wheels are inside the release (`make-setup.py`); their
+URLs matter only when a release is built. Every file above is pinned by
+size and SHA-256, and a file already in the downloads folder with the
+right hash is never fetched again. `--cache DIR` keeps the folder, so a
+second install from it is offline already, but nothing fills it on
+purpose, the window and launchers can't point at it, and a dead URL has
+no fallback.
+
+* ☑ **A. Bring your own files** (2026-11-23). `setup.py --offline PATH`
+  (repeatable; a folder, searched four levels deep, or a single file):
+  before any download, a file of the right size and SHA-256 is taken from
+  there, whatever its name (kit `offline.py`; a hard link when the volume
+  allows, else a copy). The game's folder's `offline/` is searched
+  without being asked. The window has a "Downloaded files" folder row;
+  the front end passes `--offline` on (fork). Without network and without
+  a match, the error names the file, its size, SHA-256 and URL.
+  `offline.py <folder>` alone lists which pinned downloads a folder holds.
+* ☑ **B. An offline bundle** (2026-11-23). `setup.py --download-only DIR
+  [--for windows,linux,macos,android|all]` (the front end's
+  `--download-only` passes it on): everything the setup would download,
+  for this platform or the ones named, into DIR in the downloads folder's
+  layout with `offline.json` (file, size, SHA-256, URL), then exits; run
+  again, it fetches only what is missing. The licences are accepted as for
+  a build, so the player downloads Sony's, Microsoft's and Google's files
+  themselves and nothing is redistributed.
+  * Found on the way: Microsoft's manifest gives the four CRT VSIX
+    payloads sizes that aren't their files' (CRT.Headers 14.44.17.14:
+    2,128,977 listed, 2,116,223 served, SHA-256 as listed). Every check
+    compares the size first, so they were downloaded again on every run,
+    `--cache` too, and offline they would have failed. The lock file has
+    the files' sizes now, and `toolchain.py resolve` takes them from the
+    files.
+  * Checked on Windows: a Windows + Android bundle (42 files, 732 MB);
+    with the network blocked (a dead proxy), a fresh release folder built
+    the US dump from it through `ss-delta.exe --dump ... --offline
+    <bundle> --build-only` (10 min, exit 0, every file from the bundle),
+    booted to the title at 60 fps on native code; `ss-delta.exe
+    --download-only` filled a second bundle from the first, offline.
+    Linux and macOS not run yet (the same code paths, zig's lock).
+* ☐ **C. Fallback URLs.** Lock entries take `urls: [...]`, tried in
+  order; the hash makes any mirror safe. The firmware: the Wayback
+  Machine has both PUP URLs (snapshots 2026-07-24 and 2026-02-27, HTTP
+  200; the raw bytes from `…/web/<timestamp>id_/<url>`). **Hypothesis:**
+  the snapshots are the whole files (hashes not checked yet). llvm-mingw
+  and zig: a copy as an asset of our own release.
+* ☐ **D. Bundle what may be bundled.** zig (Linux, macOS, Android) and
+  llvm-mingw inside the release archive (+50–90 MB a platform, more for
+  llvm-mingw): then only Sony's firmware is downloaded outside Windows.
+* ☐ **E. No Microsoft download on Windows** (experiment). The modules
+  for llvm-mingw's or zig's `x86_64-windows-gnu`, which need no
+  Microsoft headers or libraries. **Hypothesis:** possible because
+  `aot_abi.h` is a C interface (plain structs, an `extern "C"` export);
+  needs no C++ types or exceptions crossing into the MSVC-built exe, and
+  bit-identical maths (both use `ucrtbase.dll`). With D, only the
+  firmware is left to download.
+* ☐ **F. A weekly link check.** A scheduled workflow sends a HEAD request
+  to every pinned URL (the lock files, `fetch-firmware.py`) and opens an
+  issue when one stops answering 200 or changes size.
+
+**Exit:** with an offline bundle made once (B) and no network, a fresh
+release folder on a fresh computer builds the game from the player's
+dump; and a dead primary URL is found by F before players report it.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine
@@ -1231,3 +1309,4 @@ player sideloads their own IPA and gets to a quest on native code.
 | R7 | Frame-locked game logic | no 60 fps | treat 60 fps as optional; logic steps by frame time, loading screens kept at 30 ([D16](decisions.md)) |
 | R8 | GPL (Vita3K) | the runtime can't be relicensed | private, non-distributed project ([D2](decisions.md)); keep the recompiler tool separate |
 | R9 | First Vita recomp: no prior art to copy | slower progress | borrow patterns from PSP recompilers (Yakumo's psprecomp fallback), N64Recomp/XenonRecomp (lookup tables), 3dsrecomp (verify mode) |
+| R10 | A download the setup needs disappears (Sony's update servers, Microsoft's payload URLs, ziglang.org, GitHub) | new players can't build the game | offline files matched by hash, offline bundles, fallback URLs, a link check ("Installer future-proofing") |

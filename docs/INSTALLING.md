@@ -13,6 +13,7 @@ game on your computer or device from **your own dump** of it.
 * [macOS (Apple Silicon)](#macos-apple-silicon)
 * [Android](#android)
 * [The first start: building the game](#the-first-start-building-the-game)
+  ([without internet](#without-internet))
 * [Playing](#playing)
 * [Saves](#saves)
 * [Ad Hoc Play](#ad-hoc-play)
@@ -31,7 +32,7 @@ game on your computer or device from **your own dump** of it.
 | macOS | macOS 13.3 or newer on Apple Silicon (M1 and later) |
 | Android | Android 9 or newer, 64-bit ARM, Vulkan; about 10 GB free while it builds ([Android](#android)) |
 | Disk space | about 4 GB for the game's folder, and up to 2 GB more while it builds |
-| Internet | the first start downloads the PS Vita firmware from Sony and a compiler |
+| Internet | the first start downloads the PS Vita firmware from Sony and a compiler, unless you kept them ([offline](#without-internet)) |
 
 **Your own copy of the game, at update 1.30**, either version:
 
@@ -333,6 +334,29 @@ ss-delta.exe --dump "<your dump>" --accept-microsoft-license      (Windows)
 `--build-only` builds and quits instead of playing, and `--progress` adds
 `progress <0-1> <text>` lines for a launcher's progress bar.
 
+### Without internet
+
+The downloads can be kept, so a later build needs no network (a new PC, a
+reinstall, or a time when a download link no longer works). Once, with
+internet:
+
+```
+ss-delta.exe --download-only "<folder>" --accept-microsoft-license   (Windows)
+./ss-delta.x86_64 --download-only "<folder>"                         (Linux)
+```
+
+This saves the firmware and the compiler in that folder (Windows about
+450 MB, Linux and macOS about 240 MB), with a list of them
+(`offline.json`), and builds nothing. `--for windows,linux,macos,android`
+(or `all`) saves what those platforms need too. Then either put the
+folder in the game's folder as `offline`, choose it in the importer's
+"Downloaded files" row, or pass `--offline "<folder>"` with `--dump`.
+Files are recognised by their size and SHA-256, whatever their names, so a
+folder holding the firmware PUPs you already have (`PSVUPDAT.PUP`,
+`PSP2UPDAT.PUP`) works too; anything not found there is downloaded as
+usual. The firmware and Microsoft's files are under their owners'
+licences: keep the folder for yourself.
+
 **RecompLauncher:** each release carries a `recomplauncher.json`, so
 [RecompLauncher](https://recomplauncher.com/game/ss-delta) can install the game, build
 it from the dump you pick (the same importer, without its window), show
@@ -451,6 +475,8 @@ game: don't share it.
 | `--accept-microsoft-license` | Windows, with `--dump`: accept Microsoft's licence for the compiler's runtime and SDK |
 | `--shortcut`, `--steam` | with `--dump`: a desktop shortcut, menu entry or Applications copy; add the game to Steam (Linux) |
 | `--cache <folder>`, `--jobs <n>` | with `--dump`: keep the downloads there for next time; compile with n jobs |
+| `--offline <folder\|file>` | take the downloads from there first (any name, matched by size and SHA-256; repeatable). The game folder's `offline` is used unasked ([without internet](#without-internet)) |
+| `--download-only <folder> [--for <platforms>]` | save everything the importer downloads into that folder, then quit |
 | `--progress` | with `--dump`: also `progress <0-1> <text>` lines, for a launcher (RecompLauncher) |
 | `--add-to-steam` | Linux, Steam Deck: add the game to Steam (Steam running), then quit |
 | `--android` | put the game, built here, on an Android device (a window asks how it's connected), then quit; with `--dump`, build for both first |
