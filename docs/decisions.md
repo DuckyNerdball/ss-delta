@@ -1574,8 +1574,8 @@ result through `process_nans`.
 **Consequences:**
 
 * Windows' first build downloads 182 MB (the firmware) instead of
-  650 MB, with no licence to accept; the release grows by zig's ~100 MB
-  (Linux and macOS ~55 MB).
+  650 MB, with no licence to accept; the release archives grow by 93 MB
+  (Windows) and 85 MB (Linux, macOS).
 * A release plus the firmware PUPs (which many players already have from
   Vita3K) builds the game without a network.
 * A front end change that needs C++ types or exceptions across the

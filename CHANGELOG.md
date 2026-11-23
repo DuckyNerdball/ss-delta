@@ -23,8 +23,8 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   macOS, and each release carries it: the first build downloads only the
   PS Vita firmware (about 180 MB; Windows downloaded 650 MB before), and
   there is no Microsoft licence to accept. `--accept-microsoft-license`
-  is still accepted and does nothing. The release is about 100 MB larger
-  (Linux and macOS 55 MB).
+  is still accepted and does nothing. The release download is about
+  90 MB larger.
 * **Fallback downloads**: when Sony's server (or ziglang.org) doesn't
   answer, the setup takes the same files from the Wayback Machine's
   copies, checked by SHA-256.

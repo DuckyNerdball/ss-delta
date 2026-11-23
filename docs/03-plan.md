@@ -1279,8 +1279,10 @@ no fallback.
   its version is the lock file's, else downloads as before. A player's
   setup then downloads only the firmware (and adb for Android);
   `--download-only` leaves out a compiler the release carries. The
-  release grows by zig's archive (Windows ~100 MB, Linux and macOS
-  ~55 MB). Not trimmed: the headers of unused targets are 34 MB of
+  release archives grow by 93 MB (Windows' zip) and 85 MB (the Linux and
+  macOS `.tar.gz`; the release workflow's run of 6ce7313 against 0690f8b's:
+  Windows 125 → 218 MB, Linux 176 → 260, macOS 135 → 220, each with the
+  92 MB APK). Not trimmed: the headers of unused targets are 34 MB of
   399 MB unpacked (zig.exe alone is 181 MB).
 * ☑ **E. No Microsoft download on Windows** (2026-11-23, D32). The
   modules are built by zig for `x86_64-windows-gnu`: no Microsoft headers
