@@ -51,6 +51,26 @@ Any of these forms works:
 * the PSN `.pkg` of the game with its licence (`work.bin` or a `.rif`, or a
   zRIF), plus the 1.30 update's `.pkg`.
 
+**From your own Vita** (a modded one, with the game installed on its
+memory card or SD2Vita): the folders on the Vita carry your PSN account's
+own licence, which works only on that Vita, so they can't be used as they
+are (the setup says so; older releases stopped with "header signature is
+invalid"). Make a NoNpDrm dump:
+
+1. Install the NoNpDrm plugin and start the game once. It writes a
+   licence that works anywhere:
+   `ux0:nonpdrm/license/app/PCSA00152/6488b73b912a753a492e2714e9b38bc7.rif`
+   (`PCSF00532` for EU).
+2. Copy `ux0:app/PCSA00152`, `ux0:patch/PCSA00152` (the 1.30 update) and
+   `ux0:nonpdrm/license` into one folder on the PC, as `app/PCSA00152`,
+   `patch/PCSA00152` and `license/`. Copy them as they are, not with
+   VitaShell's "Open decrypted".
+3. Give that folder as the **Game**. Instead of copying `license/`, the
+   `.rif` can also be given as its **Licence**.
+
+Add-ons from the Vita need their NoNpDrm licences too
+(`ux0:nonpdrm/license/addcont/...`, in the same `license/` folder).
+
 The add-ons' content (raiments, hoods, additional pacts) is part of update
 1.30; ss-delta unlocks it.
 
@@ -285,7 +305,8 @@ The importer's window asks for your dump:
    already holds the 1.30 update and the licence, it says so and doesn't ask
    for them.
 2. **Update**: the 1.30 update, if the game's dump doesn't hold it.
-3. **Licence** (for a `.pkg`): its `work.bin` or `.rif`, found beside it when
+3. **Licence** (for a `.pkg`, or a folder or `.zip` without a usable
+   licence inside): its `work.bin` or `.rif`, found beside a `.pkg` when
    it's there, or a zRIF typed in.
 4. Add-ons are optional (their content is part of 1.30).
 

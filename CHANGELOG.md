@@ -19,6 +19,23 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### Fixed
 
+* **Games copied straight off a Vita**
+  ([#13](https://github.com/vita-recomps/ss-delta/issues/13)): their
+  folders carry the PSN account's own licence, usable only on that Vita,
+  and the setup stopped with "header signature is invalid". It now says
+  what is wrong before its downloads, takes the NoNpDrm licence in the
+  dump's `license/` folder in place of that licence, and uses a licence
+  given with a folder or `.zip` (it used to be ignored). See
+  [INSTALLING](docs/INSTALLING.md#what-you-need), "From your own Vita".
+* **Linux and the Steam Deck: the update in the same folder as the game
+  could be left out** (#13). The game and its update were installed in the
+  order the file system lists them, and on Linux the update could come
+  first and fail; the setup then stopped with "eboot.bin is not a build
+  this port supports" (the game's 1.00). The game is now always installed
+  first, and the setup says when the update is missing.
+* A folder whose game failed to install while something else in it
+  installed counted as installed; the setup then stopped with "no
+  PCSA00152 or PCSF00532 ... after installing" instead of the reason.
 * Removing a packaged mod that had added a table the game's patch archive
   lacks left a copy of the archive in `fs/ux0/rePatch/`; it is deleted now.
 

@@ -189,6 +189,49 @@ neither of the NoNpDrm ones, though the code is the same.
 * Vita3K loads an unencrypted FSELF without a licence (`decrypt_fself`
   returns it unchanged), so such a folder needs no `work.bin` or `.rif`.
 
+### Folders copied straight off a Vita [local, 2026-11-22; GitHub issue #13]
+
+A licence (`.rif`, `work.bin`, 0x200 bytes) has its account ID at 0x08.
+NoNpDrm's fake licences carry `0x0123456789ABCDEF`, stored little-endian
+(`ef cd ab 89 67 45 23 01`: checked in our own dump's `work.bin` and the
+installed `ux0/license/PCSA00152/*.rif`), with the content's key in the
+clear at 0x50. A work.bin made from a zRIF is one of those.
+
+* **Hypothesis** (from dump guides, no real Vita checked): a game
+  installed on a Vita keeps the PSN account's own licence in its
+  `sce_sys/package/work.bin`, with the account's ID and a key only that
+  console can decrypt. psvpfstools takes the key as it is, so the files.db
+  check fails: "header signature is invalid", the #13 reporter's error
+  with the encrypted folders. The fix on the Vita is NoNpDrm: started
+  once with the plugin, the game gets a fake licence in
+  `ux0:nonpdrm/license/app/<title>/6488b73b912a753a492e2714e9b38bc7.rif`.
+* Simulated here (our dump's work.bin with another account ID and a
+  scrambled key): the install fails at that check, as reported. With the
+  fake licence in `license/app/PCSA00152/` beside `app/` and `patch/`, or
+  given with `--license`, the fork (game-frontend, `interface.cpp`
+  `license_kind`) replaces the account's work.bin and installs the US 1.30
+  eboot (`a13a1bfe…`). `dumpinfo.py` tells the two kinds apart the same
+  way, so the setup stops before its downloads.
+* Before this, a folder install counted as done when any one content in it
+  installed (`install_contents(...) > 0`), so a failed game could end as
+  "no PCSA00152 or PCSF00532 ... after installing" (#13's third error).
+* The reporter's logs bear the hypothesis out. Their Vita's own `work.bin`
+  compressed to a 443-byte zRIF (a NoNpDrm licence, mostly zeros,
+  compresses to about 64) and failed the files.db check; with the NoNpDrm
+  `.rif` in its place the check passed and the game decrypted.
+* The second failure (Steam Deck, one folder holding `app/` and `patch/`):
+  only the game was decrypted, and its eboot.bin was
+  `339fb27bf34794ad…3e3bf8a870`, the US 1.00 one (PFS-decrypted, checked
+  against our dump). Vita3K installs a folder's contents in the order
+  `recursive_directory_iterator` lists them; Windows lists `app` before
+  `patch`, Linux in its file system's order, so the update came first,
+  failed with "Install app before patch", and the install still counted as
+  done. The fork now installs a folder's or zip's game first, then its
+  update, then the rest (`sort_contents`, by param.sfo CATEGORY). Tested
+  with the update named so it lists first (`0patch/`, `zapp/`): both
+  install and the eboot is 1.30. `game.json` `eboot_sha256_other` names
+  the 1.00 hash, so the setup says the update is missing.
+
 ### Text language [local, 2026-11-17; GitHub issue #3]
 
 There is no language option in the game: it follows the Vita's system
