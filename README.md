@@ -113,6 +113,7 @@ Compared with running the game in Vita3K:
 * **Mouse camera** on the PC: Tab or a middle click captures the cursor,
   and the mouse turns the camera (Sensitivity and Invert vertical in the
   settings menu); Tab, a middle click or Esc gives the touchscreen back.
+  The cursor hides by itself while you play with a gamepad or the keyboard.
 * **Vita saves** imported and exported (`--import-save`, `--export-save`).
 * **One program** per platform (`ss-delta.exe`, `ss-delta.x86_64`, the
   macOS app), without Vita3K's interface and offline, which builds itself

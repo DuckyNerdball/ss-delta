@@ -52,6 +52,9 @@ Mouse camera: press Tab or click the middle mouse button to capture the
 cursor; moving the mouse then turns the camera. Tab, the middle button or
 Esc releases it, and the mouse is the touchscreen again. Sensitivity and
 Invert vertical are on the menu's Mouse page ([mouse] in ss-delta.ini).
+The cursor hides after 3 seconds without mouse motion, or when you use a
+key or the gamepad, and comes back when the mouse moves (Hide idle cursor
+on the Mouse page; [mouse] hide_cursor).
 
 Intro logos: Skip intro logos on the menu's Game page ([game] skip_intro in
 ss-delta.ini) skips the health warning and the company logos at start; the

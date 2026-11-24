@@ -1668,6 +1668,13 @@ the compass. At sensitivity 1 a count asks for 0.05°.
   release for the menu and a text dialog, alt-tab and back) and how it
   feels with a real mouse. The owner played it with a mouse the same day:
   it works.
+* **Idle cursor** (2026-11-24, GitHub issue #16, fork `c4ba2112`):
+  `[mouse] hide_cursor` (on by default, Hide idle cursor on the Mouse
+  page) hides the cursor after 3 s without mouse motion while the window
+  has the focus, and at once on a key, gamepad button or stick (past a
+  quarter); motion, a click or the wheel show it again. The test folder
+  booted to the title screen with no new log errors; the owner checked
+  the hiding itself: the cursor goes after 3 seconds.
 
 ## Laptops with two GPUs: AMD's "LoadLibrary failed with error 87" (2026-11-19, GitHub issue #4)
 

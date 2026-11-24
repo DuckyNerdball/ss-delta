@@ -15,6 +15,11 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   game's folder) instead of the internet. Firmware PUPs you already have
   work too, whatever their names. See
   [INSTALLING](docs/INSTALLING.md#without-internet).
+* **The cursor hides by itself**
+  ([#16](https://github.com/vita-recomps/ss-delta/issues/16)) when the
+  mouse has been still for 3 seconds, and at once when you use a key or a
+  gamepad; moving the mouse shows it again. Hide idle cursor on the
+  settings menu's Mouse page turns it off.
 
 ### Changed
 
