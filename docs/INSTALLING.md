@@ -357,7 +357,9 @@ yourself.
 [RecompLauncher](https://recomplauncher.com/game/ss-delta) can install the game, build
 it from the dump you pick (the same importer, without its window), show
 the main settings of `ss-delta.ini` on the game's page, and back up the
-saves. After an update it builds the game again from the same dump. Its
+saves. After an update it builds the game again from the same dump; when
+it runs the setup again with nothing new (the same release and dump), the
+setup says "Already built" at once. Its
 setup also takes the Japanese Voice-over Pack and a rePatch mod such as
 the Undub patch (both optional, on its Add-ons step); adding one later
 installs only that.
@@ -466,7 +468,8 @@ game: don't share it.
 |---|---|
 | `--game <folder>` | play the game in that folder (default: the program's own) |
 | `--install` | open the importer again (another dump, an update), then play |
-| `--dump <file> [--license <work.bin\|.rif> \| --zrif <zRIF>]` | build from this dump without the window (repeat for the update and add-ons; also `--dump=<file>`), then play. A `.pkg` takes the licence beside it. With the game built, add-ons alone are installed without building again |
+| `--dump <file> [--license <work.bin\|.rif> \| --zrif <zRIF>]` | build from this dump without the window (repeat for the update and add-ons; also `--dump=<file>`), then play. A `.pkg` takes the licence beside it. With the game built, add-ons alone are installed without building again; the same dump it was built from (by this release, unchanged): nothing to do |
+| `--rebuild` | with `--dump`: build again even from the same dump |
 | `--build-only` | build if needed (or with `--install` / `--dump`), then quit |
 | `--shortcut`, `--steam` | with `--dump`: a desktop shortcut, menu entry or Applications copy; add the game to Steam (Linux) |
 | `--cache <folder>`, `--jobs <n>` | with `--dump`: keep the downloads there for next time; compile with n jobs |

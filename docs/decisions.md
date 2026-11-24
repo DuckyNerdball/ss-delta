@@ -1023,6 +1023,22 @@ folder with a command line for everything.
 * No `game.dumps`: there is no Redump or No-Intro entry to check a Vita
   dump's container against; the importer checks the eboot's SHA-256.
 
+**Update (2026-11-24, checked against the launcher's `docs/DEVELOPERS.md`
+and its schema):** RecompLauncher now runs the setup step again for every
+new release by itself ("you have nothing to bump"), and asks a step run
+again with nothing new to print `progress 1 Already built` and exit 0.
+`prepare.version` is kept (the launcher 0.90.0-beta.64 still reads it;
+the schema no longer lists it), `prepare.timeout` is dropped (not a
+field: the launcher stops only a step silent for an hour), and
+`prepare.done` names `{install}/ss-delta/build.json`, the stamp the setup
+writes when a build has finished. The stamp now also records the parts it
+was built from (paths, sizes, times; a zRIF only as its hash): the same
+parts with this release's executable and every module there is "Already
+built" (`--rebuild` builds anyway), and the stamp is removed before a
+build starts, so a build cut short never looks finished. An optional input
+the player didn't choose leaves its whole argument out; the front end
+ignores an empty `--dump=` anyway (it had named the current folder).
+
 **Rejected:** shipping the file with an unchanging `prepare.version`
 (players would keep modules the updated front end may refuse); key
 bindings in the launcher (its key names are not known to match the

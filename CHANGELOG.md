@@ -33,6 +33,11 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 * **Fallback downloads**: when Sony's server (or ziglang.org) doesn't
   answer, the setup takes the same files from the Wayback Machine's
   copies, checked by SHA-256.
+* **RecompLauncher: no second build for nothing.** When the launcher runs
+  the setup again with the same release and the same dump, it now ends at
+  once ("Already built") instead of building the game again; a new
+  release or another dump still builds. `--rebuild` builds anyway. The
+  launcher's setup text no longer mentions a compiler download.
 
 ### Fixed
 

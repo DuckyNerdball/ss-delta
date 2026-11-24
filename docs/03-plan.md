@@ -1259,6 +1259,36 @@ no fallback.
     booted to the title at 60 fps on native code; `ss-delta.exe
     --download-only` filled a second bundle from the first, offline.
     Linux and macOS not run yet (the same code paths, zig's lock).
+  * Checked on the Steam Deck and the M5 (2026-11-24) with the release
+    workflow's archives of `c1842f3` (run 45362983839), each unpacked
+    fresh, the US dump through the game's own `--dump ... --build-only`:
+    * online: only the firmware downloaded (182 MB), zig from
+      `setup/toolchain`; Deck 1219 s (peak 6.2 GB), Mac 333 s; the
+      downloads and work files removed; booted to the title on native
+      code (0 native-to-JIT calls);
+    * `--download-only`: 2 files (182 MB) and `offline.json`, the
+      compiler left out as the release's own. On the Mac with only
+      `web.archive.org` reachable (a dead proxy, `no_proxy`) and `--for
+      macos,linux`: both PUPs and Linux's zig came from the Wayback copies
+      (C), checked by SHA-256;
+    * offline, no network at all (Deck `unshare -rn`, the bundle as the
+      game folder's `offline/`, not named; Mac `sandbox-exec` denying
+      outbound IP, `--offline <bundle>`): Deck 1207 s, Mac 329 s, every
+      file from the bundle, which is left intact; booted on native code;
+    * no network and no file: `fetch-firmware.py` exits 1 naming the
+      file, its size, SHA-256 and the three URLs tried;
+    * the setup window (no arguments) starts without errors on both; its
+      "Downloaded files" row was not looked at (no screen over SSH).
+    * Found: the Linux and macOS release READMEs still said the first start
+      downloads "a compiler (zig, about 240 MB in all)"; now the firmware
+      alone (about 180 MB), as Windows' README says.
+    * RecompLauncher's step replayed on the Mac (`recomplauncher.json`'s
+      args: `--dump <copy> --build-only --progress`, plus the old
+      `--accept-microsoft-license` a launcher may still pass): built, exit
+      0, progress lines 0.02 → 1.00. Against the launcher's current
+      developer guide: a run again with the same copy built everything a
+      second time (329 s); now "Already built" (D24 update). The launcher
+      app itself not run (it installs published releases).
 * ☑ **C. Fallback URLs** (2026-11-23). Lock entries take `mirrors`
   (kit `toolchain.obtain`), the firmware `MIRRORS` (`fetch-firmware.py`),
   tried in order after the URL; a copy whose SHA-256 is wrong goes on to
