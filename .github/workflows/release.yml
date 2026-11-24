@@ -15,6 +15,10 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      platforms:
+        description: 'A manual run: all, or some of android, windows, linux, macos (comma-separated); the PC archives are made without the APK when android is left out'
+        default: all
 
 permissions:
   contents: write
@@ -29,6 +33,7 @@ jobs:
   # ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD): an installed APK can only be updated by one signed with the
   # same key. A tag needs the key; a manual run without it signs with a throwaway debug key.
   android:
+    if: github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'android')
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
@@ -119,6 +124,7 @@ jobs:
 
   windows:
     needs: android
+    if: always() && (needs.android.result == 'success' || needs.android.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'windows'))
     runs-on: windows-2025
     timeout-minutes: 180
     steps:
@@ -131,6 +137,7 @@ jobs:
           python-version: '3.12'
 
       - uses: actions/download-artifact@v7
+        if: needs.android.result == 'success'
         with:
           name: setup-android
           path: build/apk
@@ -145,9 +152,9 @@ jobs:
           $version = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ github.sha }}'.Substring(0, 7) }
           $name = "ss-delta-$version-windows"
           python -I tools/stamp-recomplauncher.py recomplauncher.json $version
-          $apk = (Get-ChildItem build/apk/*.apk | Select-Object -First 1).FullName
+          $apk = @(Get-ChildItem build/apk/*.apk -ErrorAction SilentlyContinue | Select-Object -First 1 | ForEach-Object { '--apk', $_.FullName })
           python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-windows.json `
-            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta --apk $apk --zip --archive "build/release/$name"
+            --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta @apk --zip --archive "build/release/$name"
           $zip = "build/release/$name.zip"
           $hash = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLower()
           [IO.File]::WriteAllText("$PWD/build/release/$name.zip.sha256", "$hash  $name.zip`n")  # LF, for sha256sum -c
@@ -166,6 +173,7 @@ jobs:
 
   linux:
     needs: android
+    if: always() && (needs.android.result == 'success' || needs.android.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'linux'))
     runs-on: ubuntu-24.04
     timeout-minutes: 180
     # the SDK the Deck's Steam Runtime matches: glibc 2.31, g++ 14 (docs/07-linux.md)
@@ -186,6 +194,7 @@ jobs:
           echo "PY=/opt/python/bin/python3" >> "$GITHUB_ENV"
 
       - uses: actions/download-artifact@v7
+        if: needs.android.result == 'success'
         with:
           name: setup-android
           path: build/apk
@@ -200,7 +209,7 @@ jobs:
           $PY -I tools/stamp-recomplauncher.py recomplauncher.json "$version"
           $PY -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-linux.json \
             --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta \
-            --apk "$(ls build/apk/*.apk | head -1)" --zip --archive "build/release/$name"
+            $(ls build/apk/*.apk 2>/dev/null | head -1 | sed 's/^/--apk /') --zip --archive "build/release/$name"
           tgz="build/release/$name.tar.gz"
           (cd build/release && sha256sum "$name.tar.gz" > "$name.tar.gz.sha256")
           echo "TGZ=$tgz" >> "$GITHUB_ENV"
@@ -219,6 +228,7 @@ jobs:
   macos:
     # Apple Silicon; the build targets macOS 13.3 (the fork's CMAKE_OSX_DEPLOYMENT_TARGET)
     needs: android
+    if: always() && (needs.android.result == 'success' || needs.android.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'macos'))
     runs-on: macos-15
     timeout-minutes: 180
     steps:
@@ -231,6 +241,7 @@ jobs:
           python-version: '3.12'
 
       - uses: actions/download-artifact@v7
+        if: needs.android.result == 'success'
         with:
           name: setup-android
           path: build/apk
@@ -248,7 +259,7 @@ jobs:
           python -I tools/stamp-recomplauncher.py recomplauncher.json "$version"
           python -I third_party/recomp/tools/make-setup.py build third_party/recomp/tools/setup-macos.json \
             --project . --bin build/vita3k-games/bin/RelWithDebInfo --out build/release/ss-delta \
-            --apk "$(ls build/apk/*.apk | head -1)" --zip --archive "build/release/$name"
+            $(ls build/apk/*.apk 2>/dev/null | head -1 | sed 's/^/--apk /') --zip --archive "build/release/$name"
           tgz="build/release/$name.tar.gz"
           (cd build/release && shasum -a 256 "$name.tar.gz" > "$name.tar.gz.sha256")
           echo "TGZ=$tgz" >> "$GITHUB_ENV"
