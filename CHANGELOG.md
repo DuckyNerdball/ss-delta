@@ -4,6 +4,25 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### Fixed
+
+* **Square blocks in smoke, fire and fog on some graphics cards**
+  ([#17](https://github.com/vita-recomps/ss-delta/issues/17)): cards whose
+  driver has neither shader interlock nor raster-order attachment access
+  (older AMD Radeon, such as the R5 in an A10-9600P laptop; Qualcomm's own
+  Adreno driver on Android). The log's `Framebuffer reads:` line says
+  "no, no" on those. Smoke is now drawn from a copy of the picture there,
+  and `[debug] framebuffer_reads` on the settings menu's Debug page picks
+  another way if one looks better on your card.
+
+### New
+
+* **The log lists every graphics card** Vulkan offers the game, and
+  `[debug] gpu` picks one by its number there (for a laptop that starts on
+  the wrong one).
+
 ## 0.5.1 (2026-11-24)
 
 ### New

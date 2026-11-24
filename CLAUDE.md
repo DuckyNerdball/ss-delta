@@ -145,8 +145,9 @@ notes, kept in a private repo.
   frames as PNGs: use it for glitches that last a few frames (the ST03A
   water patch is 5 frames). `close` now posts WM_CLOSE and waits up to 8 s
   before killing, so the async log is complete.
-- Our fork's shader cache version is 16 (patch 0039), so the files are
-  `vk16-*.spv`; leftover `vk15-*` and older files are unused and can be deleted.
+- Our fork's shader cache version is 24 (`shader::CURRENT_VERSION`, fork
+  `6655bc93`), so the files are `vk24-*.spv`; leftover `vk23-*` and older
+  files are unused and can be deleted.
 - A crash in `amdvlk64.dll` (`c0000409`) at quest load on every run means a
   stale shader in `cache/shaders/PCSA00152` (e.g. from a run with another
   `memory-mapping`). Move the folder aside rather than hunting further.

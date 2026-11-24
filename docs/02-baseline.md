@@ -1750,3 +1750,51 @@ The reporter's GPU and log were asked for; no answer yet.
   GPU that has neither feature, as on Qualcomm's driver; the Radeon 760M
   (RDNA 3) doesn't show the path's fault, this GCN APU does. Whether the
   R7 M340 on the same driver has interlock is not known.
+
+### The fix: reads from a copy (2026-11-24; fork 763971ac, 6655bc93)
+
+Reproduced on the AYN Thor with Qualcomm's own driver (Adreno 740, 512.676.53:
+no interlock, no raster-order access), the title screen's green smoke, a test
+package of the APK (`io.github.vitarecomps.ssdelta.kittest`) with a copy of the
+game files:
+
+* Five draws on the title read the framebuffer: the smoke particles (fragment
+  shader `6ee9a18da1766bc9`, 72 quads in one draw: texture x vertex colour,
+  added to the old pixel with its alpha) give the 8x8 blocks; four triangle
+  strips (`e1e0003f…`, `c3ca22e8…`, `61f0d854…`, `e89cc4b3…`) give strips of
+  stale pixels. Skipping all five (`VITA3K_SKIP_FRAGMENT_SHADERS`) removes
+  both, and the smoke.
+* Not fixed by: the draw split into parts of 2 or 1 triangles with the
+  subpass barrier between them; a new render pass before each reading draw;
+  a new render pass between each 2 triangles; storage usage on the colour
+  surfaces; the render pass's external dependency extended to input
+  attachment reads in the fragment shader; all of these together. So on that
+  driver a subpass input of the attachment being drawn reads stale data
+  whatever the ordering.
+* **Fixed by reading a copy** (`FeatureState::fetch_from_copy`): before each
+  draw that reads the framebuffer the render pass ends, the colour surface
+  (its scissor) is copied into an image of the attachment view's format, and
+  the fragment shader fetches its own pixel from that (set 1 binding 0, a
+  sampled image; shader cache version 24). No blocks in any frame; 60.0 fps,
+  p95 18 ms on the Thor, as on Turnip.
+* What the copy changes: particles that overlap within one draw each blend
+  with the picture as it was before the draw, so smoke is thinner than on
+  Turnip (raster-order access, the reference) and an overlap can show a
+  straight edge. A copy before each particle matches Turnip but costs p95
+  131 ms; up to 8 or 16 parts per draw (`VITA3K_FB_FETCH_PARTS`) still leave
+  edges, and 16 parts drop to 37 fps.
+* On the Radeon 760M with the path forced (`VITA3K_NO_ORDERED_FB_READS`) at
+  2x, the title runs at 46-49 fps with copies (60 without): the cost is the
+  render-pass restarts, not the copy's size (the whole surface or the
+  scissor, the same).
+* `[debug] framebuffer_reads` (auto, subpass, subpass_storage, copy): on a GPU
+  without either feature, auto is the copy. subpass_storage keeps the subpass
+  input but gives the colour surfaces storage usage, which keeps AMD's colour
+  compression (DCC) off them. **Hypothesis**: the R5's blocks lie on DCC's
+  8x8 grid for 32-bit pixels, so on GCN that alone may fix them, with the
+  overlaps right (the 760M's subpass path draws them right). It doesn't help
+  on the Adreno. The reporter's test decides `auto` for AMD.
+* The log now lists every Vulkan device (`Vulkan devices: N ...`) and
+  `[debug] gpu` picks one by that number: the reporter's R7 M340 was never
+  offered to the game (only the R5 was chosen, with the high-performance
+  exports in the exe).
