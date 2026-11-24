@@ -34,6 +34,14 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   answer, the setup takes the same files from the Wayback Machine's
   copies, checked by SHA-256.
 
+### Fixed
+
+* **Spirits' Wolf fang and Spirits' Dragon fang: the thrust no longer
+  crashes the game** ([#18](https://github.com/vita-recomps/ss-delta/issues/18))
+  or misses. Their punch still named a skill Delta removed; it now does
+  the arm's damage, as Delta's own fang arms do. The Spirits' offerings
+  are rebuilt once when the game starts.
+
 ## 0.5.0 (2026-11-23)
 
 ### New

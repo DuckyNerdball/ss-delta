@@ -110,7 +110,8 @@ What ss-delta changes when it switches them on, so they work like Delta's
 own:
 
 * the two fang arms named a punch effect Delta removed; it is left out,
-  as on Delta's own fang arms;
+  as on Delta's own fang arms, and their punch does the arm's damage
+  (before the fix, a thrust that hit crashed the game: issue #18);
 * the giant arms and fang arms get Delta's falcon-combo values from the
   arm with the same model, as the Spirits' swords already have them;
 * Spirits' Falconfeather gets the original's names back in English,

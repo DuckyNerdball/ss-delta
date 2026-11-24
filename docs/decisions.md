@@ -1392,6 +1392,14 @@ rather than a mod the player makes, as for the Japan-only raiments.
   so they match Delta's own offerings:
   * the two fang arms name a punch-effect skill Delta removed (1601001,
     1601101); Delta's own fang arms have 0 there, and so do these;
+  * update (2026-11-24, GitHub issue #18): the fang arms' punch motions
+    in `chara_motion_combo_param.csv` (rows Delta left active,
+    `CH_ATD01_01_M`/`CH_ATIW01_01_M` level 1) name the same removed
+    skills, and a thrust that hit crashed the game (a null read) or did
+    no damage. The package also carries that table (whole, as `files/`)
+    with the two rows pointed at the arms' damage skills (1601003,
+    1601103), as Delta's own fang arms' punch rows are. Package version
+    2;
   * arms rows with 0 in Delta's falcon columns take them from Delta's arm
     with the same model, as the Spirit swords already have them;
   * Spirits' Falconfeather is "test" in Delta's western item text: the

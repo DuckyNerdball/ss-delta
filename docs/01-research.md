@@ -1113,6 +1113,30 @@ numbers above:
         `itembox_fixed.csv` still has the original's offering boxes
         `CATALYST_01`-`_17` (19 of the 20; Spirits' Heart is in none), but
         no entitlement table names them.
+      * **The fang arms' thrust** [local, 2026-11-24; GitHub issue #18]:
+        `chara_motion_combo_param.csv` has active rows for the Spirit arms
+        (1494-1541, Delta's file line numbers), and the two fang punches
+        (`CH_ATD01_01_M`, `CH_ATIW01_01_M`, level 1) name 1601001/1601101,
+        which only the original has (its punch-effect skills, no damage).
+        Delta's own fang punch rows name the damage skill (`1142103` for
+        Blizzard Wolf Fang (M)). A thrust that hit an enemy crashed the
+        game (read of guest address 0, the same in a reporter's log on an
+        RTX 5080) or did nothing. Fixed in D29's package (version 2).
+      * **The arrows draw nothing** [local, 2026-11-24; GitHub issue #19;
+        open]: Spirits' Flame Arrow casts (aim reticle, the Fire prompt) but
+        no arrows appear; Fire Djinn's Arrow (L) in the same try-out works.
+        The Spirit rows equal Delta's Lv.2 arrows (`1121010`/`1121011`,
+        `1125010`/`1125011`) in `skill_param_ply`, `magic_eff_pack_param_ply`
+        and `magic_bullet_param_ply` except the numbers. In
+        `magic_gimmick_param_ply` (type 8) they differ from all of Delta's
+        elemental arrows in general parameter 1 (0 against 0.45) and in
+        the element's sub-skill slot (Delta's fire arrows name their
+        "強化" (enhanced) projectile in sub-skill 5, stone in 8, the
+        no-element arrows one per element in 5-9; the Spirit rows, like
+        all of the original's arrows, only sub-skill 1). Tried: parameter
+        1 = 0.45 alone: still no arrows, no crash. Plus the Spirit
+        projectile in the element's slot: the cast crashed (read of guest
+        `0x2beb6b09`). So the tables alone don't explain it.
     * Sanguine Shot (and its Godly and Diabolic forms, items 100000/50/60):
       the original's right-arm shot, replaced in Delta by Sanguine Cannon,
       Angelshot and Demonshot. A mechanic changed, not content removed.
