@@ -1700,3 +1700,27 @@ NVIDIA laptops.
 * Not checked: the fixed build on such a laptop without the setting.
   **Hypothesis:** the export has the same effect as the setting, so builds
   from `8b815f2f` on need no workaround.
+
+## Squares in smoke and fire (2026-11-24, GitHub issue #17, open)
+
+Reported on 0.5.0 at 1366×768: square blocks in the hub's fire-pit smoke
+"and almost everything that has smoke". Up close they are 8×8-pixel blocks
+on a grid inside the smoke, each holding stale image data from elsewhere.
+The reporter's GPU and log were asked for; no answer yet.
+
+* **Hypothesis:** a GPU with neither shader interlock nor raster-order
+  attachment access. The renderer then reads the framebuffer for the
+  smoke's programmable blending through non-coherent subpass input, which
+  orders draws but not the overlapping particles within one draw: the
+  failure Qualcomm's Android driver showed in ST03A's fog (09-android).
+  Every machine tested so far has interlock (Radeon 760M, RTX 4090, the
+  Deck's RADV, MoltenVK on the M5). **Hypothesis** (owner): an older
+  Intel iGPU, which was never tested.
+* `VITA3K_NO_ORDERED_FB_READS=1` (fork) leaves both features unused, to
+  run that path on any GPU; the log says so and its `Framebuffer reads:`
+  line reads "no, no". Shader translation changes with it: move the
+  title's shader cache aside for such a run.
+* On the Radeon 760M with it (save 2, the hub, the fire pit, 40 frames
+  recorded): the smoke stays smooth, no squares. An immediate-mode GPU
+  seems to keep the reads in order in practice, so the path's fault
+  doesn't show here; this neither confirms nor rules out the hypothesis.
