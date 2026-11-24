@@ -1885,10 +1885,12 @@ fixed-function blender, without reading the framebuffer:
   to blend: blended by the fixed-function blender`, then one line per program,
   and `Framebuffer read from a copy by fragment program …` once for each
   program still read through the copy.
-* 96 programs qualify on the title, the menus and the hub, and no program
-  is read through the copy there any more (the log's per-program line). A
-  program that uses the old pixel for anything else keeps the copy; where
-  those are in quests isn't known yet.
+* 96 programs qualify; the game creates all its fragment programs at boot.
+  On the title, the menus, the hub and five quest maps (ST03A, ST02A, ST06A,
+  ST09A, ST10A, through Stage Select) no program is read through the copy any
+  more (the log's per-program line), and the quests' smoke and mist look
+  right. A program that used the old pixel for anything else would keep the
+  copy.
 * Checked against the reference, 60 frames over 10 s of the title (the smoke
   changes a lot between frames, so 40 consecutive frames gave differences of
   5-8 that were only the animation's phase): Radeon 760M at 2x, interlock
