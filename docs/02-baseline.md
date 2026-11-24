@@ -1846,3 +1846,63 @@ game files:
   `[debug] gpu` picks one by that number: the reporter's R7 M340 was never
   offered to the game (only the R5 was chosen, with the high-performance
   exports in the exe).
+
+### The reporter's test of the copy (2026-11-24)
+
+The test build (release workflow, Windows only, `ss-delta-67d51ad`) on the
+R5: `framebuffer_reads = copy` (auto) removes the squares, but the smoke
+flickers and parts of it are missing below the logo; `subpass_storage` is
+slow and flickers. So DCC wasn't the whole story on GCN, and the copy's
+thin, edged overlaps show on that card as flicker.
+
+### The fix: the blend by the fixed-function blender (2026-11-24, fork, see below)
+
+Every program that reads the framebuffer on the title and at the hub ends
+the same way: `PHAS`, then one `SOP2` that blends the program's colour with
+the old pixel (`o0`) into `o0`: `result = op(f1 * src1, f2 * src2)`, factors
+zero, a colour, an alpha or their complements, op add or subtract. That is a
+Vulkan blend state. The fork now finds such programs and blends them with the
+fixed-function blender, without reading the framebuffer:
+
+* `shader::find_shader_blend` translates the program once in a scan mode:
+  it counts the SOP2s and the reads and writes of the output bank outside the
+  final blend. A program qualifies if it has exactly one SOP2, that SOP2 has
+  the blend form (no predicate, no repeat or modifiers, `o0` as destination
+  and as one source, the other source not an output register), and the output
+  bank isn't touched elsewhere. The old pixel may be either source (one shader
+  on the title, `38a75dfe…`, computes `old - colour.a * colour`, i.e. Vulkan's
+  reverse subtract).
+* Its translation for the pipeline then reads no framebuffer and the SOP2
+  just writes the colour; the blend state goes into the fragment program
+  (`ShaderBlend` → `VkPipelineColorBlendAttachmentState`). The translation is
+  cached under the program's hash with its last byte changed (`^ 0xB1`), so it
+  doesn't clash with the reading translation of the same program.
+* On by default (`FeatureState::native_shader_blend`) only on a GPU with
+  neither interlock nor raster-order access, where reading is the problem.
+  `[debug] shader_blend` (auto, on, off; `VITA3K_SHADER_BLEND=1/0`) forces it;
+  `VITA3K_SHADER_BLEND_ONLY=<hash prefixes>` limits it to some programs
+  (debugging). The log says `Fragment programs that read the framebuffer only
+  to blend: blended by the fixed-function blender`, then one line per program,
+  and `Framebuffer read from a copy by fragment program …` once for each
+  program still read through the copy.
+* 96 programs qualify on the title, the menus and the hub, and no program
+  is read through the copy there any more (the log's per-program line). A
+  program that uses the old pixel for anything else keeps the copy; where
+  those are in quests isn't known yet.
+* Checked against the reference, 60 frames over 10 s of the title (the smoke
+  changes a lot between frames, so 40 consecutive frames gave differences of
+  5-8 that were only the animation's phase): Radeon 760M at 2x, interlock
+  (reference) 64.5/74.6/63.1 mean RGB in the smoke region, the default path
+  of a card with neither feature (copy + native blend, forced with
+  `VITA3K_NO_ORDERED_FB_READS`) 65.8/75.4/63.6, the copy alone 63.7/71.2/62.9
+  (thinner smoke, as above). At 1x the same. The fire pit and the menus look
+  like the reference; no squares, no edges.
+* AYN Thor, title: Turnip (raster-order access, the reference) 68.7/72.5/61.0,
+  with native blend forced 68.7/72.8/60.9; at 2x 75.7/79.9/64.4 and
+  75.0/79.1/63.4. Qualcomm's driver (neither feature): copy 67.9/69.5/62.0,
+  copy + native blend (the default now) 69.4/73.5/62.1.
+* Native blend mixed with interlock (forced on the 760M) darkens the smoke:
+  pipelines that blend into the attachment and pipelines that read and write
+  it under interlock aren't ordered against each other. That's why it stays
+  off on GPUs with interlock. **Hypothesis**: the same reason as storage-image
+  writes against attachment writes; not investigated, as nothing needs it.

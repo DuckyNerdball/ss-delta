@@ -13,9 +13,12 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   driver has neither shader interlock nor raster-order attachment access
   (older AMD Radeon, such as the R5 in an A10-9600P laptop; Qualcomm's own
   Adreno driver on Android). The log's `Framebuffer reads:` line says
-  "no, no" on those. Smoke is now drawn from a copy of the picture there,
-  and `[debug] framebuffer_reads` on the settings menu's Debug page picks
-  another way if one looks better on your card.
+  "no, no" on those. The smoke, fire and fog shaders there now leave their
+  blending to the graphics card's own blender instead of reading the
+  picture, which looks as on other cards; the few shaders that can't
+  still read a copy of the picture. `[debug] shader_blend` and
+  `[debug] framebuffer_reads` on the settings menu's Debug page change
+  this if something looks wrong on your card.
 
 ### New
 
