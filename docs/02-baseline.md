@@ -1724,3 +1724,20 @@ The reporter's GPU and log were asked for; no answer yet.
   recorded): the smoke stays smooth, no squares. An immediate-mode GPU
   seems to keep the reads in order in practice, so the path's fault
   doesn't show here; this neither confirms nor rules out the hypothesis.
+* **Intel iGPUs have interlock on Windows** (vulkan.gpuinfo.org, the
+  `VK_EXT_fragment_shader_interlock` coverage list for Windows, read by
+  the owner): every Intel iGPU from Skylake on, from its first driver
+  with Vulkan (HD 520/620/630 and UHD 620/630 since 100.71xx in 2019,
+  Iris Xe since 2020; Arc). Older ones have no Vulkan on Windows. So an
+  older Intel laptop doesn't lack the feature; the list doesn't show
+  whether the driver enables `fragmentShaderSampleInterlock`, which the
+  fork requires (its shaders use `SampleInterlockOrderedEXT`).
+* **`[debug] high_accuracy = false`** (the settings menu's Debug page,
+  "Off is faster but can flicker") takes the same non-coherent path on
+  any GPU, and texture viewport as well. On the Radeon 760M at the fire
+  pit, 40 frames: smooth smoke, no squares.
+* Left (**hypotheses**): on the reporter's GPU either that path shows what
+  the 760M hides (with `high_accuracy` off, or without sample interlock),
+  or the driver's interlock itself doesn't order the reads. Their log
+  (`Framebuffer reads:`, "Using shader interlock") and `ss-delta.ini`
+  tell which.
