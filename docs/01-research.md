@@ -1122,21 +1122,39 @@ numbers above:
         Blizzard Wolf Fang (M)). A thrust that hit an enemy crashed the
         game (read of guest address 0, the same in a reporter's log on an
         RTX 5080) or did nothing. Fixed in D29's package (version 2).
-      * **The arrows draw nothing** [local, 2026-11-24; GitHub issue #19;
-        open]: Spirits' Flame Arrow casts (aim reticle, the Fire prompt) but
-        no arrows appear; Fire Djinn's Arrow (L) in the same try-out works.
-        The Spirit rows equal Delta's Lv.2 arrows (`1121010`/`1121011`,
-        `1125010`/`1125011`) in `skill_param_ply`, `magic_eff_pack_param_ply`
-        and `magic_bullet_param_ply` except the numbers. In
-        `magic_gimmick_param_ply` (type 8) they differ from all of Delta's
-        elemental arrows in general parameter 1 (0 against 0.45) and in
-        the element's sub-skill slot (Delta's fire arrows name their
-        "強化" (enhanced) projectile in sub-skill 5, stone in 8, the
-        no-element arrows one per element in 5-9; the Spirit rows, like
-        all of the original's arrows, only sub-skill 1). Tried: parameter
-        1 = 0.45 alone: still no arrows, no crash. Plus the Spirit
-        projectile in the element's slot: the cast crashed (read of guest
-        `0x2beb6b09`). So the tables alone don't explain it.
+      * **The arrows drew nothing: continuation rows** [local, 2026-11-24;
+        GitHub issue #19]: Spirits' Flame Arrow cast (aim reticle, the Fire
+        prompt) but no arrows appeared and nothing was hit; Fire Djinn's
+        Arrow (L) in the same try-out worked.
+        * `magic_eff_pack_param_ply.csv` has **continuation rows**: lines
+          with an empty ID that belong to the row above (3,004 in Delta).
+          A throw's pack (`1121010`) is followed by four `投擲準備` (throw
+          preparation) rows, one hover position per arrow. Delta commented
+          out only the first line of each Spirit pack (`;1600400`), not its
+          continuation rows, and D29's package took only the `;` lines: the
+          Spirit throws had no arrows.
+        * 16 of the 49 Spirit packs have continuation rows (47 lines): the
+          swords `1600001`/`1600101` (6 each), the giant arms
+          `1600201`/`1600301` (4), both throws (4), the eggs and the
+          root/spark crawls with their shots (2 each), Frostfluff
+          (`1601400`, 2), Falconfeather (`1601800`, 1). No other Spirit table
+          has continuation rows, and none of the tables has a commented one
+          (`;,`).
+        * Found by swapping: the Spirit skill pointed at Delta's pack
+          `1121010` drew arrows. Ruled out on the way (each tried alone in a
+          try-out): the gimmick's general parameter 1 (0 in the Spirit and
+          all of the original's arrows, 0.45 in Delta's; no change) and
+          Delta's "強化" (enhanced) projectile slot (the element's sub-skill,
+          5 for fire, 8 for stone; the Spirit projectile there crashed the
+          cast, read of guest `0x2beb6b09`).
+        * Fixed in D29's package (version 3): each row taken with its
+          continuation rows. Spirits' Flame Arrow then draws its four
+          arrows, locks on and kills the try-out's goblin; Spirits' Stone
+          Arrow draws its rocks.
+        * In Delta itself the 47 lines stay active after the commented
+          block. **Hypothesis:** the game reads them as further effects of
+          the last active row before the block, `1514621` (a boss's
+          Gungnir Lv3 projectile, which has 3 of its own).
     * Sanguine Shot (and its Godly and Diabolic forms, items 100000/50/60):
       the original's right-arm shot, replaced in Delta by Sanguine Cannon,
       Angelshot and Demonshot. A mechanic changed, not content removed.

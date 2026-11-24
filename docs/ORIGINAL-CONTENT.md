@@ -112,6 +112,9 @@ own:
 * the two fang arms named a punch effect Delta removed; it is left out,
   as on Delta's own fang arms, and their punch does the arm's damage
   (before the fix, a thrust that hit crashed the game: issue #18);
+* the effect rows below each Spirits' row that Delta left uncommented
+  (an arrow's four arrows, a sword's further effects) are taken along
+  (before the fix, the two Spirits' arrows had no arrows: issue #19);
 * the giant arms and fang arms get Delta's falcon-combo values from the
   arm with the same model, as the Spirits' swords already have them;
 * Spirits' Falconfeather gets the original's names back in English,

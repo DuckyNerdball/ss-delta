@@ -41,6 +41,12 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   or misses. Their punch still named a skill Delta removed; it now does
   the arm's damage, as Delta's own fang arms do. The Spirits' offerings
   are rebuilt once when the game starts.
+* **Spirits' Flame Arrow and Spirits' Stone Arrow fire their arrows**
+  ([#19](https://github.com/vita-recomps/ss-delta/issues/19)); they had
+  drawn none and done no damage. ss-delta had left out part of the
+  Spirits' effect data, so other Spirits' offerings (the swords, giant
+  arms, eggs, roots, Frostfluff, Falconfeather) now also have all their
+  effects, as the original game's did.
 
 ## 0.5.0 (2026-11-23)
 

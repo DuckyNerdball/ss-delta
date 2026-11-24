@@ -1400,6 +1400,12 @@ rather than a mod the player makes, as for the Japan-only raiments.
     with the two rows pointed at the arms' damage skills (1601003,
     1601103), as Delta's own fang arms' punch rows are. Package version
     2;
+  * update (2026-11-24, GitHub issue #19): each row is taken with the
+    continuation rows after it (lines with an empty ID, which Delta left
+    uncommented: 47 in `magic_eff_pack_param_ply.csv`, among them the
+    throws' four arrow positions). Without them the Spirit arrows had no
+    arrows, and 14 other Spirit packs lacked part of their effects.
+    Package version 3;
   * arms rows with 0 in Delta's falcon columns take them from Delta's arm
     with the same model, as the Spirit swords already have them;
   * Spirits' Falconfeather is "test" in Delta's western item text: the
