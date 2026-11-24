@@ -1310,6 +1310,54 @@ the Radeon 760M runs 56-57.
   59-60 (median 60) on the Radeon 760M. The flip still waits for each
   vblank, so it can't exceed 60.
 
+## 120 fps study (2026-11-24, not implemented)
+
+The owner asked whether 120 fps is possible. A local, uncommitted experiment
+on the fork (`SSD_VBLANK_HZ` for the emulated vblank rate, a `frame_rate =
+120` choice with an 8000 µs frame timer, `SSD_PRESENT_IMMEDIATE` for Vulkan's
+immediate present mode). Junction test folder, Radeon 760M, Stage Select's
+first quest (rain, two enemies), native code, vsync off. Run-to-run noise on
+that map is about ±3 fps.
+
+| Vblank | Timer | Present | Menu | Quest |
+|---|---|---|---|---|
+| 60 Hz | 60 (16000 µs) | FIFO-relaxed | 60 | 54–56 |
+| 60 Hz | 120 (8000 µs) | FIFO-relaxed | 60 | 55–56 |
+| 60 Hz | 120 | immediate, scale 1, 720×408 | 60 | 55–60 |
+| 120 Hz | 120 | immediate, scale 1 / scale 2 | 116–118 | 54–56 |
+| 480 Hz | 1000 µs (unthrottled) | immediate, scale 1 / 2, surface sync exact / off | 460–470 | 53–57 |
+
+What limits the frame rate:
+
+* **The emulated vblank, through the pad.** The game reads the pad with the
+  blocking `sceCtrlReadBufferPositive2` (and `sceTouchRead`), which the fork
+  wakes once per vblank (`ctrl.cpp` `ctrl_get`). Vblank is a fixed 60 Hz
+  (`display.cpp`, `TARGET_FPS`), so any timer gives exactly 60. The flip
+  threshold doesn't pace anything here: the display callback only picks
+  `NEXTFRAME` or `IMMEDIATE`, and the fork ignores both. The comment "the flip
+  still waits for each vblank" in `update_frame_rate` is really this pad wait.
+* **Presentation.** The Vulkan renderer never reads the `vsync` setting (only
+  OpenGL applies `pending_vsync`). It takes mailbox, else FIFO-relaxed, else
+  FIFO. The 760M has no mailbox, so a 60 Hz monitor caps at 60 whatever
+  `vsync` says.
+* **The game's own CPU work, in quests.** Unthrottled, the quest stays at about
+  55 fps at both resolutions and with surface sync off, so the GPU's fill rate
+  isn't the limit. One guest thread runs at 77–80% of a core (~14 ms a frame at
+  54 fps), and all six stack samples were in `ssd_aot_eboot` (recompiled game
+  code), not in the renderer or HLE. **Hypothesis:** the heavy NEON functions
+  of 05-recompiler "Results" are part of it; the hot guest functions weren't
+  mapped.
+* With a 120 Hz vblank, a frame that misses 8.3 ms waits for the next vblank
+  (16.7 ms). A machine that can't hold 120 then gets 60 or less, not 90.
+
+To do it: make the vblank rate follow `frame_rate`, or stop the pad and touch
+reads blocking per vblank; honour `vsync = false` on Vulkan (immediate or
+mailbox) and use FIFO on a high-refresh or VRR display otherwise; set the
+timer to about 8000 µs. Not checked: per-frame game logic like the Blitz bug
+(D30; its override scales correctly at k = 0.25, but others would be twice as
+far off as at 60), audio, Ad Hoc Play between players at different rates, and
+how fast the owner's Ryzen 7 7800X3D runs that game thread.
+
 ## Blue haze in ST02A: colour outputs clamped (2026-10-18, fixed)
 
 The owner compared quest 2 (ST02A, Stage Select index 3) with a Vita
