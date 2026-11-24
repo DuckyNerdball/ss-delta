@@ -1741,3 +1741,12 @@ The reporter's GPU and log were asked for; no answer yet.
   or the driver's interlock itself doesn't order the reads. Their log
   (`Framebuffer reads:`, "Using shader interlock") and `ss-delta.ini`
   tell which.
+* **Confirmed (the reporter's log and ini, 2026-11-24):** `Vulkan device:
+  AMD Radeon R5 Graphics`, driver 2.0.179, the integrated GPU of an AMD
+  A10-9600P (Bristol Ridge, 2016; the laptop also has a Radeon R7 M340,
+  not the one the game used), Adrenalin 21.9; `Framebuffer reads:
+  raster-order attachment access no, shader interlock no`, with
+  `high_accuracy = true`. So the squares are the non-coherent path on a
+  GPU that has neither feature, as on Qualcomm's driver; the Radeon 760M
+  (RDNA 3) doesn't show the path's fault, this GCN APU does. Whether the
+  R7 M340 on the same driver has interlock is not known.
