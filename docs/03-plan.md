@@ -1368,6 +1368,24 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     `[keyboard]` binds to it, as a keycap in the ink blot. Open: short
     forms for long key names (Space, Enter, Shift, Tab), the first of two
     keys, and following a binding changed on the Controls page.
+  * ☐ Two gamepad inputs per Vita button, and the triggers as bindings
+    ([#26](https://github.com/vita-recomps/ss-delta/issues/26), 2026-11-25:
+    RT as a second D-pad up, for the support spells in combat, with the
+    D-pad kept for the menus). Today `[gamepad]` takes one button per Vita
+    button (`apply_bindings` in the fork's `game-frontend/input.cpp` drops
+    the rest; upstream's `controller_binds` has one slot per button), and
+    LT/RT can't be named there: `ctrl.cpp` `apply_controller` always makes
+    them L2/R2. Plan: `up = dpup, righttrigger` (up to two, as in
+    `[keyboard]`; `lefttrigger`/`righttrigger` as `[touch]` already takes
+    them), kept in a list of our own next to `controller_binds` and applied
+    in `apply_controller` beside the L2/R2 check, so the game's pad read
+    sees it with no frame of delay. RT is free outside PS TV mode (the
+    game reads L2/R2 only in its PS TV branches, 01-research), so it still
+    sending R2 does no harm; with `pstv_mode` it does both. LT is the Black
+    Rite by default. Shared `game-frontend`, so every platform gets it;
+    `[gamepad]` in INSTALLING, and the Controls page above shows both
+    inputs. Until then: Steam Input, DS4Windows or reWASD, or a second key
+    in `[keyboard]`.
 
 ## Unplanned
 
