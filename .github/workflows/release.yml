@@ -9,6 +9,13 @@
 # Each archive carries recomplauncher.json (game.json release_files), with the version stamped into
 # its prepare.version: RecompLauncher builds the game again from the player's dump after every update,
 # as docs/INSTALLING.md asks of a player updating by hand.
+#
+# Time and stalls (#27): every job downloads what it needs first, in attempts of a few minutes
+# (tools/ci-retry.py; the kit leaves a source slower than 256 KB/s for its next mirror), and keeps the
+# downloads in the Actions cache until their lock files change. The compilers run through sccache
+# (its GitHub Actions cache backend). The PC jobs build while the android job runs and wait for its APK
+# (tools/ci-wait-job.py) only before laying out the setup. Every step that touches the network has a
+# time limit of its own.
 name: Setup release
 
 on:
@@ -24,6 +31,14 @@ permissions:
   contents: write
   id-token: write
   attestations: write
+  actions: read  # tools/ci-wait-job.py reads the run's jobs
+
+env:
+  # sccache with the GitHub Actions cache; CMake takes the launchers from the environment (Vita3K's
+  # CMakeLists.txt already builds MSVC objects with /Z7, which sccache can cache)
+  SCCACHE_GHA_ENABLED: 'true'
+  CMAKE_C_COMPILER_LAUNCHER: sccache
+  CMAKE_CXX_COMPILER_LAUNCHER: sccache
 
 jobs:
   # The game's APK (docs/decisions.md D25, docs/09-android.md): lib ss-delta.so built with the NDK on
@@ -40,24 +55,27 @@ jobs:
       NDK_VERSION: 29.0.14206865
     steps:
       - uses: actions/checkout@v7
+        timeout-minutes: 10
         with:
           submodules: recursive
 
       - uses: actions/setup-java@v5
+        timeout-minutes: 5
         with:
           distribution: temurin
           java-version: '21'
 
       # Vita3K's language catalog generator needs Python 3.12
       - uses: actions/setup-python@v6
+        timeout-minutes: 5
         with:
           python-version: '3.12'
 
-      # The device's build tools' downloads (python.org, ziglang.org, PyPI; android-build-tools.json)
-      # come first, kept between runs until the lock changes: ziglang.org once trickled for minutes
-      # after the NDK build had already taken 9 (2026-11-25), and a download that never stops is
-      # never timed out by the kit. Each attempt gets 5 minutes; files already checked are kept.
-      - uses: actions/cache@v6
+      # The device's build tools' downloads (python.org, ziglang.org or a mirror, PyPI;
+      # android-build-tools.json), kept until the lock changes
+      - id: tools-cache
+        uses: actions/cache/restore@v6
+        timeout-minutes: 5
         with:
           path: build/android/downloads
           key: android-build-tools-${{ hashFiles('third_party/recomp/tools/android-build-tools.json') }}
@@ -65,14 +83,21 @@ jobs:
       - name: Download the build tools for the device
         timeout-minutes: 16
         run: |
-          for attempt in 1 2 3; do
-            timeout 300 python -I -c "import json, sys; sys.path.insert(0, sys.argv[1]); import toolchain; toolchain.download(json.load(open(sys.argv[2], encoding='utf-8')), sys.argv[3])" \
-              third_party/recomp/tools third_party/recomp/tools/android-build-tools.json build/android/downloads && exit 0
-            echo "::warning::attempt $attempt to download the build tools failed or took over 5 minutes"
-          done
-          exit 1
+          python -I tools/ci-retry.py --attempts 3 --minutes 5 -- python -I -c "import json, sys; sys.path.insert(0, sys.argv[1]); import toolchain; toolchain.download(json.load(open(sys.argv[2], encoding='utf-8')), sys.argv[3])" \
+            third_party/recomp/tools third_party/recomp/tools/android-build-tools.json build/android/downloads
+
+      - if: steps.tools-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        timeout-minutes: 5
+        with:
+          path: build/android/downloads
+          key: ${{ steps.tools-cache.outputs.cache-primary-key }}
+
+      - uses: mozilla-actions/sccache-action@v0.0.11
+        timeout-minutes: 5
 
       - name: NDK r29, platform 35, build-tools 35, Ninja
+        timeout-minutes: 15
         run: |
           sudo apt-get update -q && sudo apt-get install -y -q ninja-build
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
@@ -86,6 +111,7 @@ jobs:
             -DANDROID_PLATFORM=28 -DCMAKE_BUILD_TYPE=RelWithDebInfo -DVITA3K_GAMES_ONLY=ON \
             -DUSE_DISCORD_RICH_PRESENCE=OFF
           cmake --build build/vita3k-android --target ss-delta
+          sccache --show-stats
           # the game's library and libadrenotools' hooks beside it (add_game), without debug info
           mkdir -p build/android/jniLibs/arm64-v8a
           for f in build/vita3k-android/bin/*.so; do
@@ -101,6 +127,7 @@ jobs:
             build/android/buildtools --ndk "$NDK" --project . --cache build/android/downloads
 
       - name: Pack and sign the APK
+        timeout-minutes: 20  # Gradle downloads its plugins
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -131,39 +158,79 @@ jobs:
           echo "APK=build/release/$name" >> "$GITHUB_ENV"
 
       - uses: actions/attest-build-provenance@v3
+        timeout-minutes: 10
         with:
           subject-path: ${{ env.APK }}
 
       - uses: actions/upload-artifact@v7
+        timeout-minutes: 10
         with:
           name: setup-android
           path: |
             ${{ env.APK }}
             ${{ env.APK }}.sha256
 
+  # The PC jobs don't wait for android to start: they build at once and wait for its APK just before
+  # laying out the setup (ANDROID: whether this run makes one).
   windows:
-    needs: android
-    if: always() && (needs.android.result == 'success' || needs.android.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'windows'))
+    if: github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'windows')
     runs-on: windows-2025
-    timeout-minutes: 180
+    timeout-minutes: 120
+    env:
+      ANDROID: ${{ github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'android') }}
     steps:
       - uses: actions/checkout@v7
+        timeout-minutes: 10
         with:
           submodules: recursive
 
       - uses: actions/setup-python@v6
+        timeout-minutes: 5
         with:
           python-version: '3.12'
 
-      - uses: actions/download-artifact@v7
-        if: needs.android.result == 'success'
+      # the setup's downloads (python.org's embeddable Python and Tk, the wheels, zig), kept until the
+      # lock files change
+      - id: setup-cache
+        uses: actions/cache/restore@v6
+        timeout-minutes: 5
         with:
-          name: setup-android
-          path: build/apk
+          path: build/release/setup-downloads
+          key: setup-windows-${{ hashFiles('third_party/recomp/tools/setup-windows.json', 'third_party/recomp/tools/toolchain-windows.json') }}
+
+      - name: Download the setup's files
+        timeout-minutes: 16
+        run: python -I tools/ci-retry.py --attempts 3 --minutes 5 -- python -I third_party/recomp/tools/make-setup.py download third_party/recomp/tools/setup-windows.json --out build/release/ss-delta
+
+      - if: steps.setup-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        timeout-minutes: 5
+        with:
+          path: build/release/setup-downloads
+          key: ${{ steps.setup-cache.outputs.cache-primary-key }}
+
+      - uses: mozilla-actions/sccache-action@v0.0.11
+        timeout-minutes: 5
 
       - name: Build ss-delta.exe (games only, no Qt)
         shell: pwsh
-        run: python -I third_party/recomp/tools/build-vita3k.py --games-only --target ss-delta
+        run: |
+          python -I third_party/recomp/tools/build-vita3k.py --games-only --target ss-delta
+          sccache --show-stats
+
+      - name: Wait for the APK
+        if: env.ANDROID == 'true'
+        timeout-minutes: 90
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -I tools/ci-wait-job.py android --minutes 85
+
+      - uses: actions/download-artifact@v7
+        if: env.ANDROID == 'true'
+        timeout-minutes: 10
+        with:
+          name: setup-android
+          path: build/apk
 
       - name: Lay out the setup
         shell: pwsh
@@ -180,10 +247,12 @@ jobs:
           "ZIP=$zip" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
 
       - uses: actions/attest-build-provenance@v3
+        timeout-minutes: 10
         with:
           subject-path: ${{ env.ZIP }}
 
       - uses: actions/upload-artifact@v7
+        timeout-minutes: 10
         with:
           name: setup-windows
           path: |
@@ -191,35 +260,70 @@ jobs:
             ${{ env.ZIP }}.sha256
 
   linux:
-    needs: android
-    if: always() && (needs.android.result == 'success' || needs.android.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'linux'))
+    if: github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'linux')
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 120
     # the SDK the Deck's Steam Runtime matches: glibc 2.31, g++ 14 (docs/07-linux.md)
     container: registry.gitlab.steamos.cloud/steamrt/sniper/sdk:3.0.20261021.266025
+    env:
+      ANDROID: ${{ github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'android') }}
     steps:
       - uses: actions/checkout@v7
+        timeout-minutes: 10
         with:
           submodules: recursive
 
       - name: Python 3.12 (the setup's own, python-build-standalone; the SDK has 3.9)
+        timeout-minutes: 10
         run: |
           read -r url sha <<EOF
           $(python3 -c "import json; f = next(f for f in json.load(open('third_party/recomp/tools/setup-linux.json'))['files'] if f['kind'] == 'python'); print(f['url'], f['sha256'])")
           EOF
-          curl -sSL --retry 3 -o /tmp/python.tar.gz "$url"
+          curl -sSfL --retry 3 --retry-all-errors --connect-timeout 30 --speed-limit 262144 --speed-time 30 --max-time 300 \
+            -o /tmp/python.tar.gz "$url"
           echo "$sha  /tmp/python.tar.gz" | sha256sum -c -
           mkdir -p /opt/python && tar -xzf /tmp/python.tar.gz -C /opt/python --strip-components=1
           echo "PY=/opt/python/bin/python3" >> "$GITHUB_ENV"
 
+      - id: setup-cache
+        uses: actions/cache/restore@v6
+        timeout-minutes: 5
+        with:
+          path: build/release/setup-downloads
+          key: setup-linux-${{ hashFiles('third_party/recomp/tools/setup-linux.json', 'third_party/recomp/tools/toolchain-linux.json') }}
+
+      - name: Download the setup's files
+        timeout-minutes: 16
+        run: $PY -I tools/ci-retry.py --attempts 3 --minutes 5 -- $PY -I third_party/recomp/tools/make-setup.py download third_party/recomp/tools/setup-linux.json --out build/release/ss-delta
+
+      - if: steps.setup-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        timeout-minutes: 5
+        with:
+          path: build/release/setup-downloads
+          key: ${{ steps.setup-cache.outputs.cache-primary-key }}
+
+      - uses: mozilla-actions/sccache-action@v0.0.11
+        timeout-minutes: 5
+
+      - name: Build ss-delta.x86_64
+        run: |
+          $PY -I third_party/recomp/tools/build-vita3k.py --target ss-delta
+          sccache --show-stats
+
+      - name: Wait for the APK
+        if: env.ANDROID == 'true'
+        timeout-minutes: 90
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: $PY -I tools/ci-wait-job.py android --minutes 85
+
       - uses: actions/download-artifact@v7
-        if: needs.android.result == 'success'
+        if: env.ANDROID == 'true'
+        timeout-minutes: 10
         with:
           name: setup-android
           path: build/apk
-
-      - name: Build ss-delta.x86_64
-        run: $PY -I third_party/recomp/tools/build-vita3k.py --target ss-delta
 
       - name: Lay out the setup
         run: |
@@ -234,10 +338,12 @@ jobs:
           echo "TGZ=$tgz" >> "$GITHUB_ENV"
 
       - uses: actions/attest-build-provenance@v3
+        timeout-minutes: 10
         with:
           subject-path: ${{ env.TGZ }}
 
       - uses: actions/upload-artifact@v7
+        timeout-minutes: 10
         with:
           name: setup-linux
           path: |
@@ -246,30 +352,66 @@ jobs:
 
   macos:
     # Apple Silicon; the build targets macOS 13.3 (the fork's CMAKE_OSX_DEPLOYMENT_TARGET)
-    needs: android
-    if: always() && (needs.android.result == 'success' || needs.android.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'macos'))
+    if: github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'macos')
     runs-on: macos-15
-    timeout-minutes: 180
+    timeout-minutes: 120
+    env:
+      ANDROID: ${{ github.event_name != 'workflow_dispatch' || inputs.platforms == 'all' || contains(inputs.platforms, 'android') }}
     steps:
       - uses: actions/checkout@v7
+        timeout-minutes: 10
         with:
           submodules: recursive
 
       - uses: actions/setup-python@v6
+        timeout-minutes: 5
         with:
           python-version: '3.12'
 
+      - id: setup-cache
+        uses: actions/cache/restore@v6
+        timeout-minutes: 5
+        with:
+          path: build/release/setup-downloads
+          key: setup-macos-${{ hashFiles('third_party/recomp/tools/setup-macos.json', 'third_party/recomp/tools/toolchain-macos.json') }}
+
+      - name: Download the setup's files
+        timeout-minutes: 16
+        run: python -I tools/ci-retry.py --attempts 3 --minutes 5 -- python -I third_party/recomp/tools/make-setup.py download third_party/recomp/tools/setup-macos.json --out build/release/ss-delta
+
+      - if: steps.setup-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        timeout-minutes: 5
+        with:
+          path: build/release/setup-downloads
+          key: ${{ steps.setup-cache.outputs.cache-primary-key }}
+
+      # Ninja from PyPI, pinned (Homebrew updates itself first, which took minutes)
+      - name: Ninja
+        timeout-minutes: 5
+        run: python -m pip install --disable-pip-version-check ninja==1.13.2
+
+      - uses: mozilla-actions/sccache-action@v0.0.11
+        timeout-minutes: 5
+
+      - name: Build ss-delta.arm64
+        run: |
+          python -I third_party/recomp/tools/build-vita3k.py --target ss-delta
+          sccache --show-stats
+
+      - name: Wait for the APK
+        if: env.ANDROID == 'true'
+        timeout-minutes: 90
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python -I tools/ci-wait-job.py android --minutes 85
+
       - uses: actions/download-artifact@v7
-        if: needs.android.result == 'success'
+        if: env.ANDROID == 'true'
+        timeout-minutes: 10
         with:
           name: setup-android
           path: build/apk
-
-      - name: Ninja
-        run: brew install ninja
-
-      - name: Build ss-delta.arm64
-        run: python -I third_party/recomp/tools/build-vita3k.py --target ss-delta
 
       - name: Lay out the setup
         run: |
@@ -284,10 +426,12 @@ jobs:
           echo "TGZ=$tgz" >> "$GITHUB_ENV"
 
       - uses: actions/attest-build-provenance@v3
+        timeout-minutes: 10
         with:
           subject-path: ${{ env.TGZ }}
 
       - uses: actions/upload-artifact@v7
+        timeout-minutes: 10
         with:
           name: setup-macos
           path: |
@@ -298,19 +442,23 @@ jobs:
     if: github.ref_type == 'tag'
     needs: [android, windows, linux, macos]
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       # the release's notes: .github/release-notes/<tag>.md when there is one (written when the release
       # is prepared), else the short text below
       - uses: actions/checkout@v7
+        timeout-minutes: 10
         with:
           sparse-checkout: .github/release-notes
 
       - uses: actions/download-artifact@v7
+        timeout-minutes: 10
         with:
           path: dist
           merge-multiple: true
 
       - name: Draft release
+        timeout-minutes: 10
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

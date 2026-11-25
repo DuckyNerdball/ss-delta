@@ -96,7 +96,12 @@ with Python 3.12). `--apk <file>` adds the game's Android APK as
 a device ([09-android](09-android.md)). Pushing a tag `v*` runs
 `.github/workflows/release.yml`, which builds the APK (NDK r29 on Ubuntu,
 Gradle) and all three archives on GitHub, with their SHA-256 and build
-attestations, into a draft release. Its notes are
+attestations, into a draft release. Each job downloads first, in
+attempts of 5 minutes (`tools/ci-retry.py`; the kit moves on to a mirror
+when a source is slower than 256 KB/s), and keeps the downloads in the
+Actions cache until their lock files change; the compilers run through
+sccache; the PC jobs build while the APK is made and wait for it
+(`tools/ci-wait-job.py`) only to lay out the setup (#27). Its notes are
 `.github/release-notes/<tag>.md` when that file exists (write it before
 tagging), else a short default text. Add the release to `CHANGELOG.md`
 too, with the issues each change answers.
