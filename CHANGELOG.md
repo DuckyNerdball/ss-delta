@@ -4,6 +4,17 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## 0.5.3 (2026-11-25)
+
+### Fixed
+
+* **Android: building the game on the device stopped at "Recompiling
+  eboot"** since 0.5.0 (`FileNotFoundError: ... overrides/eboot.json`):
+  the APK didn't carry the game's code fixes (the 60 fps fixes of
+  [#14](https://github.com/vita-recomps/ss-delta/issues/14) and the
+  loading screens), which the build needs. Building from a PC
+  (`--android`) wasn't affected.
+
 ## 0.5.2 (2026-11-25)
 
 ### Fixed
