@@ -109,10 +109,12 @@ Compared with running the game in Vita3K:
 * **Cheats** on the settings menu's Cheats page: Infinite health,
   Unlimited and Lasting offerings, One-hit kills, Max Lacrima and Max
   levels.
-* **Xbox button labels** in the game's prompts, tutorial pictures and
-  text, as an option (Button prompts in the settings menu; or as the
-  connected gamepad): A, B, X, Y, LB, RB, Menu and View, after your gamepad
-  bindings.
+* **Xbox or keyboard button labels** in the game's prompts, tutorial
+  pictures and text, as an option (Button prompts in the settings menu; or
+  as the device you used last): A, B, X, Y, LB, RB, Menu and View, or the
+  keys in keycaps, after your bindings.
+* **Key bindings in the settings menu** (Controls page): two keys and a
+  gamepad button per Vita button, the mouse's side buttons too.
 * **Intro logos skipped** as an option (Skip intro logos in the settings
   menu): the game opens on its title screen.
 * **Touch on keys and buttons:** the Black Rite icon on F and the left

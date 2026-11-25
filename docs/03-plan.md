@@ -1350,24 +1350,49 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
   already prefers loose files when `PackFileFirst false`).
 * Key bindings in the settings menu
   ([#24](https://github.com/vita-recomps/ss-delta/issues/24); asked for by
-  a RecompLauncher user, 2026-11-25). Today `[keyboard]`, `[gamepad]` and `[touch]` can only be
-  changed by editing `ss-delta.ini` (INSTALLING, "Controls"); the menu
-  shows none of them.
-  * ☐ A Controls page that lists each Vita button with its keys and
-    gamepad button; you pick one and press the new key or button. Up to
-    two keys per button, as in the ini, and a way to reset to the
-    defaults.
-  * ☐ Mouse buttons as bindings (side buttons X1/X2; maybe the right
-    button while the mouse camera has the cursor). Today the mouse buttons
-    are only the touchscreen and the middle click that captures the
-    cursor.
-  * ☐ Keyboard button prompts, the same way as the Xbox labels (Phase 8):
-    a `keyboard` value for `[game] button_labels`, with `auto` following
-    the device last used. Each □ ○ × △ / L / R / START / SELECT in the
-    `com_001_*` atlases, the tutorial pictures and the text shows the key
-    `[keyboard]` binds to it, as a keycap in the ink blot. Open: short
-    forms for long key names (Space, Enter, Shift, Tab), the first of two
-    keys, and following a binding changed on the Controls page.
+  a RecompLauncher user, 2026-11-25). Until then `[keyboard]`, `[gamepad]`
+  and `[touch]` could only be changed by editing `ss-delta.ini`
+  (INSTALLING, "Controls"). Done 2026-11-25 in the shared front end
+  (`game-frontend/settings_menu.*`, `input.*`, `button_labels.*`), so
+  every game on it has them.
+  * ☑ A Controls page (after Audio; on Android after the on-screen
+    controls on the same page): each Vita button with its key, second key
+    and gamepad button, then the `[touch]` bindings (Black Rite), then
+    Reset all controls (Cross twice). Left/Right pick the column, Cross
+    waits for the new key or button (raw SDL input from the front end; Esc
+    cancels, 6 s timeout), Square clears, Triangle restores that row's
+    defaults. A key or button another control has changes places with it.
+    Changes are applied at once (`apply_bindings`, `Touches::configure`)
+    and written to the ini; an empty `[gamepad]` value now unbinds, as an
+    empty `[keyboard]` one already did. The defaults are one table
+    (`button_bindings()`), which also writes the default file's lines. The
+    sticks and LT/RT (L2/R2) are shown, not editable, until #26. The menu's
+    own hints name the keys bound now. Checked on Windows 2026-11-25 with
+    posted keys in a test folder: rebinding, the swap and its note, a new
+    key working in the menu at once, Esc, a mouse side button on the Black
+    Rite, Reset all, the ini after each. Not yet checked: pressing a real
+    gamepad's button or trigger into the gamepad column (**hypothesis**
+    that it works as the keys do; same code path through SDL events).
+  * ☑ Mouse buttons as bindings: `MouseX1`, `MouseX2` (side buttons)
+    always; `MouseLeft`, `MouseRight` only while the mouse camera has the
+    cursor (the touchscreen otherwise; let go when the cursor is
+    released). Middle stays the capture. Key codes of their own on HID's
+    Button page (0x09xxxx) beside the keyboard's, so `[keyboard]` and
+    `[touch]` take them like keys.
+  * ☑ Keyboard button prompts: `[game] button_labels = keyboard`, each
+    symbol a keycap (rounded outline) with the first key `[keyboard]`
+    binds, in the ink blot; START/SELECT's keycap half again as tall as
+    the word; the font page's ○ △ □ in a keycap instead of a ring. The
+    stroke font grew A-Z, 0-9, punctuation and arrows; long names have
+    three-letter forms (SPC, ENT, SHF, TAB, CTL, ALT, BS, ESC, F12, M4).
+    `auto` follows the device used last (a key or mouse click: keyboard; a
+    gamepad: its letters or PlayStation's), before any input the connected
+    gamepad's, keyboard without one (Android: PlayStation's). The prompts
+    follow a Controls page change at once (the labels read `[keyboard]`
+    each tick). Checked: every atlas, tutorial picture and the font page
+    with `--button-labels-test` (`--set game.button_labels=keyboard`), all
+    glyphs at 3x; `auto` switching from Xbox to keyboard on a key press in
+    the log. Not yet seen in play.
   * ☐ Two gamepad inputs per Vita button, and the triggers as bindings
     ([#26](https://github.com/vita-recomps/ss-delta/issues/26), 2026-11-25:
     RT as a second D-pad up, for the support spells in combat, with the

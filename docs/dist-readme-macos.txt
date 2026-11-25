@@ -44,8 +44,7 @@ second, to open the settings menu over the paused game (Up/Down choose,
 Left/Right or Cross change, L1/R1 or Q/E switch pages, Circle, Esc or F1
 close). Window size, fullscreen, vsync, filter, volume and frame rate change
 at once; the rest are marked * and take effect the next time the game starts.
-The menu writes ss-delta.ini, which can also be edited by hand (key bindings
-and paths are there only). On a Mac keyboard the F keys need fn held, unless
+The menu writes ss-delta.ini, which can also be edited by hand (paths are there only). On a Mac keyboard the F keys need fn held, unless
 they are set as standard function keys (System Settings, Keyboard).
 
 Settings are in ss-delta.ini: resolution, window, fullscreen (F11 or
@@ -79,11 +78,21 @@ game has English, French, Spanish and Portuguese (Brazil), the EU game
 English, French, Spanish, German and Italian; a language the installed game
 lacks gives English.
 
-Button prompts: Xbox labels in place of the PlayStation symbols, from Button
-prompts on the menu's Game page ([game] button_labels = xbox, or auto to
-follow the connected gamepad; switches at once). Each symbol shows the
-gamepad button bound to it in [gamepad]: A, B, X, Y, LB, RB, and Xbox's Menu
-and View for START and SELECT, also in the tutorial pictures and the text.
+Button prompts: Xbox or keyboard labels in place of the PlayStation symbols,
+from Button prompts on the menu's Game page ([game] button_labels = xbox,
+keyboard, or auto to follow the device you used last; switches at once). Each
+symbol shows the gamepad button bound to it in [gamepad] (A, B, X, Y, LB, RB,
+and Xbox's Menu and View for START and SELECT), or the key bound to it in
+[keyboard] in a keycap (X, C, Z, V, Q, E, ENT, SHF ...), also in the tutorial
+pictures and the text.
+
+Controls: the menu's Controls page lists each Vita button with its key, a
+second key and its gamepad button, and the Black Rite. Pick one, press Cross,
+then the new key, mouse button or gamepad button (Esc cancels); Square clears
+it, Triangle restores its default, Reset all controls (Cross twice) restores
+them all. A key already in use changes places with the old one. The mouse's
+side buttons can be bound; its left and right buttons too, which then act only
+while the mouse camera has the cursor.
 
 The add-ons (raiments, hoods, additional pacts) are unlocked: their content
 is in the game since update 1.30, and the game records them in your

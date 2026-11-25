@@ -447,8 +447,36 @@ menu's Mouse page (`[mouse]`) holds Mouse camera (off: the mouse is only the
 touchscreen), Capture key, Sensitivity, Invert vertical and Hide idle
 cursor.
 
-**Changing the bindings:** close the game and edit `ss-delta.ini` in a text
-editor. The settings menu doesn't have them yet.
+**Changing the bindings:** the settings menu's **Controls** page (F1, or
+View held for a second) lists each Vita button with its key, a second key
+and its gamepad button, and the Black Rite below them. Up/Down picks a
+control, Left/Right a column; Cross, then press the new key, mouse button or
+gamepad button (Esc cancels). Square clears the selected one, Triangle puts
+that control back to its defaults, and **Reset all controls** at the bottom
+(Cross twice) all of them. A key or button another control already has
+changes places with it, so nothing is left with two jobs. The changes work
+at once and are saved in `ss-delta.ini`. The gamepad's sticks and its
+triggers (LT and RT are a PS TV's L2 and R2) can't be changed there; a
+touch such as the Black Rite also takes LT or RT.
+
+**Mouse buttons as bindings:** the side buttons (`MouseX1`, `MouseX2`) work
+like keys. The left and right buttons (`MouseLeft`, `MouseRight`) press
+their Vita button only while the mouse camera has the cursor; otherwise
+they stay the touchscreen. The middle button always captures the cursor.
+
+**Keyboard button prompts:** Button prompts on the settings menu's Game page
+(`[game] button_labels`) also has **Keyboard**: each □ ○ ✕ △, L, R, START and
+SELECT in the game's prompts, tutorial pictures and text shows the key bound
+to it (the first of two) in a keycap: X, C, Z, V, Q, E, and short forms for
+long names (ENT, SHF, SPC, TAB, CTL, ALT, BS, ESC, arrows, F1-F12, M4/M5 for
+the mouse's side buttons). **As the device used** (`auto`) switches between
+keyboard prompts and your gamepad's (Xbox letters, or PlayStation symbols
+for a PlayStation pad) by what you pressed last; before any input it takes
+the connected gamepad's, or the keyboard's without one. The prompts follow
+a binding changed on the Controls page at once.
+
+The bindings can also be changed by hand: close the game and edit
+`ss-delta.ini` in a text editor.
 
 * `[keyboard]`: `<vita button> = <key>`, or two keys separated by a comma
   (`cross = X, Space`). The Vita button names are `cross`, `circle`, `square`,
@@ -457,11 +485,13 @@ editor. The settings menu doesn't have them yet.
   `right_analog_up` ... `right_analog_right` (the right stick), and `l2`, `r2`.
   The key names are listed in the comment above the section: A-Z, 0-9, the
   arrows, Return, Space, Tab, Left Shift, Right Ctrl, F1-F12, Keypad 0-9, or
-  W3C codes such as Comma, Period, Semicolon, BracketLeft.
+  W3C codes such as Comma, Period, Semicolon, BracketLeft, and the mouse
+  buttons above. Nothing after the `=` unbinds the button.
 * `[gamepad]`: one gamepad button per Vita button: `south`, `east`, `west`,
   `north` (the face buttons: A, B, X, Y on an Xbox pad), `leftshoulder`,
   `rightshoulder`, `start`, `back`, `guide`, `dpup`, `dpdown`, `dpleft`,
-  `dpright`, `leftstick`, `rightstick`. The sticks can't be swapped.
+  `dpright`, `leftstick`, `rightstick`; nothing after the `=` unbinds it.
+  The sticks can't be swapped.
 * `[touch]`: keys and buttons that hold a finger on the screen for as long
   as they are held. `black_rite_key` and `black_rite_gamepad` move the Black
   Rite (`_gamepad` also takes `lefttrigger`, `righttrigger`). More can be
@@ -469,9 +499,6 @@ editor. The settings menu doesn't have them yet.
   `<name>_gamepad`.
 * `[mouse] capture_key`: the key(s) that capture the cursor, as in
   `[keyboard]`.
-
-Mouse buttons can't be bound to Vita buttons yet: they are the
-touchscreen, and the middle button captures the cursor.
 
 ## Saves
 
