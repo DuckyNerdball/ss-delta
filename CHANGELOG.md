@@ -4,26 +4,20 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
-## Unreleased
-
-### New
-
-* **Ad Hoc Play over the internet**, through a VPN (Tailscale, ZeroTier,
-  Radmin VPN or another) or between subnets, where broadcasts don't arrive:
-  the other players type the host's VPN address into **Peers (host
-  address)** on the settings menu's Multiplayer page. Step by step:
-  [Playing together over the internet](docs/ONLINE-PLAY.md).
-* **Typing in the settings menu**: Peers takes a keyboard (Android's
-  on-screen one too) or a gamepad (Up/Down change the character under the
-  cursor).
-* **Network adapter `auto`** (the new default) takes the adapter that
-  reaches the first peer, or the one of the internet connection, not a
-  virtual adapter that Windows lists first (Hyper-V, WSL).
-
 ## 0.5.2 (2026-11-25)
 
 ### Fixed
 
+* **Android: the game's files wouldn't install on some phones**
+  ([#23](https://github.com/vita-recomps/ss-delta/issues/23)), such as a
+  Galaxy S25: the setup stopped at "Failed to load archive file". The app
+  now reads the files you pick through the access Android's file picker
+  gives it, instead of opening them again by name, which those phones
+  refuse to an app without storage permission.
+* **Building the Android app's game from Windows** (`--android`) stopped
+  with `relocation R_AARCH64_ABS64 cannot be used against symbol ...;
+  recompile with -fPIC` since 0.5.0
+  ([#23](https://github.com/vita-recomps/ss-delta/issues/23)).
 * **Square blocks in smoke, fire and fog on some graphics cards**
   ([#17](https://github.com/vita-recomps/ss-delta/issues/17)): cards whose
   driver has neither shader interlock nor raster-order attachment access
@@ -38,6 +32,17 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### New
 
+* **Ad Hoc Play over the internet**, through a VPN (Tailscale, ZeroTier,
+  Radmin VPN or another) or between subnets, where broadcasts don't arrive:
+  the other players type the host's VPN address into **Peers (host
+  address)** on the settings menu's Multiplayer page. Step by step:
+  [Playing together over the internet](docs/ONLINE-PLAY.md).
+* **Typing in the settings menu**: Peers takes a keyboard (Android's
+  on-screen one too) or a gamepad (Up/Down change the character under the
+  cursor).
+* **Network adapter `auto`** (the new default) takes the adapter that
+  reaches the first peer, or the one of the internet connection, not a
+  virtual adapter that Windows lists first (Hyper-V, WSL).
 * **The log lists every graphics card** Vulkan offers the game, and
   `[debug] gpu` picks one by its number there (for a laptop that starts on
   the wrong one).

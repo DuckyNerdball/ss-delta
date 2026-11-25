@@ -1047,7 +1047,14 @@ Modules a PC put there (no `android-build.json`) are left alone.
 2. The firmware, then the picked files, installed (`FrontendStepActivity`).
    Each picked `content://` file is opened in the step's process and
    reaches the front end as a link named with its extension to
-   `/proc/self/fd/N`, so a 3 GB zip isn't copied.
+   `/proc/self/fd/N`, so a 3 GB zip isn't copied. The front end's `FOPEN`
+   reads through that descriptor (`android_fopen`, `fs_utils.cpp`: a
+   `dup` read with `pread` behind `funopen64`) instead of opening the link:
+   opening it opens the file again with the app's own permissions, and a
+   Galaxy S25 (Android 15/16) refused that ("Failed to load archive
+   file", #23; the Thor on Android 13 allowed it). Picked files up to
+   16 MB (licences, which are read with streams) are copied into the
+   cache instead. **Hypothesis** until the reporter confirms it on the S25.
 3. The version check (`android-setup.py check`, `game.json`'s
    `eboot_sha256`).
 4. The module dump (`--dump-elfs`, `dump_seconds`).
