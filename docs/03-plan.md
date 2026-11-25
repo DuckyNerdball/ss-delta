@@ -1348,6 +1348,19 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
 
 * Modding hooks: C++ function overrides, plus loose files (the engine
   already prefers loose files when `PackFileFirst false`).
+* Key bindings in the settings menu
+  ([#24](https://github.com/vita-recomps/ss-delta/issues/24); asked for by
+  a RecompLauncher user, 2026-11-25). Today `[keyboard]`, `[gamepad]` and `[touch]` can only be
+  changed by editing `ss-delta.ini` (INSTALLING, "Controls"); the menu
+  shows none of them.
+  * ☐ A Controls page that lists each Vita button with its keys and
+    gamepad button; you pick one and press the new key or button. Up to
+    two keys per button, as in the ini, and a way to reset to the
+    defaults.
+  * ☐ Mouse buttons as bindings (side buttons X1/X2; maybe the right
+    button while the mouse camera has the cursor). Today the mouse buttons
+    are only the touchscreen and the middle click that captures the
+    cursor.
 
 ## Unplanned
 

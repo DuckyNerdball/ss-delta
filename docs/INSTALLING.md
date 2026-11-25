@@ -14,7 +14,7 @@ game on your computer or device from **your own dump** of it.
 * [Android](#android)
 * [The first start: building the game](#the-first-start-building-the-game)
   ([without internet](#without-internet))
-* [Playing](#playing)
+* [Playing](#playing) ([controls](#controls))
 * [Saves](#saves)
 * [Ad Hoc Play](#ad-hoc-play)
 * [Files and folders](#files-and-folders)
@@ -372,7 +372,8 @@ installs only that.
 
 * **Settings:** F1, or Select (Back/View) held for a second on a gamepad,
   opens the settings menu over the paused game. Everything is also in
-  `ss-delta.ini`, which can be edited by hand (key bindings only there).
+  `ss-delta.ini`, which can be edited by hand (key bindings only there,
+  see [Controls](#controls)).
 * **Exit:** the settings menu's last page, Exit: Cross (X on the keyboard)
   twice on Exit the game. Closing the window does the same. Progress since
   the game last saved is lost.
@@ -409,6 +410,68 @@ installs only that.
 * **Screenshots:** F12, into `ss-delta/screenshots`.
 * **Both versions installed:** the US one starts; `--title-id PCSF00532`
   starts the EU one.
+
+### Controls
+
+The default bindings:
+
+| Vita | Keyboard | Gamepad (Xbox names) |
+|---|---|---|
+| Left stick | W, A, S, D | left stick |
+| Right stick (camera) | I, J, K, L | right stick |
+| ✕ | X | A |
+| ○ | C | B |
+| □ | Z | X |
+| △ | V | Y |
+| L, R | Q, E | LB, RB |
+| D-pad | arrow keys | D-pad |
+| Start | Enter | Menu |
+| Select | Right Shift | View |
+| L2, R2 (only with PS TV controls) | U, O | LT, RT |
+| Black Rite (touch and hold its icon) | F | LT |
+
+Keys that do the same thing whatever the bindings are:
+
+| Key | What it does |
+|---|---|
+| F1 (or View held for a second) | settings menu |
+| F11, Alt+Enter | fullscreen |
+| F12 | screenshot |
+| Tab, middle click | capture the cursor for the mouse camera, and release it |
+| Esc | release the cursor |
+
+**Mouse** (PC only): when the cursor isn't captured, the mouse is the
+touchscreen (left button front, right button rear). Once captured (Tab or a
+middle click), it hides and moving the mouse turns the camera. The settings
+menu's Mouse page (`[mouse]`) holds Mouse camera (off: the mouse is only the
+touchscreen), Capture key, Sensitivity, Invert vertical and Hide idle
+cursor.
+
+**Changing the bindings:** close the game and edit `ss-delta.ini` in a text
+editor. The settings menu doesn't have them yet.
+
+* `[keyboard]`: `<vita button> = <key>`, or two keys separated by a comma
+  (`cross = X, Space`). The Vita button names are `cross`, `circle`, `square`,
+  `triangle`, `l`, `r`, `start`, `select`, `up`, `down`, `left`, `right`,
+  `analog_up`, `analog_down`, `analog_left`, `analog_right` (the left stick),
+  `right_analog_up` ... `right_analog_right` (the right stick), and `l2`, `r2`.
+  The key names are listed in the comment above the section: A-Z, 0-9, the
+  arrows, Return, Space, Tab, Left Shift, Right Ctrl, F1-F12, Keypad 0-9, or
+  W3C codes such as Comma, Period, Semicolon, BracketLeft.
+* `[gamepad]`: one gamepad button per Vita button: `south`, `east`, `west`,
+  `north` (the face buttons: A, B, X, Y on an Xbox pad), `leftshoulder`,
+  `rightshoulder`, `start`, `back`, `guide`, `dpup`, `dpdown`, `dpleft`,
+  `dpright`, `leftstick`, `rightstick`. The sticks can't be swapped.
+* `[touch]`: keys and buttons that hold a finger on the screen for as long
+  as they are held. `black_rite_key` and `black_rite_gamepad` move the Black
+  Rite (`_gamepad` also takes `lefttrigger`, `righttrigger`). More can be
+  added: `<name> = x, y` (a point on the 960×544 screen) with `<name>_key` and
+  `<name>_gamepad`.
+* `[mouse] capture_key`: the key(s) that capture the cursor, as in
+  `[keyboard]`.
+
+Mouse buttons can't be bound to Vita buttons yet: they are the
+touchscreen, and the middle button captures the cursor.
 
 ## Saves
 
