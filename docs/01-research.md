@@ -705,7 +705,10 @@ Red ch. 3): the game died as the chapter's journal scene began.
   in the Graphics pool, and the owner's route (quests, the menu, Seeing
   Red ch. 3 opened again directly) bottomed out at 8.8 MB, without a crash
   [test folder, 2026-11-25]. The default heap still runs empty in those
-  scenes, as it does at ResoDown 1.
+  scenes, as it does at ResoDown 1. On Android (the Thor, a test package
+  with the eboot built for it) the game boots with the 226 MB block and
+  loads a save to the hub, no critical log lines; the pool's size there
+  wasn't read (memdump is the PC's input pipe).
 * Project Nativ (another Vita recompiler) keeps guest surfaces at the
   Vita's size and scales them only on the host GPU, so its higher
   resolutions cost the game no memory; for us that would mean ResoDown 1

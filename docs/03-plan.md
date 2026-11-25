@@ -1370,9 +1370,14 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     own hints name the keys bound now. Checked on Windows 2026-11-25 with
     posted keys in a test folder: rebinding, the swap and its note, a new
     key working in the menu at once, Esc, a mouse side button on the Black
-    Rite, Reset all, the ini after each. Not yet checked: pressing a real
-    gamepad's button or trigger into the gamepad column (**hypothesis**
-    that it works as the keys do; same code path through SDL events).
+    Rite, Reset all, the ini after each. Checked on the Thor the same day
+    (a test package, its built-in pad through `sendevent`): the page
+    shows the gamepad column only, without the stick and L2/R2 rows; a
+    real pad's button rebinds, swaps and restores; Back cancels a wait.
+    It found a button that, still held as its own binding changed,
+    pressed another Vita button (a cleared binding): the menu now ignores
+    its buttons for 350 ms after a change (fork `d470d46a`). Not checked:
+    a trigger into a touch's gamepad cell.
   * ☑ Mouse buttons as bindings: `MouseX1`, `MouseX2` (side buttons)
     always; `MouseLeft`, `MouseRight` only while the mouse camera has the
     cursor (the touchscreen otherwise; let go when the cursor is
@@ -1392,7 +1397,11 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     each tick). Checked: every atlas, tutorial picture and the font page
     with `--button-labels-test` (`--set game.button_labels=keyboard`), all
     glyphs at 3x; `auto` switching from Xbox to keyboard on a key press in
-    the log. Not yet seen in play.
+    the log; the keycaps in play in the journal and a quest (the owner's
+    and the test runs). A click SDL makes from a touch or pen doesn't
+    count as the mouse, and on Android no key does (Back and a device's
+    extra buttons arrive as keys): on the Thor `auto` stayed Xbox through
+    Back presses (fork `5974c744`).
   * ☐ Two gamepad inputs per Vita button, and the triggers as bindings
     ([#26](https://github.com/vita-recomps/ss-delta/issues/26), 2026-11-25:
     RT as a second D-pad up, for the support spells in combat, with the
