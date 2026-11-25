@@ -23,6 +23,7 @@
 
 **[Download the latest release](https://github.com/vita-recomps/ss-delta/releases/latest)** ·
 [Installation guide](docs/INSTALLING.md) ·
+[Online play](docs/ONLINE-PLAY.md) ·
 [Changelog](CHANGELOG.md) ·
 [Build from source](docs/BUILDING.md) ·
 [Compatibility](docs/06-compatibility.md) ·
@@ -88,7 +89,9 @@ Compared with running the game in Vita3K:
   a "ghost" of the bloom trailing moving objects.
 * **Ad Hoc Play without a Vita.** Up to four copies of the game play
   together: on one PC, each with its own saves and gamepad, or across a LAN,
-  Windows, Linux and macOS mixed ([D15](docs/decisions.md)).
+  Windows, Linux and macOS mixed ([D15](docs/decisions.md)), or over the
+  internet through a VPN such as Tailscale, ZeroTier or Radmin VPN
+  ([Online play](docs/ONLINE-PLAY.md); releases after 0.5.2).
 * **The add-ons unlocked.** Their content is in the game since update
   1.30, and PSN, which recorded the purchases, is closed
   ([D14](docs/decisions.md)).
