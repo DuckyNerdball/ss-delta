@@ -1361,6 +1361,13 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     button while the mouse camera has the cursor). Today the mouse buttons
     are only the touchscreen and the middle click that captures the
     cursor.
+  * ☐ Keyboard button prompts, the same way as the Xbox labels (Phase 8):
+    a `keyboard` value for `[game] button_labels`, with `auto` following
+    the device last used. Each □ ○ × △ / L / R / START / SELECT in the
+    `com_001_*` atlases, the tutorial pictures and the text shows the key
+    `[keyboard]` binds to it, as a keycap in the ink blot. Open: short
+    forms for long key names (Space, Enter, Shift, Tab), the first of two
+    keys, and following a binding changed on the Controls page.
 
 ## Unplanned
 
