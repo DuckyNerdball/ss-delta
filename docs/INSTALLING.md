@@ -431,7 +431,13 @@ Vita: one creates a room, the others use Search for Room.
 * **Across computers** (Windows, Linux and macOS mixed, any of them as
   host): `network = lan` under `[multiplayer]` in `ss-delta.ini`, the default
   on Linux and macOS. On Windows set it, and allow `ss-delta.exe` through the
-  firewall when Windows asks.
+  firewall when Windows asks (on private and public networks, or the host
+  never hears the others). The settings menu's Multiplayer page, **Network
+  adapter**, must name the adapter of your home network (its 192.168.x.x
+  address, the Ethernet or Wi-Fi), not a virtual one (vEthernet, Hyper-V,
+  VirtualBox, VPN), which Windows often lists first. The log names the
+  adapter in use and lists the others (`Ad Hoc Play: network adapter ...`);
+  `[debug] net_trace` logs every packet, for a connection that doesn't work.
 * **Several copies on one PC** (Windows and Linux): `network = local`, the
   default on Windows; start `run-player2.bat` (`run-player2.sh`) or
   `--player 2` up to `--player 4`. Each player has its own saves, copied from

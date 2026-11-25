@@ -25,6 +25,12 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 * **The log lists every graphics card** Vulkan offers the game, and
   `[debug] gpu` picks one by its number there (for a laptop that starts on
   the wrong one).
+* **Ad Hoc Play over LAN: the log names the network adapter** the game uses,
+  with its address, and lists the others
+  ([#21](https://github.com/vita-recomps/ss-delta/issues/21)). If it is a
+  virtual one (vEthernet, Hyper-V, VPN), pick your home network's on the
+  settings menu's Multiplayer page. `[debug] net_trace` logs every Ad Hoc
+  packet, for a connection that doesn't work.
 
 ## 0.5.1 (2026-11-24)
 

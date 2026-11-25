@@ -1912,3 +1912,33 @@ fixed-function blender, without reading the framebuffer:
   `ss-delta-3d9b353`):** "it works perfectly now". Their log: Radeon R5,
   driver 2.0.179, neither feature, the notice line, all 96 programs
   converted and none read through the copy.
+
+## LAN play stuck at "Connecting..." (2026-11-25, GitHub issue #21, open)
+
+Two Windows PCs on 0.5.0 (`network = lan` on both): the guest finds the
+host's room and readies up but stays at "Connecting..."; the host never sees
+the guest. Both logs reach Ad Hoc Play normally (SceNetAdhocMatching loaded,
+its retransmit interval raised, no socket errors before the players leave).
+They don't say which adapter or address either copy used.
+
+* What reaches whom: the room is announced by the host's broadcast, which
+  the guest received; the guest's answers go to the host's address (unicast)
+  and never arrive. **Hypothesis**: something on the host blocks inbound
+  traffic to `ss-delta.exe` (Windows Firewall with the network set to Public
+  and the app allowed only on Private, or another security program). A wrong
+  adapter on the guest wouldn't stop its unicast reaching the host (the
+  socket is bound to any address and routed by destination); a wrong one on
+  the host would stop its broadcast, which arrived. Asked the reporter to
+  check the firewall on both PCs and the adapter (2026-11-25).
+* The adapter setting (`[multiplayer] adapter`) defaults to the first of the
+  PC's adapters with an address, in `GetAdaptersInfo`'s order. On the owner's
+  PC that is Hyper-V's virtual adapter, before the Wi-Fi (the 2026-11-17
+  cross-platform test needed `adapter = 1`).
+* Diagnostics (fork `cb51b507`): `init_address` logs the mode and, for LAN,
+  the adapter's index, address, mask, name and broadcast address, and lists
+  every adapter with its index (`Ad Hoc Play: network adapter 0 of 2 ...`),
+  once for each change. `[debug] net_trace` sets `VITA3K_NET_TRACE=1`
+  (P2PSocket logs each packet sent and received, with the host address and
+  port); the log says so at the start. Checked in the test folder: LAN mode
+  lists the PC's two adapters (Hyper-V first, the Wi-Fi second), local mode
+  logs `copies on this PC (network = local), this one 127.0.0.1`.
