@@ -435,18 +435,19 @@ Vita: one creates a room, the others use Search for Room.
   never hears the others). The settings menu's Multiplayer page, **Network
   adapter**, must name the adapter of your home network (its 192.168.x.x
   address, the Ethernet or Wi-Fi), not a virtual one (vEthernet, Hyper-V,
-  VirtualBox, VPN), which Windows often lists first. The log names the
+  VirtualBox, VPN), which Windows often lists first; after 0.5.2, `auto`
+  (the default) picks it by itself. The log names the
   adapter in use and lists the others (`Ad Hoc Play: network adapter ...`);
   `[debug] net_trace` logs every packet, for a connection that doesn't work.
-* **Across networks** (releases after 0.5.2; Tailscale or another VPN, or two subnets with a
-  router between them, where broadcasts don't arrive): as across computers,
-  plus `peers = <address>` under `[multiplayer]` with the host's address
-  (its Tailscale IP, `100.x.y.z`, or its Tailscale name) on every other
-  player's copy, and `adapter` set to the adapter of that network
-  (Tailscale's). The host needs no list: it answers whoever reaches it.
-  Several addresses are separated by commas. `peers` is edited in
-  `ss-delta.ini` only (on Android in the app's folder,
-  `Android/data/<app>/files/ss-delta.ini`).
+* **Over the internet** (releases after 0.5.2): through Tailscale, step by
+  step in [Playing together over the internet](TAILSCALE.md). In short: as
+  across computers, plus the host's address in **Peers (host address)** on
+  the Multiplayer page of every other player's copy (`peers` under
+  `[multiplayer]`; several addresses separated by commas). The same works
+  over another VPN, or between subnets with a router between them, where
+  broadcasts don't arrive. **Network adapter** `auto` (the default) takes
+  the adapter that reaches the first peer, or without peers the one of the
+  internet connection.
 * **Several copies on one PC** (Windows and Linux): `network = local`, the
   default on Windows; start `run-player2.bat` (`run-player2.sh`) or
   `--player 2` up to `--player 4`. Each player has its own saves, copied from

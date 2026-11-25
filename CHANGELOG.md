@@ -8,12 +8,17 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### New
 
-* **Ad Hoc Play across networks**: over Tailscale or another VPN, or
-  between subnets, where broadcasts don't arrive. `peers` under
-  `[multiplayer]` in `ss-delta.ini` takes the host's address (or several,
-  separated by commas) on the other players' copies; each broadcast also
-  goes to each of them, and a copy answers whoever reached it, so the host
-  needs no list. See [Ad Hoc Play](docs/INSTALLING.md#ad-hoc-play).
+* **Ad Hoc Play over the internet**, through Tailscale (or another VPN, or
+  between subnets), where broadcasts don't arrive: the other players type
+  the host's address into **Peers (host address)** on the settings menu's
+  Multiplayer page; the host needs nothing. Step by step:
+  [Playing together over the internet](docs/TAILSCALE.md).
+* **Typing in the settings menu**: Peers takes a keyboard (Android's
+  on-screen one too) or a gamepad (Up/Down change the character under the
+  cursor).
+* **Network adapter `auto`** (the new default) takes the adapter that
+  reaches the first peer, or the one of the internet connection, not a
+  virtual adapter that Windows lists first (Hyper-V, WSL).
 
 ## 0.5.2 (2026-11-25)
 

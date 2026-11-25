@@ -1982,3 +1982,37 @@ rooms, joining and quests work that way.
 * Not tried over a real Tailscale or routed network (none here):
   **hypothesis** that it behaves as (1) and (2) there, with `adapter` set
   to that network's adapter so the address the game reports is reachable.
+
+### Peers from the settings menu, adapter auto (2026-11-25)
+
+* **Text in the settings menu** (fork `game-frontend/settings_menu.cpp`):
+  a `Text` setting with `text_entry` (only `[multiplayer] peers` so far) is
+  edited in the menu. Cross starts editing; typed text arrives as SDL text
+  input (the front end turns it on while a row is edited, and sends the
+  keyboard to the menu instead of the game; Android shows its on-screen
+  keyboard), and a gamepad edits it too: Up/Down change the character under
+  the cursor through the setting's `text_chars`, Left/Right move the cursor,
+  Square deletes, Cross/Enter keep it, Circle/Esc drop it. The edited text
+  shows with the cursor's character in brackets.
+* The front end's per-frame IME check (for the game's own keyboard dialogs)
+  had turned SDL's text input off again each frame; it now keeps it on
+  while a menu row is edited.
+* `peers` is applied at once (`net_utils::set_lan_peers_text`, also used at
+  start), and saved to the player's settings file (`ss-delta-player<N>.ini`
+  for player N).
+* **`[multiplayer] adapter = auto`** (the new default; Vita3K's
+  `adhoc_addr` -1): the adapter whose address the routing table sends from
+  to reach the first peer (a connected UDP socket's local address; nothing
+  is sent), or without peers to `8.8.8.8` (the default route's); picked again
+  each time Ad Hoc Play starts. On the PC it takes the Wi-Fi (adapter 1), not
+  Hyper-V's adapter 0 (`Ad Hoc Play: network adapter auto (1) of 2`).
+* Checked: on the PC (test folder, player 3), Multiplayer page, Peers edited
+  with the gamepad to `10.0.0.5`; the log showed the change and `Ad Hoc
+  Play: peers 10.0.0.5`, and `ss-delta-player3.ini` got it. Typed text could
+  not be checked there: SDL delivers it only to the window with the keyboard
+  focus, which v3kdrive doesn't take. On the Thor: Select held for the menu,
+  Cross on Peers showed Android's keyboard, `100.64.0.7` typed on it (taps
+  on its keys; `adb shell input text` sends key events, not text, and
+  arrives as nothing), its Enter key kept it, the keyboard closed and
+  `ss-delta.ini` got it.
+* Player tutorial: [TAILSCALE.md](TAILSCALE.md).

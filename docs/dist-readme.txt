@@ -128,11 +128,12 @@ for Room. Each player has its own saves (ux0\user\0<N-1>, copied from player
 ss-delta-player<N>.ini next to ss-delta.ini overrides settings for player N.
 [multiplayer] in ss-delta.ini: network = local (copies on this PC) or lan
 (computers in one network, Windows, Linux or macOS, each running the game;
-allow ss-delta.exe through the firewall on private and public networks, and
-set adapter, the Multiplayer page's Network adapter, to the one with your
-home network's address, not a virtual one such as vEthernet or a VPN;
-over Tailscale or another network broadcasts don't reach, set adapter to
-that network's and peers = the host's address on the other players' copies),
+allow ss-delta.exe through the firewall on private and public networks;
+adapter (Network adapter) auto picks the home network's adapter, else set it
+to the one with that network's address, not a virtual one such as vEthernet;
+over the internet through Tailscale, the other players enter the host's
+address in Peers on the settings menu's Multiplayer page: docs/TAILSCALE.md
+in the source repository),
 and gamepad = 1-4 to give each copy its own gamepad.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under
