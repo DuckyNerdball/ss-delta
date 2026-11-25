@@ -24,6 +24,7 @@
 **[Download the latest release](https://github.com/vita-recomps/ss-delta/releases/latest)** ·
 [Installation guide](docs/INSTALLING.md) ·
 [Online play](docs/ONLINE-PLAY.md) ·
+[Mods](docs/MODS.md) ·
 [Changelog](CHANGELOG.md) ·
 [Build from source](docs/BUILDING.md) ·
 [Compatibility](docs/06-compatibility.md) ·
@@ -102,6 +103,9 @@ Compared with running the game in Vita3K:
   one (Language in the settings menu).
 * **Japanese voices:** the Japanese Voice-over Pack add-on, and rePatch
   mods such as the Undub patch, installed beside the game.
+* **Mods:** rePatch mods and packaged mods such as
+  [The Original Raiments](https://www.moddb.com/mods/the-original-raiments-arks-armor-dragonslayer)
+  (ModDB), added in seconds ([how to install mods](docs/MODS.md)).
 * **Cheats** on the settings menu's Cheats page: Infinite health,
   Unlimited and Lasting offerings, One-hit kills, Max Lacrima and Max
   levels.
@@ -154,6 +158,7 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 | Doc | Contents |
 |---|---|
 | [CHANGELOG](CHANGELOG.md) | what changed in each release, with the issues that asked for it |
+| [MODS](docs/MODS.md) | for players: installing rePatch and packaged mods, such as the Undub and The Original Raiments (ModDB) |
 | [INSTALLING](docs/INSTALLING.md) | for players: requirements, each system, the first start, saves, Ad Hoc Play, files, command line |
 | [GALLERY](docs/GALLERY.md) | screenshots of the raiments and hoods ss-delta adds, and of the original game's two raiments (a mod) |
 | [ORIGINAL-CONTENT](docs/ORIGINAL-CONTENT.md) | what the original Soul Sacrifice has that Delta lacks, and what ss-delta does about it: the Spirits' offerings, the collaboration raiments |

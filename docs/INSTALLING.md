@@ -86,6 +86,8 @@ with its licence (a `work.bin` or `.rif` beside the `.pkg` is found by
 itself). Then choose it in the game: Options → Lang/Sub Settings → Voice
 Language → Japanese.
 
+[MODS](MODS.md) is a short step-by-step guide to adding mods.
+
 **Mods made for rePatch**, such as the
 [Undub patch](https://archive.org/details/soul_sacrifice_delta_undub_patch)
 (Japanese voices from the very start, also without the pack), are added
@@ -110,7 +112,9 @@ Android there is no remove yet: Mods (rePatch) turns all mods off.
 collaboration raiments that Delta never got: ARKS Armor (*Phantasy Star
 Online 2*) and Dragonslayer (*Ragnarok Odyssey ACE*). If you have the
 original game with update 1.30 (any region; a NoNpDrm dump with its
-licences, or an installed copy), you can make a mod that adds them. You
+licences, or an installed copy), you can make a mod that adds them (or download it from
+[ModDB](https://www.moddb.com/mods/the-original-raiments-arks-armor-dragonslayer)
+and add it as a packaged mod, [MODS](MODS.md)). You
 need Python 3 and two scripts from this repository's
 [`tools`](https://github.com/vita-recomps/ss-delta/tree/main/tools)
 folder, `og-raiments.py` and `lspk.py`, side by side:

@@ -145,6 +145,7 @@ Wear each one as both top and bottom.
 
 * Screenshots: [gallery](GALLERY.md#from-the-original-game-mod)
 * How to make it: [INSTALLING](INSTALLING.md#what-you-need)
+* Ready-made: [ModDB](https://www.moddb.com/mods/the-original-raiments-arks-armor-dragonslayer), installed as in [MODS](MODS.md)
 * The decision: [D28](decisions.md)
 
 ## Changed in Delta: Sanguine Shot
