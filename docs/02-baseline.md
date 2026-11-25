@@ -1749,7 +1749,7 @@ NVIDIA laptops.
   **Hypothesis:** the export has the same effect as the setting, so builds
   from `8b815f2f` on need no workaround.
 
-## Squares in smoke and fire (2026-11-24, GitHub issue #17, open)
+## Squares in smoke and fire (2026-11-24, GitHub issue #17, fixed)
 
 Reported on 0.5.0 at 1366×768: square blocks in the hub's fire-pit smoke
 "and almost everything that has smoke". Up close they are 8×8-pixel blocks
@@ -1908,3 +1908,7 @@ fixed-function blender, without reading the framebuffer:
   it under interlock aren't ordered against each other. That's why it stays
   off on GPUs with interlock. **Hypothesis**: the same reason as storage-image
   writes against attachment writes; not investigated, as nothing needs it.
+* **Confirmed on the reporter's laptop (2026-11-24, test build
+  `ss-delta-3d9b353`):** "it works perfectly now". Their log: Radeon R5,
+  driver 2.0.179, neither feature, the notice line, all 96 programs
+  converted and none read through the copy.
