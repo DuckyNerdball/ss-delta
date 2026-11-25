@@ -130,7 +130,9 @@ ss-delta-player<N>.ini next to ss-delta.ini overrides settings for player N.
 (computers in one network, Windows, Linux or macOS, each running the game;
 allow ss-delta.exe through the firewall on private and public networks, and
 set adapter, the Multiplayer page's Network adapter, to the one with your
-home network's address, not a virtual one such as vEthernet or a VPN),
+home network's address, not a virtual one such as vEthernet or a VPN;
+over Tailscale or another network broadcasts don't reach, set adapter to
+that network's and peers = the host's address on the other players' copies),
 and gamepad = 1-4 to give each copy its own gamepad.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under

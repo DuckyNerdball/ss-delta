@@ -1942,3 +1942,43 @@ They don't say which adapter or address either copy used.
   port); the log says so at the start. Checked in the test folder: LAN mode
   lists the PC's two adapters (Hyper-V first, the Wi-Fi second), local mode
   logs `copies on this PC (network = local), this one 127.0.0.1`.
+
+## Ad Hoc Play across networks (2026-11-25)
+
+LAN play found the others only by UDP broadcasts on the chosen adapter's
+subnet, which Tailscale and other VPNs, and routers between subnets, don't
+pass. Every broadcast goes through `P2PSocket::send_packet` (Vita3K's peer
+beacon from the ad hoc thread, once a second, and SceNetAdhocMatching's
+hellos; `sceNetSendto` turns 255.255.255.255 into the adapter's broadcast
+address); `local` mode already sent one datagram to each copy instead, and
+rooms, joining and quests work that way.
+
+* `[multiplayer] peers` (fork): addresses or host names (resolved once at
+  start, IPv4; Tailscale's MagicDNS names work). In `lan` mode each
+  broadcast goes out as before and also as a datagram to each peer.
+* **Learned peers**: every address a P2P packet came from (not this
+  machine's own) joins the list for this session, up to 16, logged once
+  (`Ad Hoc Play: a packet from ..., which now also gets this copy's
+  broadcasts`). So one side knowing the other is enough: the others list
+  the host, whose own beacons and hellos then reach them.
+* The ad hoc thread's peer list (`sceNetCtlAdhocGetPeerList`) keeps the
+  address a peer's packets come from, not the one the peer reports for
+  itself (that is its chosen adapter's, possibly a wrong or unreachable
+  one, #21).
+* An adapter whose broadcast address is its own address (a /32, as
+  Tailscale's can be) sends no broadcast, only the peers'.
+* `VITA3K_ADHOC_NO_BROADCAST=1` (testing) sends only to the peers.
+* **Checked, the PC (Windows, Wi-Fi, test folder's player 3, slot 2) and the
+  Thor (test package, slot 2), both with `VITA3K_ADHOC_NO_BROADCAST=1`:**
+  (1) the PC lists the Thor, the Thor nothing: the PC created a room, the
+  Thor's Search for Room listed "Gamora [1/4]", joined, both readied, the
+  host started "Croaking Fiends in the Forest", and both were in the quest
+  together; the Thor learned the PC from its packets. (2) The PC lists
+  nobody, the Thor the PC: the PC learned the Thor from its beacon, the
+  Thor listed the room and joined; both lobbies showed both players.
+  (3) Plain `lan` with broadcasts and no peers (each beacon then arrives
+  twice, as broadcast and to the learned address): lobby, ready, start
+  and the quest as before.
+* Not tried over a real Tailscale or routed network (none here):
+  **hypothesis** that it behaves as (1) and (2) there, with `adapter` set
+  to that network's adapter so the address the game reports is reachable.

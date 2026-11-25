@@ -4,6 +4,17 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### New
+
+* **Ad Hoc Play across networks**: over Tailscale or another VPN, or
+  between subnets, where broadcasts don't arrive. `peers` under
+  `[multiplayer]` in `ss-delta.ini` takes the host's address (or several,
+  separated by commas) on the other players' copies; each broadcast also
+  goes to each of them, and a copy answers whoever reached it, so the host
+  needs no list. See [Ad Hoc Play](docs/INSTALLING.md#ad-hoc-play).
+
 ## 0.5.2 (2026-11-25)
 
 ### Fixed

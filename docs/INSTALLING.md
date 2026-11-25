@@ -438,6 +438,15 @@ Vita: one creates a room, the others use Search for Room.
   VirtualBox, VPN), which Windows often lists first. The log names the
   adapter in use and lists the others (`Ad Hoc Play: network adapter ...`);
   `[debug] net_trace` logs every packet, for a connection that doesn't work.
+* **Across networks** (releases after 0.5.2; Tailscale or another VPN, or two subnets with a
+  router between them, where broadcasts don't arrive): as across computers,
+  plus `peers = <address>` under `[multiplayer]` with the host's address
+  (its Tailscale IP, `100.x.y.z`, or its Tailscale name) on every other
+  player's copy, and `adapter` set to the adapter of that network
+  (Tailscale's). The host needs no list: it answers whoever reaches it.
+  Several addresses are separated by commas. `peers` is edited in
+  `ss-delta.ini` only (on Android in the app's folder,
+  `Android/data/<app>/files/ss-delta.ini`).
 * **Several copies on one PC** (Windows and Linux): `network = local`, the
   default on Windows; start `run-player2.bat` (`run-player2.sh`) or
   `--player 2` up to `--player 4`. Each player has its own saves, copied from
