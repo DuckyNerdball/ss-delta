@@ -1061,10 +1061,25 @@ Modules a PC put there (no `android-build.json`) are left alone.
 5. The build (`android-setup.py build`): one job per core as far as
    memory allows (2 GB each), at least 5 GB free, the modules into the
    game's folder, `android-build.json` written, the work files removed.
+   The build reads `game.json`'s overrides (`overrides/eboot.json`) from
+   the APK's build tools: **0.5.0-0.5.2's APKs lacked it** and stopped at
+   "Recompiling eboot" (`FileNotFoundError`), found 2026-11-25 with
+   utakata's draft on the Thor; 0.5.3 (kit `7a72d44`) carries it. Checked
+   on the Thor with 0.5.3's APK: the US dump picked from `Download/` (3.3
+   GB, read through the picker's descriptor), firmware, install, dump and
+   build in **15.5 min**, then the game on NativeCPU with the eboot's
+   `blitz_frame_time loading_race` fixes, verified against guest memory.
+   The kit now refuses overrides that need libc++ (`check-overrides.py`)
+   and checks the Android modules' symbols; see BUILDING, "Before
+   publishing a draft".
 
 The build runs in a foreground service (type `dataSync`, a wake lock, a
 notification with the compile's progress), so the player may leave the
-app. The service's output also goes to `setup.log` in the game's folder.
+app. Android 13 and later ask the player to allow that notification
+(optional: the build runs without it). Asked at Build, the question stayed
+in front of the steps that start the game's activity and the setup waited
+for the answer; since fork `34c696d7` it is asked as the setup screen
+opens. The service's output also goes to `setup.log` in the game's folder.
 
 **After an app update** the stamp changes and the setup opens again. When
 the game is installed and its dumps are there, **Build** needs no dump: the
