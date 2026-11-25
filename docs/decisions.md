@@ -496,6 +496,9 @@ notice (fork patch 0028).
   can be turned off.
 * Engine keys (`FPS`, `ForceDLC`, ...) can be tried without patches, but
   `FPS` turned out not to set the frame rate (02-baseline, 60 fps study).
+* Update (2026-11-25): ResoDown 0's render targets take about 4.6 MB more
+  of the game's 56 MB Graphics pool, which a journal chapter scene could
+  run out (a crash); the pool is 8 MB larger since (D30 update).
 
 ## D14 — The add-ons are unlocked by recording them in the save's system.bin (accepted, 2026-10-11)
 
@@ -1520,6 +1523,20 @@ rather than a mod the player makes, as for the Japan-only raiments.
   with `aot_module_has_feature`, for a module whose native code is
   checked. With `loading_race` the 30 fps loading screens are dropped;
   without it (an eboot built before, the JIT) they stay.
+* Update (2026-11-25): D13's `full_3d` leaves the game's 56 MB Graphics
+  pool about 4.6 MB smaller than the Vita's resolution does, and a journal
+  chapter scene after a quest could run it out: the game copies a texture
+  to a null pointer (a RecompLauncher player's crash, reproduced by the
+  owner; 01-research "The Graphics pool and the journal crash"). Three
+  overrides (feature `graphics_pool`) make the game's memory block 226 MB
+  instead of 218 and the Graphics pool 64 MB instead of 56, at every
+  resolution. The port's Vita3K doesn't cap memory blocks at the Vita's
+  256 MB and the game never asks how much is free, so the 8 MB beyond a
+  Vita's budget costs nothing. Rejected: `full_3d` off by default (blurrier
+  3D for every player), and ResoDown 1 with a larger multiplier (Project
+  Nativ's way, no guest memory cost; it reopens D13 and needs a visual
+  check on every map). On the JIT (`[recompiled] enabled = false`) the
+  pool stays 56 MB.
 
 ## D31 — Sortiara as an ally: a setting of `ss-delta.exe` that adds her to the roster (accepted, 2026-11-23)
 

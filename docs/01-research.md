@@ -658,6 +658,59 @@ Why the quest-start loading screen never ended at 60 fps (02-baseline,
   the id in the player's slot (`+0x1d0 + 4 × slot`) during a quest doesn't
   change the skill.
 
+### The Graphics pool and the journal crash [local, 2026-11-25]
+
+A RecompLauncher player (0.5.0, EU game) reported a crash when Seeing
+Red ch. 3 (Sorcerous Deeds > Grim) was opened again straight from the
+journal; their log ended at boot (the asynchronous log wasn't flushed).
+The owner reproduced it in the test folder (2026-11-25: save 2, Sorcerer's
+Ordeal Ch. 1, a few minutes and several settings-menu visits, then Seeing
+Red ch. 3): the game died as the chapter's journal scene began.
+
+* **The crash.** A write to guest address 0 (host `0x400000000`, the
+  guest memory base) in libc's `memcpy` (`0x80331d70`), on a job thread
+  (`0x812d4e68`) through `0x8189cf88` → `0x8183be28` → `0x8183bbf6`. The
+  last loads a texture-like resource: it allocates its size from the
+  default heap (`0x8183ba46`); if that fails it tries the memory type
+  `0x0c208060` heap (`0x81829606`, the Graphics pool below), and copies
+  into the result **without checking it** (`0x8183bde6` → `0x8183bc24`).
+  Both heaps full → `memcpy` to NULL. Frames were mapped with the DLL's
+  own `g_functions` table (guest address, size, host pointer).
+* **The heaps are dlmalloc mspaces** (`0x8180d646` is `mspace_memalign`:
+  the magic at `+0x24`, `mflags` at `+0x1bc`, the lock at `+0x1c0`,
+  footprint at `+0x1b0`). The default heap's object is `*0x81c9a848`
+  (mspace `0x60000008`, 96 MB, CDRAM); the Graphics pool's
+  `*0x81c9a808` (mspace `0x89ed49d8`, 56 MB). Each object's `+0xc` is its
+  mspace; one segment, starting at mspace − 8, as big as the footprint, so
+  a memdump of it walks chunk by chunk.
+* **The pools.** At boot `0x812aad70` allocates one 218 MB block
+  (`0xda00000`, USER_RW) and `0x812ab13e` carves four pools out of it with
+  `0x81804514(size, index, name)`: Default 126.75 MB, Graphics 56 MB
+  (`0x812ab1b2`), Sound 25 MB, Collision 10 MB (217.75 MB, 0.25 MB to
+  spare). The eboot never calls `sceKernelGetFreeMemorySize`.
+* **Measured** (memdumps of the two mspaces through the input pipe, about
+  8 a second): in every journal chapter scene the default heap's free top
+  drops to 0 at once and stays there for the scene (about a minute), so
+  each texture loaded meanwhile goes to the Graphics pool, which then
+  shrinks page by page. In one session with `full_3d` (ResoDown 0) the
+  Graphics pool's free top went 10.7 → 4.7 → 3.2 → **0.6 MB**; a larger
+  texture, or a scene that starts a little lower, is the crash. At the hub
+  after loading the same save: Graphics pool 9.7 MB free with ResoDown 0,
+  14.3 MB with ResoDown 1 (the retail mode). So `full_3d` (D13) takes about
+  **4.6 MB** of the Graphics pool, the Vita's margin in these scenes.
+* **Fix** (D30 update): `overrides/eboot.json` makes the block 226 MB
+  (`0x812aad88`, `0x812aadb4`) and the Graphics pool 64 MB (`0x812ab1b2`).
+  A Graphics pool alone made larger left the Collision pool without memory
+  (a null write at `0x9fffdc` at boot). With both: the hub has 17.7 MB free
+  in the Graphics pool, and the owner's route (quests, the menu, Seeing
+  Red ch. 3 opened again directly) bottomed out at 8.8 MB, without a crash
+  [test folder, 2026-11-25]. The default heap still runs empty in those
+  scenes, as it does at ResoDown 1.
+* Project Nativ (another Vita recompiler) keeps guest surfaces at the
+  Vita's size and scales them only on the host GPU, so its higher
+  resolutions cost the game no memory; for us that would mean ResoDown 1
+  with a larger multiplier (D13), not tried.
+
 ### Sortiara as an ally [local, 2026-11-23]
 
 * **The data is complete.** Sortiara is `ch9000_06` (`ニミュエ`, Nimue):

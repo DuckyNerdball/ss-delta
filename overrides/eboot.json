@@ -1,6 +1,6 @@
 {
   "_comment": "Fixes to the 1.30 eboot's code, applied by the recompiler (third_party/recomp/recomp/recompile.py --overrides; game.json recomp_overrides). The game's bytes stay as they are; the JIT runs the original code. docs/decisions.md D30, docs/01-research.md 'Blitz offerings at 60 fps' and 'The loading screen at 60 fps'.",
-  "features": ["blitz_frame_time", "loading_race"],
+  "features": ["blitz_frame_time", "loading_race", "graphics_pool"],
   "prelude": [
     "#include <cmath>",
     "namespace armrecomp {",
@@ -83,6 +83,24 @@
         "ssd_loading_finished_early = 0;"
       ],
       "why": "loading screen reset: forget an early finish (D16)"
+    },
+    {
+      "address": "812aad88",
+      "insn": "movs.w r2, #0xda00000",
+      "code": ["ctx->r[2] = 0xe200000u;"],
+      "why": "the game's memory block, which its four pools share, 218 -> 226 MB for the Graphics pool's 8 MB below"
+    },
+    {
+      "address": "812aadb4",
+      "insn": "movs.w r1, #0xda00000",
+      "code": ["ctx->r[1] = 0xe200000u;"],
+      "why": "the same block's size, handed to the game's allocator"
+    },
+    {
+      "address": "812ab1b2",
+      "insn": "movs.w r0, #0x3800000",
+      "code": ["ctx->r[0] = 0x4000000u;"],
+      "why": "Graphics pool 56 -> 64 MB: full_3d's render targets take about 4.6 MB more of it, and a journal chapter after a quest ran it out (a null memcpy in 0x8183bbf6)"
     }
   ]
 }
