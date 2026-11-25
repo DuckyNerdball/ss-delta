@@ -132,9 +132,9 @@ copied from player 1's on its first start), log and config
 (ss-delta/player<N>); ss-delta-player<N>.ini next to ss-delta.ini overrides
 settings for player N. [multiplayer] in ss-delta.ini: network = lan (the
 default: computers in one network, Windows, Linux or macOS, each running the
-game; over the internet through Tailscale, the other players enter the
-host's address in Peers on the settings menu's Multiplayer page:
-docs/TAILSCALE.md in the source repository) or local (copies on this
+game; over the internet through a VPN such as Tailscale or ZeroTier, the
+other players enter the host's VPN address in Peers on the settings menu's
+Multiplayer page: docs/ONLINE-PLAY.md in the source repository) or local (copies on this
 computer), and gamepad = 1-4 to give each copy its own gamepad.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under

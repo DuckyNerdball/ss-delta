@@ -439,15 +439,16 @@ Vita: one creates a room, the others use Search for Room.
   (the default) picks it by itself. The log names the
   adapter in use and lists the others (`Ad Hoc Play: network adapter ...`);
   `[debug] net_trace` logs every packet, for a connection that doesn't work.
-* **Over the internet** (releases after 0.5.2): through Tailscale, step by
-  step in [Playing together over the internet](TAILSCALE.md). In short: as
-  across computers, plus the host's address in **Peers (host address)** on
-  the Multiplayer page of every other player's copy (`peers` under
-  `[multiplayer]`; several addresses separated by commas). The same works
-  over another VPN, or between subnets with a router between them, where
-  broadcasts don't arrive. **Network adapter** `auto` (the default) takes
-  the adapter that reaches the first peer, or without peers the one of the
-  internet connection.
+* **Over the internet** (releases after 0.5.2): through a VPN (Tailscale,
+  ZeroTier, Radmin VPN or another), step by step in
+  [Playing together over the internet](ONLINE-PLAY.md). In short: as across
+  computers, the host's **Network adapter** set to the VPN's, and the host's
+  VPN address in **Peers (host address)** on the Multiplayer page of every
+  other player's copy (`peers` under `[multiplayer]`; several addresses
+  separated by commas). The same works between subnets with a router
+  between them, where broadcasts don't arrive. **Network adapter** `auto`
+  (the default) takes the adapter that reaches the first peer, or without
+  peers the one of the internet connection.
 * **Several copies on one PC** (Windows and Linux): `network = local`, the
   default on Windows; start `run-player2.bat` (`run-player2.sh`) or
   `--player 2` up to `--player 4`. Each player has its own saves, copied from

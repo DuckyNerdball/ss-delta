@@ -8,11 +8,11 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### New
 
-* **Ad Hoc Play over the internet**, through Tailscale (or another VPN, or
-  between subnets), where broadcasts don't arrive: the other players type
-  the host's address into **Peers (host address)** on the settings menu's
-  Multiplayer page; the host needs nothing. Step by step:
-  [Playing together over the internet](docs/TAILSCALE.md).
+* **Ad Hoc Play over the internet**, through a VPN (Tailscale, ZeroTier,
+  Radmin VPN or another) or between subnets, where broadcasts don't arrive:
+  the other players type the host's VPN address into **Peers (host
+  address)** on the settings menu's Multiplayer page. Step by step:
+  [Playing together over the internet](docs/ONLINE-PLAY.md).
 * **Typing in the settings menu**: Peers takes a keyboard (Android's
   on-screen one too) or a gamepad (Up/Down change the character under the
   cursor).

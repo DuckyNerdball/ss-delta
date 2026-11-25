@@ -131,9 +131,9 @@ Ad Hoc Play (Librom, Network, Ad Hoc Play): ss-delta.ini has network = lan
 running the game. macOS asks whether the game may "find and
 connect to devices on your local network": allow it, or no room can be
 joined (System Settings, Privacy & Security, Local Network changes it
-later). Over the internet through Tailscale, the other players enter the
-host's address in Peers on the settings menu's Multiplayer page
-(docs/TAILSCALE.md in the source repository). Several copies on one Mac (network = local, --player 2) don't work yet: macOS only has the address 127.0.0.1 for them.
+later). Over the internet through a VPN such as Tailscale or ZeroTier, the
+other players enter the host's VPN address in Peers on the settings menu's
+Multiplayer page (docs/ONLINE-PLAY.md in the source repository). Several copies on one Mac (network = local, --player 2) don't work yet: macOS only has the address 127.0.0.1 for them.
 
 ss-delta is built from Vita3K (https://github.com/Vita3K/Vita3K) and is under
 the GNU GPL version 2. The ssd_aot_*.dylib files and the game files are

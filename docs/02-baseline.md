@@ -2015,4 +2015,4 @@ rooms, joining and quests work that way.
   on its keys; `adb shell input text` sends key events, not text, and
   arrives as nothing), its Enter key kept it, the keyboard closed and
   `ss-delta.ini` got it.
-* Player tutorial: [TAILSCALE.md](TAILSCALE.md).
+* Player guide: [ONLINE-PLAY.md](ONLINE-PLAY.md) (Tailscale, ZeroTier, Radmin VPN).
