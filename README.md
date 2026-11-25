@@ -92,7 +92,7 @@ Compared with running the game in Vita3K:
   together: on one PC, each with its own saves and gamepad, or across a LAN,
   Windows, Linux and macOS mixed ([D15](docs/decisions.md)), or over the
   internet through a VPN such as Tailscale, ZeroTier or Radmin VPN
-  ([Online play](docs/ONLINE-PLAY.md); releases after 0.5.2).
+  ([Online play](docs/ONLINE-PLAY.md); 0.5.2 and newer).
 * **The add-ons unlocked.** Their content is in the game since update
   1.30, and PSN, which recorded the purchases, is closed
   ([D14](docs/decisions.md)).

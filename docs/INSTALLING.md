@@ -439,11 +439,11 @@ Vita: one creates a room, the others use Search for Room.
   never hears the others). The settings menu's Multiplayer page, **Network
   adapter**, must name the adapter of your home network (its 192.168.x.x
   address, the Ethernet or Wi-Fi), not a virtual one (vEthernet, Hyper-V,
-  VirtualBox, VPN), which Windows often lists first; after 0.5.2, `auto`
+  VirtualBox, VPN), which Windows often lists first; since 0.5.2, `auto`
   (the default) picks it by itself. The log names the
   adapter in use and lists the others (`Ad Hoc Play: network adapter ...`);
   `[debug] net_trace` logs every packet, for a connection that doesn't work.
-* **Over the internet** (releases after 0.5.2): through a VPN (Tailscale,
+* **Over the internet** (0.5.2 and newer): through a VPN (Tailscale,
   ZeroTier, Radmin VPN or another), step by step in
   [Playing together over the internet](ONLINE-PLAY.md). In short: as across
   computers, the host's **Network adapter** set to the VPN's, and the host's

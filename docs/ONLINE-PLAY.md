@@ -4,7 +4,7 @@ Ad Hoc Play was made for players in one room. ss-delta also plays it between
 homes, through a VPN that puts the players' machines into one private
 network: [Tailscale](#tailscale), [ZeroTier](#zerotier) or
 [Radmin VPN](#radmin-vpn) below, or any other. Every player's copy of the
-game must be the same ss-delta release, after 0.5.2.
+game must be the same ss-delta release, 0.5.2 or newer.
 
 At home, in one network, none of this is needed: `network = lan` alone finds
 the others ([Ad Hoc Play](INSTALLING.md#ad-hoc-play)).
