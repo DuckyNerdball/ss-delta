@@ -445,6 +445,7 @@ Keys that do the same thing whatever the bindings are:
 | F1 (or View held for a second) | settings menu |
 | F11, Alt+Enter | fullscreen |
 | F12 | screenshot |
+| F5 | a mark in the log, for a bug report (a binding on F5 still works) |
 | Tab, middle click | capture the cursor for the mouse camera, and release it |
 | Esc | release the cursor |
 
@@ -645,3 +646,8 @@ before it are kept as `vita3k.1.log` (the run before) to `vita3k.4.log`,
 so after a crash attach the one whose run crashed, even if you have
 started the game since. Never attach game files, saves you don't want public, or
 anything from `fs/`.
+
+Press F5 the moment something goes wrong: the log gets a line `User mark N
+at frame F`, and the issue can say "after mark 2". Stutters show up on
+their own as `Hitch` lines (frames slower than 100 ms, with the shaders
+built meanwhile; `[debug] hitch_log_ms` sets the limit).

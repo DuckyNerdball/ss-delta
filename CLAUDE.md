@@ -132,7 +132,8 @@ notes, kept in a private repo.
   modules, and the game stops in SceSysmodule.
 - `v3kdrive.py` steps for `ss-delta.exe` only: `frame:<path>` (a PNG at
   render resolution, read back on the render thread), `touch:x:y:ms`,
-  `tdown:x:y`/`tup` (960×544 points). Test data patches go in
+  `tdown:x:y`/`tup` (960×544 points), `key:<SDL name>` (the front end's
+  own keys, e.g. `key:F5`, through the input pipe). Test data patches go in
   `build/vita3k/bin/RelWithDebInfo/patch/PCSA00152.txt` (Vita3K's patch
   format, `[eboot.bin]` then `seg:offset hexbytes`, little-endian values).
   Remove the file after use. A code patch disables native code for the

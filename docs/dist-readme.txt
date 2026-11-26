@@ -45,7 +45,8 @@ Alt+Enter while playing), filter, frame rate (frame_rate under [display]:
 gamepad bindings. The mouse is the touchscreen: left button front, right
 button rear. The Black Rite icon (touch and hold) is also on F and the
 gamepad's left trigger ([touch] in ss-delta.ini). F12 saves a screenshot to
-ss-delta\screenshots.
+ss-delta\screenshots. F5 writes a mark into ss-delta\vita3k.log: press it
+when something goes wrong, and mention the mark in a bug report.
 
 Mouse camera: press Tab or click the middle mouse button to capture the
 cursor; moving the mouse then turns the camera. Tab, the middle button or

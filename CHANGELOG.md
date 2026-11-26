@@ -46,6 +46,13 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   that cost health cost none either. It switches on the game's own debug
   switch for this (NoDamage). A boss's shockwave or wing gust still makes
   you brace for a moment.
+* **F5 marks the moment in the log**: when something goes wrong, press F5
+  and `vita3k.log` gets a line `User mark N at frame F`, so a bug report
+  shows where to look. A binding on F5 still works.
+* **Slow frames in the log**: a game frame that takes longer than 100 ms
+  gets a `Hitch` line in `vita3k.log`, with the number of shaders built
+  meanwhile, which helps with a stutter report. The settings menu's Debug
+  page sets the limit (`[debug] hitch_log_ms`, 0 turns it off).
 
 ### Fixed
 
