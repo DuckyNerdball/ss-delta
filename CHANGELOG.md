@@ -71,6 +71,15 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   game** ([#25](https://github.com/vita-recomps/ss-delta/issues/25)), not
   only at Play. On an Adreno 735, Qualcomm's driver crashed in that run,
   so the game was never built.
+* **A `.pkg` with a licence for other content**
+  ([#25](https://github.com/vita-recomps/ss-delta/issues/25)): a
+  `work.bin` or `.rif` picked for the wrong game or add-on (the US voice
+  pack's for the EU one, say) unpacked the whole package and then failed
+  with only "exit 1". The install now stops at once and says, on the
+  setup screen (PC and Android), which content the licence is for and
+  which one to pick. For an update, the licence already installed with the
+  game is used instead. Any add-on that fails to install is named on the
+  screen too, instead of "see the log".
 * **Android: the setup no longer waits behind the notification
   permission dialog.** The app asks when the setup screen opens, not when
   you tap Build.

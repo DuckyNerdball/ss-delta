@@ -510,9 +510,11 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
     own attacks still kill. The Harpy's shockwave (landing) and wing gust
     still make him brace for a moment, arm over his face, then stand: a
     reaction outside the hit handler, without damage.
-  * Not checked: allies, Ad Hoc Play (the remote sorcerer's object on this
-    machine has the same handler; **hypothesis:** its hits are skipped
-    here too), grabs, status ailments, falls.
+  * Ad Hoc Play (02-baseline): the switch covers only the copy's own
+    sorcerer. With it on the guest, the host's sorcerer still took its
+    hits and died on both screens, and the reverse; each sorcerer's
+    health is its own copy's. The EU game (Android) behaves the same.
+  * Not checked: allies, grabs, status ailments, falls.
 * **The save data**, `*0x81c98618` (the game's pointer, set from boot; a
   block of more than 1.5 MB, not the file's layout):
   * `+0x8c`: Lacrima (u32). 9627 in memory and on the Portraiture page.

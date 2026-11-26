@@ -701,9 +701,11 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     "Cheats"), so scripted playtests stay on course
     (`v3kdrive.py ... start --set cheats.invincible=true`). Checked
     against goblins, the Harpy's minions and the Harpy on the PC.
-  * ☐ Invincible in Ad Hoc Play, with allies, and on the EU game and
-    Android; a boss's shockwave and gust still make the sorcerer brace
-    for a moment (a reaction outside the hit handler).
+  * ☑ Invincible in Ad Hoc Play (players 3 and 4, host or guest: only the
+    copy's own sorcerer) and on the EU game on Android, in a room with the
+    US game on the PC (2026-11-26).
+  * ☐ Invincible with allies; a boss's shockwave and gust still make the
+    sorcerer brace for a moment (a reaction outside the hit handler).
   * ☐ Max levels early in the story: those saves keep the levels in play
     in another record whose place depends on the save; left alone for now.
   * ☐ Playtest by the owner: the stats at level 99, a whole quest.

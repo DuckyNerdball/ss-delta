@@ -1707,8 +1707,32 @@ the Radeon 760M.
   * `v3kdrive.py <dir> start --set cheats.invincible=true` (kit: start
     passes its arguments on): the flag set from the title screen, the
     ini unchanged.
-  * Not checked: allies, Ad Hoc Play, the EU game and Android (same
-    eboot and addresses), grabs, status ailments.
+  * **Ad Hoc Play, PC** (players 3 and 4 in the test folder,
+    `network = local`, both with slot 2; `--set` for the cheats, so the
+    shared ini stayed as it was): room, ready, "Croaking Fiends in the
+    Forest". Player 4 (guest) started with `--set cheats.invincible=true`:
+    over 20 s standing among the beasts its HP stayed 1000 on its copy,
+    and on player 3's screen its sorcerer stood untouched; player 3 (host,
+    no cheat) went 384 → 0 and was "dying" on both screens. Player 4 saved
+    it ("F. Cleric III Gained"). Then the other way round, switched on the
+    Cheats page of each copy: host on, guest off. The host held 500 and
+    never moved, and the guest went 430 → 0. Each copy's NoDamage
+    (`memdump`) was what its menu said. So the switch covers only the
+    copy's own sorcerer, host or guest.
+  * **EU game on Android, with the PC** (the Thor, `ssdelta.t25`: the EU
+    game, a debug APK of fork `52a2980d` with t25's own versionCode and
+    build tools, so its build stamp held and nothing was rebuilt; the
+    test folder's slot 2 imported with `--import-save`, removed after):
+    the EU game's Search for Room listed the US PC host's "Gamora [1/4]"
+    (player 3, `network = lan`, `adapter = 1`), joined, and both entered
+    the quest. On the Thor's Cheats page Invincible was there with its
+    text; on, its sorcerer stood through 30 s of the beasts' swipes, no
+    stagger and no health ring, while the PC host went down.
+    `--set cheats.invincible=true` through GameActivity's `args` turns it
+    on for the run there too (Cheats page: On, ini without the key). A
+    change on the Cheats page is written to the ini (`invincible = true`
+    appeared; taken out after).
+  * Not checked: allies, grabs, status ailments.
 
 ## Mouse camera (2026-11-21)
 
@@ -2140,3 +2164,44 @@ separate offline mode needing both files).
   printed the two paths and downloaded nothing, Installing the firmware
   exit 0, the dummy's install failed as it should. Files pushed with adb
   show in the picker only after `content call --method scan_volume`.
+
+## A pkg's licence for other content (2026-11-26, GitHub issue #25)
+
+Fork `52a2980d` (`game-frontend/frontend.cpp` `pkg_zrif`,
+`packages` `pkg_content_id`): a licence file is compared with the
+package's content ID before anything is unpacked. Checked on the PC with
+Shinobido 2's pkgs when it was written (the commit message). On the Thor
+(`ssdelta.t25`, the EU game, the debug APK from the Invincible tests):
+
+* The EU Japanese Voice-over Pack (`EP9000-PCSF00532_00-SSS000CVN0000001`,
+  919 MB) with the US pack's licence
+  (`UP9000-PCSA00152_00-SSS000CVN0000001`), through GameActivity's `args`
+  (`--install-content <pkg> --license <rif>`, the step "Add an add-on"
+  runs): refused 9 ms after "Installing", nothing unpacked (no
+  `ux0/addcont`). The log says the licence "is for UP9000-..., not for
+  ... (EP9000-...): it can't decrypt it", then that the pkg "needs the
+  licence (work.bin or .rif) for EP9000-PCSF00532_00-SSS000CVN0000001",
+  and "Installation failed". An add-on keeps no installed licence, so
+  there was nothing to use instead.
+* The screens said only "... failed (the game's log: ...)", on Android
+  (`BuildActivity`) and in the PC setup. Fixed (fork `b8612172`, kit): the
+  install step writes a line per part it couldn't install to
+  `<id>/step-error.txt` beside the log (removed when a step succeeds), and
+  the add-on screen, `setup.py` and `install-game.py` show it. A picked
+  file keeps its name in the app's cache (`picked-N/<name>`), so the line
+  names it.
+  * PC, a scratch folder (`--game`, `--vita-fs`): the EU pack with the US
+    licence, exit 1, "jpvoice-eu.pkg: the licence picked is for
+    UP9000-..., not for this package. Pick the work.bin or .rif for
+    EP9000-PCSF00532_00-SSS000CVN0000001."; the pack alone, "it needs its
+    licence: pick its work.bin or .rif with it."; then the US pack's
+    folder installed (exit 0) and the file was gone.
+  * The Thor (debug APK of `b8612172`, `t25` labelled `ss-delta-t25` for
+    the test): the "Add an add-on" shortcut's intent (`SetupActivity`,
+    action `ADD_ADDON`), the system picker, `jpvoice-eu.pkg` then
+    `us-addon.rif` from `Download`: "Installing the add-on failed:" with
+    that line in red, then "(More in the game's log: ...)". Start over
+    went back to "The game is built." with Play. Files removed after.
+* Not checked on the device: a right licence through the same path (none
+  here for the EU pack), an update's fallback to the game's installed
+  licence.
