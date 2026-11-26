@@ -348,6 +348,23 @@ Vulkan, `double-buffer`, `high-accuracy: true`, surface sync on.
   own "Unhandled access" was never logged.
 * Screenshots with `spectacle -b` over SSH come out blank (Wayland); the
   input pipe's `screenshot` command works.
+* **Again on 2026-11-26** (fork `224db0d4`, kit `fd55e64`): a release folder
+  laid out in WSL as the release workflow's `linux` job does
+  (`make-setup.py build`, no APK), the US dump through `--dump ...
+  --build-only` over SSH: exit 0 after 1204 s, 6.35 GB peak used (3.5 GB
+  before), 10 modules. Over SSH the build needs the desktop session's
+  `XDG_RUNTIME_DIR`, `WAYLAND_DISPLAY` and `DISPLAY` like any run: without
+  them its 45 s module dump fails ("SDL_Init failed: No available video
+  device", then "the game did not load eboot within 45 s"). ST16A (0) from
+  Stage Select natively: 60.0 fps, 4.37 W, 0 native-to-JIT calls; F5 sent
+  through the FIFO (`key F5`) logged both marks.
+* **Hitch lines on the Deck**: with warm caches no frame of the quest
+  load passed 55 ms (the loading screen runs at 30 fps, 33 ms a frame), so
+  the default 100 ms logs only two boot frames (about 145 and 115 ms).
+  Asynchronous pipeline compilation skips a draw while its pipeline
+  builds, so new shaders seldom slow a frame. With the caches emptied and
+  `hitch_log_ms = 40`: `frame 975 took 51 ms (3 new pipelines)` and `frame
+  1211 took 60 ms (16 new pipelines)`.
 
 ## Native code on the Deck (2026-11-17)
 
