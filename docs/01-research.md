@@ -704,6 +704,88 @@ Why the quest-start loading screen never ended at 60 fps (02-baseline,
   the id in the player's slot (`+0x1d0 + 4 × slot`) during a quest doesn't
   change the skill.
 
+### 1/30 s and 960/544 constants in the eboot [local, 2026-11-26]
+
+A static scan of the 1.30 eboot for the float constants a 60 fps or
+widescreen fix looks for, after Project Nativ's `dev/hookscan.py`: movw/movt
+pairs and pc-relative `ldr`/`vldr` building 1/30 (`0x3d088889`, ±1 ulp),
+1/60, 30.0, 60.0, 960/544 (`0x3fe1e1e2`) or 544/960, plus every aligned
+word in the image with those values. Nothing was run; the verdicts are from
+reading the code.
+
+* **The game counts time in seconds and converts to 30 fps frames
+  itself.** `vmov.f32 sN, #30` appears 278 times in 218 functions
+  (the usual idiom is frame time × 30 = frames elapsed, e.g. `0x81882c9e`),
+  and a global float **30.0 at `0x81c9a484`** (data segment, next to the
+  debug config pointer `*0x81c9a488`) is read 65 times in 54 functions; no
+  code writes it through its address. 1/30 itself is built in only 14 places, all by
+  movw/movt; no literal pool holds it.
+* **1/30 sites** (function: what it does):
+  * `0x812ac73c`: the frame-time getter's fixed 1/30 when
+    `*0x81c9a488 + 5` is set (02-baseline "60 fps study"). Known.
+  * `0x812cf524` (`0x812cf55c`), `0x81882c36` (`0x81882c64`), and the
+    one-frame character update `0x81672e7c` (`0x81672e82`), called from
+    `0x8105f1dc` (the DEBUG MENU's draw), `0x817134bc` and `0x8103ed34`
+    behind a flag or button: a **debug pause and frame step**. The flags
+    are `*0x81c9a80c + 0x56a` (paused), `+0x568` (stepping) and `+0x569`
+    (step now); a step adds exactly 1/30, the normal path the frame time.
+    Harmless in play (**hypothesis**: debug only).
+  * `0x8167312a` (`0x816732de`), `0x8101b6f0` (`0x8101b828`), `0x816798fe`
+    (`0x81679b12`), the last two through `0x81672e90`: one 1/30 update of a
+    character right after its motion or position is set, so the new pose
+    shows at once. One-off, harmless (**hypothesis**).
+  * `0x8151cc34` (`0x8151d31a`), the constructor of the state-0x11 action
+    (vtable `0x81c7c614`): duration = motion frames × 1.3 × 1/30, which
+    its update `0x8151dc58` counts down by the frame time. Frame count to
+    seconds: harmless.
+  * `0x81723c9c` (`0x81723e3c`): a timer set to 1/30 minus the frame time
+    and counted down in seconds (state 0x327). Harmless.
+  * `0x8190f950` (`0x8190facc`) and the rodata struct at `0x81c17780`
+    (0.1, 200, 1/30, 0.6, 4, 1, ..., 0.01): world-setup defaults that
+    match Havok's `hkpWorldCinfo` (expected minimum step 1/30, then 0.01
+    and 20 iterations). `0x81902f82` stores 1/60 and 60 (`0x819040ba`,
+    `0x819040c8`) like a default step info. **Hypothesis:** Havok
+    defaults, not the step the game uses; how the game steps Havok is not
+    answered here.
+  * `0x81659334` (`0x816593ec`) and `0x81659112` (`0x8165912e`): the
+    journal's episode player (`EpisodePlayer`, `.evep` timelines; the book
+    player's update is `0x81694aba`). Its normal update `0x81657bba` takes
+    the frame time; `0x81659334` advances the timeline by a fixed 1/30,
+    used for catch-up (`+0xf0` whole steps, `+0xf4` the rest,
+    `0x81694ea0`), for skipping (`0x81659112`: up to 1,500 × 2 steps) and
+    once from `0x81694742` when a page check fails (`0x81694aa6`).
+    **Unknown** whether that last path runs every frame in some state.
+  * `0x815ed630` (`0x815ed964`), in `MagicBullet`'s code: stores 1/30 at
+    `+0x920` beside two integers at `+0x918`/`+0x91c`; no direct read of
+    `+0x920` was found. **Unknown.**
+* **960/544** is built 6 times, each stored into a camera-like object
+  shortly before `0x81815d22` (**hypothesis:** the projection): `0x8105a55c`
+  (`+0x5a4`), `0x812b71b4`, `0x817074aa` (`+0x12c`), `0x817923be`
+  (`+0xb4`, a constructor that also sets near 0.5 and far 10000),
+  `0x817fb16e` (`+0xac`), `0x817fd598`. These are the sites for the wider
+  screens option (03-plan). 544/960 doesn't occur.
+* The other 30.0 and 60.0 words are geometry: vector constants loaded
+  with `vldr d` (`0x81494854`, `0x81707790`, `0x8171fa38` and its two
+  copies) and repeated static records in the data segment (`0x81c9d080`
+  onwards, about 0x4d0 apart).
+* **What a constant scan can't see:** fixed steps a frame with no
+  constant at all (the Blitz controller's 0.7 and 0.433, above) and
+  integer frame counters. So this list isn't a list of every 60 fps bug.
+
+Worth checking in play at 30 against 60 fps, most likely first:
+
+1. The reads of `0x81c9a484` that the code doesn't multiply by its own
+   frame time (54 of 65 by a simple check:
+   the value isn't multiplied by the function's entry `s0`): `vdiv` by 30 (a per-second value made
+   per frame, or frames made seconds) in, e.g., `0x81082b54`, `0x810a4902`,
+   `0x81113988`, `0x811147ac`, `0x81461c72`, `0x814e3b24`-`0x814e3c4a`,
+   `0x81591a36`; and the per-frame movers of the Blitz family
+   (`0x8136b022`, `0x8136e7bc`, `0x8136eeca` at `0x8136f35a`,
+   `0x8136f54e`), which multiply a step vector by 30.
+2. The journal's episode playback (`0x81694742`'s 1/30 tick): text,
+   voice and animation timing of a journal page at 60 fps.
+3. `MagicBullet` (`0x815ed630`, `+0x920`): projectile offerings at 60 fps.
+
 ### The Graphics pool and the journal crash [local, 2026-11-25]
 
 A RecompLauncher player (0.5.0, EU game) reported a crash when Seeing

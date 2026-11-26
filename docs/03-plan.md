@@ -527,6 +527,11 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☑ The owner played at 60, alone and in Ad Hoc Play, without issues
     (2026-10-13): 60 is the default since patch 0042, written explicitly
     in the default `ss-delta.ini` (`frame_rate = 30` for the Vita's rate).
+  * ☐ The constant scan's candidates checked in play at 30 against 60
+    (2026-11-26, 01-research "1/30 s and 960/544 constants in the eboot"):
+    the reads of the global 30.0 at `0x81c9a484` that aren't multiplied by
+    the frame time (the Blitz family's movers first), the journal's
+    episode playback, `MagicBullet`'s projectiles.
 * ☑ **Saves.**
   * ☑ Stored on the PC, in the Vita file system folder.
   * ☑ Import of Vita saves: `ss-delta.exe --import-save <folder|zip>`
