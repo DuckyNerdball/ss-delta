@@ -1319,6 +1319,21 @@ no fallback.
   With Sony's host made unreachable, `fetch-firmware.py` took PSP2UPDAT
   from Wayback. adb has no copy there (left: an archived copy, or a
   mirror of our own; Google's licence forbids redistributing it).
+  * ☑ A last firmware mirror (2026-11-26, the owner's request):
+    RetroBIOS's re-upload in a GitHub release
+    (`Abdess/retrobios`, release `large-files`: `PSVUPDAT.PUP` and
+    `PSP2UPDAT.PUP.3ae832c9`; its plain `PSP2UPDAT.PUP` is another
+    revision), tried after Sony and both Wayback copies. A private
+    person's copy in a release that isn't immutable, so treated as
+    untrusted: `download()` now holds every URL to the pinned file. A
+    different `Content-Length` is refused before reading, reading stops at
+    the first byte past the pinned size, the SHA-256 is taken while
+    reading, and a refused or broken download leaves no file (the Windows
+    curl.exe path: `--max-filesize`, then size and hash). Checked against
+    a local server (the right file, one of the same size with other
+    bytes, a larger one announced or unannounced, a short one, both
+    download paths), and for real with Sony's and Wayback's URLs dead:
+    both files from the mirror in 28 s, hashes as pinned.
 * ☑ **D. The compiler in the release** (2026-11-23). `make-setup.py`
   puts the platform's pinned zig into `setup/toolchain` (as `toolchain.py
   fetch` unpacks it, its MIT licence beside it); `setup.py` uses it when
