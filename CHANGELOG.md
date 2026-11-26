@@ -4,6 +4,65 @@ The changes in each release of ss-delta. The downloads and each release's
 full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/releases);
 [INSTALLING](docs/INSTALLING.md#updating) explains how to update.
 
+## Unreleased
+
+### New
+
+* **Key bindings in the settings menu**
+  ([#24](https://github.com/vita-recomps/ss-delta/issues/24)): a Controls
+  page lists each Vita button's key, second key and gamepad button, and
+  the Black Rite. Pick one and press the new key or button (one already in
+  use changes places), or reset all controls. On Android the page shows
+  the gamepad's buttons only.
+* **Mouse buttons as bindings**: the side buttons (MouseX1, MouseX2) bind
+  like keys, and MouseLeft and MouseRight while the mouse camera has the
+  cursor.
+* **Keyboard button prompts**: `[game] button_labels = keyboard` draws the
+  bound key in a keycap over each button symbol in the game; `auto`
+  follows what you used last, keyboard or gamepad (touches, the on-screen
+  controls and Android's keys don't count). On macOS the Command keys read
+  CMD.
+
+### Fixed
+
+* **The settings menu pauses the game**
+  ([#29](https://github.com/vita-recomps/ss-delta/issues/29), contributed
+  by ELLINDON): until now, opening it stopped the sound while the game
+  kept running behind it, on every system. During Ad Hoc Play the game
+  keeps running behind the menu, so the other players don't drop you.
+* **A crash when a journal chapter was opened again after a quest**
+  (Seeing Red, chapter 3, from the journal): with full-resolution 3D the
+  game ran out of graphics memory in the chapter's scene. Its Graphics
+  pool is 64 MB now instead of 56.
+* **A dump that also carries a rePatch mod** (a fan patch packed with the
+  game) installed only the mod; it now installs the game, then the mod.
+* **A recompiled module that can't be loaded** left the game stopped at
+  its title, with one line in the log. A message now names it and asks
+  you to build the game again.
+* **Android: the Turnip offer comes before the setup's first run of the
+  game** ([#25](https://github.com/vita-recomps/ss-delta/issues/25)), not
+  only at Play. On an Adreno 735, Qualcomm's driver crashed in that run,
+  so the game was never built.
+* **Android: the setup no longer waits behind the notification
+  permission dialog.** The app asks when the setup screen opens, not when
+  you tap Build.
+
+### Changed
+
+* **Downloads during setup**: a server slower than 256 KB/s is left for
+  the next mirror, and zig (the compiler on Linux and macOS, and for the
+  Android build from Windows) has community mirrors.
+* **From Vita3K**: the display queue follows the firmware's limits
+  (queue length, waiting for a free slot), and additions to it are
+  serialized and refused after the game shuts its graphics down.
+* **Renderer**: a surface read right after it was drawn now reaches the
+  game's memory in the `double-buffer` mapping too (it broke another game
+  on the same tools; no change seen in Soul Sacrifice Delta).
+* **Recompiler**: more ARM code is handled (jump tables through
+  `ldr pc`, NEON `vuzp` and fixed-point `vcvt`, calls through linker
+  veneers, ARM-mode `movw`/`movt` relocations), for other games built
+  with the same tools.
+
 ## 0.5.3 (2026-11-25)
 
 ### Fixed

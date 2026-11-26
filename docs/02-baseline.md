@@ -2016,3 +2016,52 @@ rooms, joining and quests work that way.
   arrives as nothing), its Enter key kept it, the keyboard closed and
   `ss-delta.ini` got it.
 * Player guide: [ONLINE-PLAY.md](ONLINE-PLAY.md) (Tailscale, ZeroTier, Radmin VPN).
+
+## The settings menu's pause (2026-11-26, GitHub issue #29, fixed)
+
+Reported by ELLINDON from their Android build (Moto g54, Mi Pad 5): opening
+the settings menu stopped the sound, but the game went on behind it.
+
+* **Cause.** `KernelState::pause_threads` suspended each running thread
+  with `stop()`, and `NativeCPU::stop()` is empty: native code isn't
+  preemptible, so recompiled threads never stopped. On the JIT the same
+  snapshot missed threads that woke from a wait after the pause. On every
+  platform, not only Android.
+* **Fix** (fork `7ca38db9`, ELLINDON's PR vita-recomps/Vita3K#1, merged
+  as `5e241028` with three commits of ours): a session gate
+  (`util/cooperative_pause.h`) that guest threads wait at before and
+  after each import, before each LLE call, and before each entry into
+  `run()` (both CPUs, and the JIT's nested loop). Exits and deletes
+  release it; shutdown resumes it before joining. `be53a38c`: the import
+  handler only waits; throwing `AotUnwind` there skipped
+  `aot_call_import`'s restore of `halted`, so an exit after a callback
+  could take r0 as the thread's exit status. `92aba4ad`: during Ad Hoc
+  Play the threads keep running (below).
+* **Checked** (test folder, Windows, Radeon 760M; two frames 3 s apart
+  with the menu open, `frame:`):
+  * Before (fork `1955f5fc`), in a quest: the frames differ, an enemy
+    knocked the player down behind the menu. After: frames and a 128 KB
+    memdump of the eboot's data identical; closed, the game runs at
+    59–60 fps; 20 quick open/close cycles while walking fine; `close`
+    with the menu open exits in 1 s.
+  * `[recompiled] jit = true` and the JIT alone (`enabled = false`): the
+    same.
+  * A loading screen ("Now Loading", three more cycles during the load,
+    the quest then playable), the opening movie (its text and mid-FMV),
+    the menu over a save dialog (it answered afterwards): frozen, then
+    continued.
+  * The PR's host test (`vita3k/util/tests`) passes with MSVC.
+* **Ad Hoc Play.** Players 3 and 4 in one lobby: player 4's menu open for
+  30 s, and player 3 (the host) had dropped it between 20 and 30 s; player
+  4, resumed, was alone ("You are now the host"). `adhoc_matching` and the
+  game's traffic are guest threads. While `netctl.adhocState` isn't
+  disconnected, a pause now stops audio, input and the picture only, as
+  before. Then the guest's menu, and after it the host's, stayed open
+  about 37 s each and the room held.
+* **AYN Thor** (test package `kittest`, Qualcomm's driver, Select held for
+  the menu, `screencap` 3 s apart): title frozen with the menu open, the
+  process's CPU 155% → 42%; 10 quick cycles fine; Home and back, the same
+  process, running.
+* **Seen meanwhile:** the game didn't pause when the Android app went to
+  the background (CPU 155% → 255%); the games' front end never set the
+  background pause reason. Next section.

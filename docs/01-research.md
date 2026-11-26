@@ -714,6 +714,29 @@ Red ch. 3): the game died as the chapter's journal scene began.
   resolutions cost the game no memory; for us that would mean ResoDown 1
   with a larger multiplier (D13), not tried.
 
+### The 3D resolution modes: ResoDown 0-3 [contributor, 2026-11-25, **hypothesis**]
+
+From [#29](https://github.com/vita-recomps/ss-delta/issues/29) (ELLINDON,
+read in their own build of the EU eboot, PCSF00532 1.30, the same build as
+US, D19); **not checked against our binary yet**:
+
+* Function `0x81828272` takes the mode in r1 and stores it at
+  `0x81d3a63c` (`0x81828280`); width and height go to `0x81c9a820` and
+  `0x81c9a824`. Mode 0: 960×544 (immediates at `0x81828298`/`0x8182829e`),
+  1: 720×408 (`0x818282a6`/`0x818282ac`), **2: 640×368**
+  (`0x818282e2`/`0x818282e8`), **3: 480×272** (`0x818282c6`/`0x818282cc`).
+  Above 3: 960×544. Compares at `0x8182828a`, `0x818282be`, `0x818282c2`.
+* The sizes are then rounded up to 32 (`0x818282fe`-`0x81828308`):
+  960×544, 736×416, 640×384, 480×288; their product (`0x8182830c`) sizes
+  the buffers.
+* Their build sets `ResoDown 3` through `boot_config` for a 0.5× mode on
+  weak phones, with the depth-UV literals (as `unscale_depth_uvs` for mode
+  0) set to 272/288 in Y. Depth of field, shadows, bloom and Mind's Eye
+  weren't checked in every mode.
+* For wider screens (03-plan, #28) this is the switch to extend: a wider
+  mode would be a fifth case here. A smaller mode also leaves the Graphics
+  pool more room (above).
+
 ### Sortiara as an ally [local, 2026-11-23]
 
 * **The data is complete.** Sortiara is `ch9000_06` (`ニミュエ`, Nimue):

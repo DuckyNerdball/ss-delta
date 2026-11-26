@@ -498,8 +498,9 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     map IDs swept at `full_3d` + scale 2: correct, 29.5–29.7 fps on the
     Radeon 760M.
   * Widescreen: the Vita's 960×544 is already 16:9 (to within 0.7%), so
-    fullscreen on a 16:9 display has no bars to fill. Ultrawide would need
-    the game's projection changed; not planned.
+    fullscreen on a 16:9 display has no bars to fill. Wider screens
+    (phones, ultrawide) need the game's projection and 2D layer changed:
+    under "Later" since #28.
 * ☑ **Input.** Keyboard/gamepad remapping was done in Phase 6. Touch:
   * The game's text names one touch-only action, the Black Rite ("touch
     and hold the Black Rite icon"). `[touch]` bindings hold a finger at a
@@ -1420,6 +1421,55 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     `[gamepad]` in INSTALLING, and the Controls page above shows both
     inputs. Until then: Steam Input, DS4Windows or reWASD, or a second key
     in `[keyboard]`.
+* ☐ **Wider screens** (phones at 19.5:9–21:9, ultrawide monitors)
+  ([#28](https://github.com/vita-recomps/ss-delta/issues/28), 2026-11-25:
+  a player got the 3D proportions right on a phone with Codex, but the
+  menu page animations broke; asked for their changes, device and
+  screenshots). Today the 960×544 image (16:9) is pillarboxed. Needed:
+  * ☐ A wider image: the game's display buffers, render targets,
+    viewports and scissors are 960×544 (about 1216×544 for 20:9).
+    **Hypothesis**: the `ResoDown` switch between 720×408 and 960×544
+    (D13) is the place for another, wider mode. #29 found four modes
+    there (640×368 and 480×272 too; 01-research, "The 3D resolution
+    modes", not checked yet).
+  * ☐ Hor+ 3D: the projection's horizontal field of view widened, the
+    vertical kept; culling checked on every map (**hypothesis**: it
+    follows the projection).
+  * ☐ The 2D layer is laid out in 960×544, and menu pages slide in from
+    just past its edges, which a wider screen shows (very likely #28's
+    animation bug). Clip it to the centre 960 columns, or anchor the HUD
+    to the new edges; full-screen 2D (loading screens, fades, movies,
+    backgrounds) pillarboxed or stretched.
+  * ☐ Post-processing with fixed UV scales (as the depth of field in fork
+    patch 0033).
+  * ☐ Touch mapped back to the game's 960×544; the Android on-screen
+    controls, which sit mostly in the bars now, then cover the picture.
+  * ☐ An option, off until the map sweep and the menus pass at 16:9,
+    19.5:9, 20:9 and 21:9; on Android the screen's shape by default.
+    Fixes through `overrides/eboot.json` (D30) and the fork.
+* **The game pauses behind the settings menu**
+  ([#29](https://github.com/vita-recomps/ss-delta/issues/29), 2026-11-25:
+  a player's Android build; 02-baseline, "The settings menu's pause"):
+  * ☑ The menu (2026-11-26): ELLINDON's cooperative pause, PR
+    vita-recomps/Vita3K#1, merged with our fixes as fork `5e241028`.
+    Checked on Windows (native code, both JIT modes, quest, loading
+    screen, movie, closing while paused) and on the Thor.
+  * ☑ Ad Hoc Play keeps the game running behind a pause: a copy paused
+    for 20–30 s was dropped from the room.
+  * ☐ Android: the game pauses while the app is in the background (it
+    went on there, at more CPU than in front).
+* **Offered in #29** (ELLINDON's Android build), welcome as separate PRs:
+  * ☐ A diagnostics export on Android (the setup's and the game's logs,
+    the device, shared through a content provider).
+  * ☐ An FPS counter (`[display]`).
+  * ☐ A layout editor for the on-screen controls (09-android, "Not yet"),
+    floating sticks, combos, buttons that touch a screen point.
+  * ☐ Driver import from a zip, and back to the system driver after a
+    launch with a custom one crashed.
+  * ☐ Android's setup from PUP files the player has (PC: `--offline`,
+    "Installer future-proofing"), checked against the pinned hashes.
+  * Not taken: 24/40/45 fps targets (uneven on a 60 Hz vblank, the game's
+    speed unproven), an APK with game modules in it (D2).
 
 ## Unplanned
 
