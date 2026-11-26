@@ -42,7 +42,7 @@ installed, the US one does; --title-id PCSF00532 starts the EU one.
 Settings: press F1, or hold Select (the View button) on a gamepad for a
 second, to open the settings menu over the paused game (Up/Down choose,
 Left/Right or Cross change, L1/R1 or Q/E switch pages, Circle, Esc or F1
-close). Window size, fullscreen, vsync, filter, volume and frame rate change
+close). Window size, fullscreen, vsync, filter, FPS counter, volume and frame rate change
 at once; the rest are marked * and take effect the next time the game starts.
 The menu writes ss-delta.ini, which can also be edited by hand (paths are there only). On a Mac keyboard the F keys need fn held, unless
 they are set as standard function keys (System Settings, Keyboard).

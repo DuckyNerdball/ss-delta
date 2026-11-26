@@ -2085,3 +2085,32 @@ the settings menu stopped the sound, but the game went on behind it.
   says "Android: the app left the screen" and "is back on the screen".
   The menu still freezes the title. With the menu open, Home and back: the
   title stays frozen until the menu closes, then runs.
+
+## FPS counter and Android's firmware from the player's files (2026-11-26)
+
+Two of #29's offers, written here rather than ported from the contributor's
+build (their counter was a game-specific setting; their firmware import a
+separate offline mode needing both files).
+
+* **FPS counter** (fork `fbb38768`): `[display] fps_counter` = `off`,
+  `fps`, `frametime`, `stats`, `graph`, mapped onto Vita3K's performance
+  overlay (`cfg.performance_overlay`, its detail level, top left), which
+  the renderer already draws from `app.cpp`'s once-a-second figures; live
+  through `app::sync_perf_overlay_config`. Checked on Windows (test
+  folder): on from the menu (Display page, saved to the ini), `graph` from
+  the ini (FPS, ms, min/avg/max, RAM, the graph); the title screen at
+  32.4 fps with it off and with `graph`. On the Thor (`kittest`, `stats`):
+  60 fps (17 ms), min 56, max 61, readable at the screen's size.
+* **Firmware files on Android** (fork `0f6a57eb`): the setup screen's Add
+  firmware files (`EXTRA_ALLOW_MULTIPLE`) reads each file through the
+  picker's grant, hashing it as it copies it into
+  `setup-work/firmware/picked.part`; size and SHA-256 equal to one of
+  fetch-firmware.py's pins → renamed to that PUP's name. The firmware step
+  (`android-setup.py firmware`, unchanged) keeps a file that is there with
+  the right size and hash. Checked on the Thor (a fresh test package):
+  `firmware-a.bin` and `fonts-b.bin` (the two PUPs) taken as PSVUPDAT.PUP
+  and PSP2UPDAT.PUP, a 56,768,512-byte file of zeros named `fake.PUP`
+  refused by its hash; with a dummy game file, Build: the firmware step
+  printed the two paths and downloaded nothing, Installing the firmware
+  exit 0, the dummy's install failed as it should. Files pushed with adb
+  show in the picker only after `content call --method scan_volume`.

@@ -244,8 +244,11 @@ or more.
    1.30 update's `.pkg`.
 3. Start **ss-delta**. Its setup screen asks for the files: **Add the
    game's files** (the dump; then the update's `.pkg` if needed) and, for
-   a `.pkg`, **Add a licence**. Then **Build**.
-4. The app downloads the PS Vita firmware from Sony, installs it and the
+   a `.pkg`, **Add a licence**. If you have the PS Vita firmware 3.74's
+   files (`PSVUPDAT.PUP`, `PSP2UPDAT.PUP`, whatever their names), **Add
+   firmware files** takes them, and nothing is downloaded for them. Then
+   **Build**.
+4. The app downloads the PS Vita firmware from Sony (unless you added it), installs it and the
    game, runs the game for a moment to find its code, and builds the native
    code: about 15 minutes on a Snapdragon 8 Gen 2. Keep the device
    charging; you may leave the app meanwhile (a notification says when it
@@ -393,6 +396,10 @@ installs only that.
   works anyway), and so is AR mode, which needs the camera.
 * **Frame rate:** 60 fps by default; `frame_rate = 30` under `[display]`
   gives the Vita's rate. Loading screens run at 30.
+* **FPS counter:** FPS counter on the settings menu's Display page
+  (`fps_counter` under `[display]`): off, `fps`, `frametime` (and the
+  milliseconds a frame), `stats` (and the lowest, average and highest of
+  the last minute) or `graph`, in the top left corner.
 * **Intro logos:** Skip intro logos on the settings menu's Game page
   (`skip_intro = true` under `[game]`) skips the health warning and the
   company logos at start: the game opens on its title screen.

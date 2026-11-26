@@ -35,7 +35,7 @@ Settings: press F1, or hold Select (Back/View) on a gamepad for a second, to
 open the settings menu over the paused game (Up/Down choose, Left/Right or
 Cross change, L1/R1 or Q/E switch pages, Circle, Esc or F1 close). Its last
 page, Exit, quits the game: press Cross (X) twice on Exit the game. Window
-size, fullscreen, vsync, filter, volume and frame rate change at once; the
+size, fullscreen, vsync, filter, FPS counter, volume and frame rate change at once; the
 rest are marked * and take effect the next time the game starts. The menu
 writes ss-delta.ini, which can also be edited by hand (paths are there only).
 

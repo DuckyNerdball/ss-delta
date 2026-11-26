@@ -22,6 +22,15 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   follows what you used last, keyboard or gamepad (touches, the on-screen
   controls and Android's keys don't count). On macOS the Command keys read
   CMD.
+* **FPS counter**: FPS counter on the settings menu's Display page
+  (`[display] fps_counter`) shows the frame rate in the top left corner,
+  with the frame time, the last minute's lowest, average and highest, and
+  a graph as you choose.
+* **Android: the setup takes your own firmware files.** If you have the PS
+  Vita firmware 3.74's `PSVUPDAT.PUP` and `PSP2UPDAT.PUP`, **Add firmware
+  files** on the setup screen takes them (one or both, whatever their
+  names; they are checked against the right ones), and they aren't
+  downloaded from Sony.
 
 ### Fixed
 

@@ -1462,13 +1462,17 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
 * **Offered in #29** (ELLINDON's Android build), welcome as separate PRs:
   * ☐ A diagnostics export on Android (the setup's and the game's logs,
     the device, shared through a content provider).
-  * ☐ An FPS counter (`[display]`).
+  * ☑ An FPS counter (2026-11-26, fork `fbb38768`): `[display]
+    fps_counter`, Vita3K's performance overlay at its four detail levels,
+    live from the menu, on every game's Display page.
   * ☐ A layout editor for the on-screen controls (09-android, "Not yet"),
     floating sticks, combos, buttons that touch a screen point.
   * ☐ Driver import from a zip, and back to the system driver after a
     launch with a custom one crashed.
-  * ☐ Android's setup from PUP files the player has (PC: `--offline`,
-    "Installer future-proofing"), checked against the pinned hashes.
+  * ☑ Android's setup from PUP files the player has (2026-11-26, fork
+    `0f6a57eb`; PC: `--offline`, "Installer future-proofing"): Add firmware
+    files, checked against fetch-firmware.py's sizes and hashes, put where
+    the firmware step keeps them; the one not given is downloaded.
   * Not taken: 24/40/45 fps targets (uneven on a 60 Hz vblank, the game's
     speed unproven), an APK with game modules in it (D2).
 
