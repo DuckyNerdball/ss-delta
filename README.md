@@ -107,8 +107,8 @@ Compared with running the game in Vita3K:
   [The Original Raiments](https://www.moddb.com/mods/the-original-raiments-arks-armor-dragonslayer)
   (ModDB), added in seconds ([how to install mods](docs/MODS.md)).
 * **Cheats** on the settings menu's Cheats page: Infinite health,
-  Unlimited and Lasting offerings, One-hit kills, Max Lacrima and Max
-  levels.
+  Unlimited and Lasting offerings, One-hit kills, Invincible, Max Lacrima
+  and Max levels.
 * **Xbox, Nintendo or keyboard button labels** in the game's prompts,
   tutorial pictures and text, as an option (Button prompts in the settings
   menu; or as the device you used last): A, B, X, Y, LB, RB, Menu and View;

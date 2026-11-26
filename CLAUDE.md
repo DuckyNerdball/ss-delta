@@ -141,6 +141,12 @@ notes, kept in a private repo.
   (v3kdrive, `ss-delta.exe`) read and write guest memory in a running
   game (the cheats' addresses were found this way, 01-research "Cheats").
   Write only in a test folder.
+- Scripted playtests in quests: start with
+  `v3kdrive.py <bin dir> --exe ss-delta.exe start --set cheats.invincible=true`
+  (arguments after `start` go to the exe) so enemies' hits don't knock the
+  sorcerer down and throw the script off course (the debug menu's
+  NoDamage, 01-research "Cheats"). Check the test folder's `[cheats]`:
+  `infinite_health` hides lost health.
 - `record:<n>:<dir>` (v3kdrive, `ss-delta.exe`) saves the next n rendered
   frames as PNGs: use it for glitches that last a few frames (the ST03A
   water patch is 5 frames). `close` now posts WM_CLOSE and waits up to 8 s

@@ -469,6 +469,50 @@ the 1.30 eboot's code and checked in `ss-delta.exe`:
     goblin at 0 too). A boss still took a fifth of its health a hit (the
     Harpy: 1700, 1360, 1020, 680 ... 0, then its dying state as usual): the
     game limits a hit on a boss to 20% (**hypothesis**, from these numbers).
+* **The developers' debug menu** [local, 2026-11-26]: the retail eboot
+  still builds it. Its values sit in one block, `*0x81c9a488`
+  (`0x820161b0` in every US run so far), built at boot and read by the
+  game code. `0x817e4f4c` registers the menu: groups through
+  `0x81810cfc(parent, name)`, bools through `0x818105a0(group, name,
+  &var, ...)`, floats through `0x8181041c`, ints through `0x81810350`, so
+  each label (a string in the eboot) gives its field. Offsets from the
+  block:
+  * Config/Preset at `+0x62`..`+0x65`: InvincibleMode, BG DesignerMode,
+    SND DesignerMode, EnemyCheck. Debug at `+0x58`..`+0x61`
+    (NoSetSceneEnemy and the like).
+  * The Player group from `+0x68` (`0x817e3bfc`): NoDamage `+0x8d`,
+    NoDeadEnd `+0x8e`, NoTabooPenalty `+0x8f` (read by the checks of a bit
+    mask at `+0xcc`, `0x8135885e` ...; **hypothesis:** the black rites'
+    penalties), InfinityMagic
+    `+0x90`, Respawn `+0x96`, Limited Death `+0x97`, AI Mode `+0xf1`,
+    AutoPilot `+0xf2`, Stop NPC `+0xf8`; PlayerParamRate's AttackRate,
+    DamageRate ... RecvDmgRate floats at `+0xd4`..`+0xe8`. Defaults
+    seen: TurnLimit[Normal] 360.0 at `+0x70`, MotionSpeed 1.0 at `+0x88`.
+  * The Enemy group from `+0x438` (`0x817e3344`): isBossAttackCheck,
+    isMobAttackCheck, isMoveStop, isBossNoDamage `+0x43b`, isMobNoDamage
+    `+0x43c`, ..., MobKnockBackDecr (float, `+0x468`).
+  * `0x817e78fa(block)` is "no damage": NoDamage, InvincibleMode or BG
+    DesignerMode. Six callers, all in the player-side character code. The
+    hit handler `0x81377452` (a virtual method in 19 vtables, at `+0x190`
+    in the player's) returns at once when it is true, or when the
+    character's byte `+0x17c3` is set (the game's own short invulnerability,
+    set and cleared by event and move code). Otherwise it applies the
+    damage (`0x813769ac`) and calls virtual `+0x194`, the hit reaction
+    (stagger, knock-down). Four other callers skip `0x8136be14`, the health
+    an attack costs (the test loadout's C attack took 5 a press, none with
+    NoDamage). Retail code never
+    sets NoDamage; `0x817e93c0`, which sets it with NoDeadEnd, is a debug
+    preset.
+  * Checked in quests (test folder, `memwrite` and then the cheat): with
+    NoDamage set, goblins, the Harpy's minions and the Harpy hit the
+    sorcerer for 15-30 s at a time and he never staggered, fell or lost
+    health; cleared, the same enemies knocked him down twice in 10 s. His
+    own attacks still kill. The Harpy's shockwave (landing) and wing gust
+    still make him brace for a moment, arm over his face, then stand: a
+    reaction outside the hit handler, without damage.
+  * Not checked: allies, Ad Hoc Play (the remote sorcerer's object on this
+    machine has the same handler; **hypothesis:** its hits are skipped
+    here too), grabs, status ailments, falls.
 * **The save data**, `*0x81c98618` (the game's pointer, set from boot; a
   block of more than 1.5 MB, not the file's layout):
   * `+0x8c`: Lacrima (u32). 9627 in memory and on the Portraiture page.

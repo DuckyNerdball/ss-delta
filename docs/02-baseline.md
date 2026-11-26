@@ -1683,6 +1683,32 @@ the Radeon 760M.
   (only an arm was tested; the debug Stage Select gives one loadout),
   switching it off (the durations go back for the next cast), and
   Android and the EU game.
+* **Invincible** (2026-11-26, for scripted playtests that enemies knocked
+  off course; the debug menu's NoDamage, 01-research "Cheats"). Test
+  folder, US game, native code, Stage Select, the Radeon 760M; frames
+  with `record`, HP read every 1-2 s.
+  * `q_e0103` (ST01A), every cheat off, Circle pressed once a second
+    near goblins: HP 940 → 511 in 12 s (hits of about 96, and 5 a C
+    press); the sorcerer was thrown to the ground. NoDamage written with
+    `memwrite`: HP stayed at 319 through 12 s of the same and 15 s
+    standing among attacking goblins (their claw trails on him), no
+    stagger; cleared again: 319 → 163 in 12 s.
+  * `q_e0105` (ST06A), the Harpy's minions on top of him: set, 15 s
+    standing, HP 1000, never moved; cleared, knocked down twice in 10 s
+    (1000 → 808).
+  * The cheat (fork build, `invincible = true` in the test ini): "cheats:
+    invincible (0x820161b0)" a moment into the boot; goblins' hits passed
+    (HP 1000 through 12 s). Switched off on the Cheats page: the log said
+    "Settings menu: [cheats] invincible = false" and "cheats: invincible
+    off", the byte was 0 and hits counted again (899 → 571). The Harpy,
+    with the cheat on, 30 s standing under its stomps, dives and gusts:
+    HP 1000, no knock-down; it braced (crouched, arm over its face) for
+    a moment at each shockwave or gust and stood again by itself.
+  * `v3kdrive.py <dir> start --set cheats.invincible=true` (kit: start
+    passes its arguments on): the flag set from the title screen, the
+    ini unchanged.
+  * Not checked: allies, Ad Hoc Play, the EU game and Android (same
+    eboot and addresses), grabs, status ailments.
 
 ## Mouse camera (2026-11-21)
 

@@ -41,6 +41,11 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   files** on the setup screen takes them (one or both, whatever their
   names; they are checked against the right ones), and they aren't
   downloaded from Sony.
+* **Invincible cheat** (`[cheats] invincible`): enemies' attacks neither
+  hurt you nor knock you down, so you keep control in a fight; attacks
+  that cost health cost none either. It switches on the game's own debug
+  switch for this (NoDamage). A boss's shockwave or wing gust still makes
+  you brace for a moment.
 
 ### Fixed
 

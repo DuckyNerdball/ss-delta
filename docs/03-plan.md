@@ -696,6 +696,14 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     (their durations live in four tables); on the EU game and the Thor.
   * ☑ Ad Hoc Play between the PC and Android (the Thor): room, lobby and a
     quest together, cheats on the Android side.
+  * ☑ Invincible (2026-11-26): enemies' hits pass without damage or a
+    stagger, through the game's own debug switch (NoDamage, 01-research
+    "Cheats"), so scripted playtests stay on course
+    (`v3kdrive.py ... start --set cheats.invincible=true`). Checked
+    against goblins, the Harpy's minions and the Harpy on the PC.
+  * ☐ Invincible in Ad Hoc Play, with allies, and on the EU game and
+    Android; a boss's shockwave and gust still make the sorcerer brace
+    for a moment (a reaction outside the hit handler).
   * ☐ Max levels early in the story: those saves keep the levels in play
     in another record whose place depends on the save; left alone for now.
   * ☐ Playtest by the owner: the stats at level 99, a whole quest.
