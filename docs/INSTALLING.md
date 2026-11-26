@@ -482,6 +482,16 @@ for a PlayStation pad) by what you pressed last; before any input it takes
 the connected gamepad's, or the keyboard's without one. The prompts follow
 a binding changed on the Controls page at once.
 
+**Nintendo and handheld button prompts:** **Nintendo (Switch Pro)**
+(`nintendo`) letters the face buttons as a Switch Pro Controller does (A on
+the right, B at the bottom, X at the top, Y on the left) and shows L, R, +
+and − for the shoulders, START and SELECT. **As the device used** picks it
+for a Nintendo pad. On Android there is also **Android handheld**
+(`handheld`), for the built-in controls of the Retroid Pocket, AYN and
+other handhelds: the face buttons lettered the Nintendo way, L1 and R1 for
+the shoulders, and Xbox's Menu and View. Choose it yourself: these handhelds tell the game
+they are Xbox pads, so **As the device used** shows Xbox letters there.
+
 The bindings can also be changed by hand: close the game and edit
 `ss-delta.ini` in a text editor.
 

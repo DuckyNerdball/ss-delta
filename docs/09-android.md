@@ -1307,7 +1307,12 @@ haptics checked (Android's virtual-key feedback, on a press).
   Controller" (in the controller style AYN's quick settings had; the
   tile `controllerStyle` switches it): A/B/X/Y, bumpers, a D-pad hat,
   sticks at ±32767, and **analog triggers** (`ABS_GAS`, `ABS_BRAKE`).
-  Upstream's app takes it as a gamepad. The Black Rite binding (left
+  Upstream's app takes it as a gamepad. Its face buttons are lettered the
+  Nintendo way (A east, B south; the owner, 2026-11-26, as on Retroid's
+  handhelds) while it reports Xbox's labels by position, so
+  `button_labels = auto` shows Xbox letters there; Button prompts →
+  Android handheld (`handheld`, Android only) draws the device's own.
+  The Black Rite binding (left
   trigger) fires past half travel (input.cpp); on Android it needed the
   touch fix above (14f).
 * **Performance modes and fan**: AYN's quick settings (Standard,

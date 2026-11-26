@@ -1403,6 +1403,24 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     count as the mouse, and on Android no key does (Back and a device's
     extra buttons arrive as keys): on the Thor `auto` stayed Xbox through
     Back presses (fork `5974c744`).
+  * ☑ Nintendo and Android handheld button prompts (2026-11-26):
+    `[game] button_labels = nintendo` (a Switch Pro Controller's: face
+    buttons by position, south B, east A, west Y, north X, in white; L, R,
+    and + / − for START and SELECT, glyphs as big as Xbox's Menu and View)
+    and, on Android only, `handheld` (the same letters, L1 and R1, and
+    Xbox's Menu and View: the Retroid Pocket's, AYN's and other handhelds'
+    built-in controls). `auto` takes `nintendo` for a pad whose SDL labels
+    are Nintendo's; never `handheld`, as those built-in pads report Xbox
+    labels (the Thor's is an "Xbox Wireless Controller"). A desktop ini
+    with `handheld` is ignored with a warning. Checked: every atlas,
+    tutorial picture and the font page with `--button-labels-test`
+    (`--set game.button_labels=nintendo`) at 3x; on the Thor (test
+    package, NDK build plus Gradle), `handheld` in the hub, the journal
+    (Lore, Tactical Advice's picture, Portraiture) and Select Offerings
+    (B, A, Y, X, R1, Menu, View; the font page redrawn per the log, its
+    letters not seen on screen), the
+    settings menu listing Android handheld, and a live switch to
+    `nintendo` there (+, −, R). Fork `12d08f73`.
   * ☐ Two gamepad inputs per Vita button, and the triggers as bindings
     ([#26](https://github.com/vita-recomps/ss-delta/issues/26), 2026-11-25:
     RT as a second D-pad up, for the support spells in combat, with the

@@ -22,6 +22,16 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   follows what you used last, keyboard or gamepad (touches, the on-screen
   controls and Android's keys don't count). On macOS the Command keys read
   CMD.
+* **Nintendo button prompts**: `[game] button_labels = nintendo` shows a
+  Switch Pro Controller's buttons: A on the right, B at the bottom, X at
+  the top, Y on the left, L, R, + and −. `auto` picks it for a Nintendo
+  pad.
+* **Android: handheld button prompts**: `[game] button_labels = handheld`
+  (Android handheld) for the built-in controls of the Retroid Pocket, AYN
+  and other Android handhelds, which letter their face buttons the
+  Nintendo way, name their shoulders L1 and R1, and keep Xbox's View and
+  Menu buttons. Pick it by hand: these devices report themselves as Xbox
+  pads.
 * **FPS counter**: FPS counter on the settings menu's Display page
   (`[display] fps_counter`) shows the frame rate in the top left corner,
   with the frame time, the last minute's lowest, average and highest, and

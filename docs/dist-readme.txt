@@ -74,11 +74,13 @@ game has English, French, Spanish and Portuguese (Brazil), the EU game
 English, French, Spanish, German and Italian; a language the installed game
 lacks gives English.
 
-Button prompts: Xbox or keyboard labels in place of the PlayStation symbols,
-from Button prompts on the menu's Game page ([game] button_labels = xbox,
-keyboard, or auto to follow the device you used last; switches at once). Each
-symbol shows the gamepad button bound to it in [gamepad] (A, B, X, Y, LB, RB,
-and Xbox's Menu and View for START and SELECT), or the key bound to it in
+Button prompts: Xbox, Nintendo or keyboard labels in place of the PlayStation
+symbols, from Button prompts on the menu's Game page ([game] button_labels =
+xbox, nintendo, keyboard, or auto to follow the device you used last; switches
+at once). Each symbol shows the gamepad button bound to it in [gamepad] (A, B,
+X, Y, LB, RB, and Xbox's Menu and View for START and SELECT; for nintendo a
+Switch Pro Controller's: A on the right, B at the bottom, L, R, + and -), or
+the key bound to it in
 [keyboard] in a keycap (X, C, Z, V, Q, E, ENT, SHF ...), also in the tutorial
 pictures and the text.
 
