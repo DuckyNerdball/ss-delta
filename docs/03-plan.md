@@ -1458,6 +1458,30 @@ Left for the next release:
     for 85 min before failing.
 * ☐ **rePatch**: a zip with a rePatch folder whose game sits at the root as
   `PCSA00152/` (no `app/`) still gets only the mod installed.
+* ☐ **A toolchain smoke test in the release workflow**: CI never compiles
+  anything with the toolchain it ships (the game's code can't be in CI),
+  so a broken zig, a lost flag or a missing file passes CI and is found
+  by the symbol check or the front end's load message on a player's
+  machine, or by the manual draft checks (BUILDING, "Before publishing a
+  draft"). A tiny synthetic ARM module from the kit's own test code,
+  recompiled and built by each job with the release's own zig and flags
+  (Windows, Linux, macOS, Android): position-independent with no text
+  relocations, only the two entry points exported, Android's symbol
+  check passed, and on the PC targets loaded and run for a known result.
+  The APK's on-device build tools (aarch64 Android binaries) can't run on
+  an x86 runner, so the Thor check stays for that path.
+* ☐ **Quest frame rate on this PC, unfocused**: in the 0.6.0 draft check
+  ST16A ran at 32-33 fps on Windows (the 760M, window not focused, as
+  v3kdrive leaves it), the release build and the dev build alike (both
+  native code, 0 native-to-JIT calls), where ST03A had shown 59.3 (D32).
+  Find out whether ST16A's rain costs that on the 760M or an unfocused
+  window is throttled (focused run, GPU clocks), and record it in
+  02-baseline.
+* ☐ **`--android`'s adb replaces a running adb server** of another version
+  (the SDK's, 37.0.1): the wireless device dropped out of it and had to be
+  connected again after the run. Reuse a running server, or say so.
+* ☐ **The firmware's size**: the PC readmes and release notes say about
+  180 MB, the Android setup screen 190 MB (128 + 54 MB = 182).
 * ☐ **Not checked in 0.6.0**: #26 on Android (the built-in pad through
   `sendevent`), and the support spells with RT as a second D-pad up.
 

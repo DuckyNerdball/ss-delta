@@ -1121,6 +1121,21 @@ built-in pad); ST16A from Stage Select loaded, walked with the left
 stick, one boot hitch (141 ms). Home: 170% CPU in front, 11.3% behind
 the home screen, logged both ways, and the game went on when it came back.
 
+**The v0.6.0 draft's own downloads** (run 54, the tag's; published after
+these): the APK (versionCode 600) installed over run 53's (53) in place,
+the saves kept; the setup opened with its rebuild text and built again
+without the dump in **15.4 min**, the same code hashes; ST16A on native
+code with the three fixes. Then `--android` from the draft's Windows
+folder (built there from the US dump in 715 s): 855 s in all (the Android
+modules built with the release's zig, adb, 3.3 GB pushed, the APK
+installed, the device's saves kept). Its ten modules have the same sizes
+as the device's own build of them (the release app's are readable only
+by the app, so not compared byte for byte; the pushed eboot is the PC's
+byte for byte). The app copied all ten to internal storage on the next
+start (no build asked for: the device's `android-build.json` stamp still
+matched) and ran the US game's ST16A on them, native code, the three
+fixes.
+
 **Not there yet:** a cancel button (Start over after a stop, or
 force-stopping the app, do for now). Folders (zip them first). A zRIF
 typed instead of a licence file.

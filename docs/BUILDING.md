@@ -129,7 +129,8 @@ through releases checked on Windows alone: the APK lacked
 `overrides/eboot.json`, utakata's overrides used a libc++ clock that
 Android's modules can't load, and `--android` from Windows lost `-fPIC`.
 
-1. **Windows:** unpack the zip, build from the pkgs (`ss-delta.exe --dump <game>
+1. **Windows:** unpack the zip, build from a dump (the game's NoNpDrm zip, or
+   its pkgs: `ss-delta.exe --dump <game>
    --dump=<update> --offline <the PUPs> --build-only`), then a quest:
    NativeCPU, 0 native-to-JIT calls, the log's "has the project's fixes".
 2. **The APK on the Thor**, installed over the previous release (as a
