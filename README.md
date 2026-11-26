@@ -115,8 +115,9 @@ Compared with running the game in Vita3K:
   a Switch Pro Controller's letters, L, R, + and −; or the keys in keycaps,
   after your bindings. On Android also the handhelds' layout (Retroid
   Pocket, AYN: Nintendo's letters, L1, R1, Xbox's Menu and View).
-* **Key bindings in the settings menu** (Controls page): two keys and a
-  gamepad button per Vita button, the mouse's side buttons too.
+* **Key bindings in the settings menu** (Controls page): two keys and two
+  gamepad buttons per Vita button, the triggers and the mouse's side
+  buttons too (e.g. RT as a second D-pad up).
 * **Intro logos skipped** as an option (Skip intro logos in the settings
   menu): the game opens on its title screen.
 * **Touch on keys and buttons:** the Black Rite icon on F and the left

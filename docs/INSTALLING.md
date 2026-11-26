@@ -457,16 +457,23 @@ touchscreen), Capture key, Sensitivity, Invert vertical and Hide idle
 cursor.
 
 **Changing the bindings:** the settings menu's **Controls** page (F1, or
-View held for a second) lists each Vita button with its key, a second key
-and its gamepad button, and the Black Rite below them. Up/Down picks a
-control, Left/Right a column; Cross, then press the new key, mouse button or
-gamepad button (Esc cancels). Square clears the selected one, Triangle puts
-that control back to its defaults, and **Reset all controls** at the bottom
-(Cross twice) all of them. A key or button another control already has
-changes places with it, so nothing is left with two jobs. The changes work
-at once and are saved in `ss-delta.ini`. The gamepad's sticks and its
-triggers (LT and RT are a PS TV's L2 and R2) can't be changed there; a
-touch such as the Black Rite also takes LT or RT.
+View held for a second) lists each Vita button with its key, a second key,
+its gamepad button and a second gamepad button, and the Black Rite below
+them. Up/Down picks a control, Left/Right a column; Cross, then press the
+new key, mouse button, gamepad button or trigger (Esc cancels). Square
+clears the selected one, Triangle puts that control back to its defaults,
+and **Reset all controls** at the bottom (Cross twice) all of them. A key or
+button another control already has changes places with it, so nothing is
+left with two jobs. The changes work at once and are saved in
+`ss-delta.ini`. The gamepad's sticks can't be changed there.
+
+**A second gamepad button:** each Vita button takes two gamepad inputs, and
+LT and RT are among them. For example, RT as a second D-pad up puts the
+D-pad's up in a quest on a trigger while the D-pad still moves through the
+menus: on the Controls page, D-pad up, the **Second button** column, Cross,
+then RT (or `up = dpup, righttrigger` in `[gamepad]`). The triggers stay a
+PS TV's L2 and R2 as well, which the game reads only with PS TV controls
+(the Game page).
 
 **Mouse buttons as bindings:** the side buttons (`MouseX1`, `MouseX2`) work
 like keys. The left and right buttons (`MouseLeft`, `MouseRight`) press
@@ -506,16 +513,16 @@ The bindings can also be changed by hand: close the game and edit
   arrows, Return, Space, Tab, Left Shift, Right Ctrl, F1-F12, Keypad 0-9, or
   W3C codes such as Comma, Period, Semicolon, BracketLeft, and the mouse
   buttons above. Nothing after the `=` unbinds the button.
-* `[gamepad]`: one gamepad button per Vita button: `south`, `east`, `west`,
-  `north` (the face buttons: A, B, X, Y on an Xbox pad), `leftshoulder`,
-  `rightshoulder`, `start`, `back`, `guide`, `dpup`, `dpdown`, `dpleft`,
-  `dpright`, `leftstick`, `rightstick`; nothing after the `=` unbinds it.
-  The sticks can't be swapped.
+* `[gamepad]`: one or two gamepad buttons per Vita button, separated by a
+  comma (`up = dpup, righttrigger`): `south`, `east`, `west`, `north` (the
+  face buttons: A, B, X, Y on an Xbox pad), `leftshoulder`, `rightshoulder`,
+  `start`, `back`, `guide`, `dpup`, `dpdown`, `dpleft`, `dpright`,
+  `leftstick`, `rightstick`, and the triggers `lefttrigger`, `righttrigger`;
+  nothing after the `=` unbinds it. The sticks can't be swapped.
 * `[touch]`: keys and buttons that hold a finger on the screen for as long
   as they are held. `black_rite_key` and `black_rite_gamepad` move the Black
-  Rite (`_gamepad` also takes `lefttrigger`, `righttrigger`). More can be
-  added: `<name> = x, y` (a point on the 960×544 screen) with `<name>_key` and
-  `<name>_gamepad`.
+  Rite (up to two of each, as above). More can be added: `<name> = x, y` (a
+  point on the 960×544 screen) with `<name>_key` and `<name>_gamepad`.
 * `[mouse] capture_key`: the key(s) that capture the cursor, as in
   `[keyboard]`.
 

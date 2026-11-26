@@ -1397,7 +1397,8 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     and written to the ini; an empty `[gamepad]` value now unbinds, as an
     empty `[keyboard]` one already did. The defaults are one table
     (`button_bindings()`), which also writes the default file's lines. The
-    sticks and LT/RT (L2/R2) are shown, not editable, until #26. The menu's
+    sticks and LT/RT (L2/R2) are shown, not editable (since #26 LT/RT can
+    be any Vita button's input as well, below). The menu's
     own hints name the keys bound now. Checked on Windows 2026-11-25 with
     posted keys in a test folder: rebinding, the swap and its note, a new
     key working in the menu at once, Esc, a mouse side button on the Black
@@ -1451,24 +1452,32 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     letters not seen on screen), the
     settings menu listing Android handheld, and a live switch to
     `nintendo` there (+, −, R). Fork `12d08f73`.
-  * ☐ Two gamepad inputs per Vita button, and the triggers as bindings
+  * ☑ Two gamepad inputs per Vita button, and the triggers as bindings
     ([#26](https://github.com/vita-recomps/ss-delta/issues/26), 2026-11-25:
     RT as a second D-pad up, for the support spells in combat, with the
-    D-pad kept for the menus). Today `[gamepad]` takes one button per Vita
-    button (`apply_bindings` in the fork's `game-frontend/input.cpp` drops
-    the rest; upstream's `controller_binds` has one slot per button), and
-    LT/RT can't be named there: `ctrl.cpp` `apply_controller` always makes
-    them L2/R2. Plan: `up = dpup, righttrigger` (up to two, as in
-    `[keyboard]`; `lefttrigger`/`righttrigger` as `[touch]` already takes
-    them), kept in a list of our own next to `controller_binds` and applied
-    in `apply_controller` beside the L2/R2 check, so the game's pad read
-    sees it with no frame of delay. RT is free outside PS TV mode (the
-    game reads L2/R2 only in its PS TV branches, 01-research), so it still
-    sending R2 does no harm; with `pstv_mode` it does both. LT is the Black
-    Rite by default. Shared `game-frontend`, so every platform gets it;
-    `[gamepad]` in INSTALLING, and the Controls page above shows both
-    inputs. Until then: Steam Input, DS4Windows or reWASD, or a second key
-    in `[keyboard]`.
+    D-pad kept for the menus). Done 2026-11-26 in the shared front end:
+    `[gamepad]` takes up to two inputs per Vita button, triggers included
+    (`up = dpup, righttrigger`), and so does a touch's `_gamepad`. The first
+    button stays in upstream's `controller_binds` (one slot per button);
+    the rest go into `CtrlState::extra_gamepad_binds` (the Vita button's
+    basic and extended bits), which `ctrl.cpp` `apply_controller` reads
+    beside its L2/R2 check, so the game's pad read sees them with no frame
+    of delay. The triggers still press L2/R2 too: harmless outside PS TV
+    mode (the game reads L2/R2 only in its PS TV branches, 01-research),
+    both with `pstv_mode`; the Controls page says so when a trigger is
+    bound. The Controls page has a fourth column, Second button (Android:
+    the two gamepad columns); a trigger is captured like a button on any
+    row, and a swap moves inputs between cells as for keys. Button prompts
+    got LT/RT (ZL/ZR, L2/R2) labels for a Vita button whose first input is
+    a trigger. Checked on Windows 2026-11-26 in the test folder with a
+    virtual SDL gamepad (new: v3kdrive `gpad:`, the input pipe's
+    `gamepad`): in a quest RT as a second D-pad down toggled Mind's Eye on
+    and off as the pad's D-pad down did; on the Controls page LT captured
+    into D-pad up's second cell (swapped with the Black Rite's, note
+    shown), LT moved to D-pad down live (RT then no longer toggled Mind's
+    Eye, LT did), Square, Triangle, Reset all, the ini after each. Not
+    checked: Android (built-in pad, `sendevent`), and the support spells
+    themselves (the first quest has no use for D-pad up).
 * ☐ **Wider screens** (phones at 19.5:9–21:9, ultrawide monitors)
   ([#28](https://github.com/vita-recomps/ss-delta/issues/28), 2026-11-25:
   a player got the 3D proportions right on a phone with Codex, but the
