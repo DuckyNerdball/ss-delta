@@ -1456,8 +1456,9 @@ firmware from a bundle, network blocked); Linux and macOS not run yet.
     screen, movie, closing while paused) and on the Thor.
   * ☑ Ad Hoc Play keeps the game running behind a pause: a copy paused
     for 20–30 s was dropped from the room.
-  * ☐ Android: the game pauses while the app is in the background (it
-    went on there, at more CPU than in front).
+  * ☑ Android: the game pauses while the app is in the background
+    (2026-11-26, fork `41475130`): it went on there at more CPU than in
+    front; on the Thor 240% → 11%.
 * **Offered in #29** (ELLINDON's Android build), welcome as separate PRs:
   * ☐ A diagnostics export on Android (the setup's and the game's logs,
     the device, shared through a content provider).

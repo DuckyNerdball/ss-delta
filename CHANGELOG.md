@@ -30,6 +30,10 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
   by ELLINDON): until now, opening it stopped the sound while the game
   kept running behind it, on every system. During Ad Hoc Play the game
   keeps running behind the menu, so the other players don't drop you.
+* **Android: the game pauses while the app is in the background.** It
+  went on behind the home screen, using more of the CPU than in front
+  (on the AYN Thor, about 11% now instead of 240%). During Ad Hoc Play it
+  keeps running there too.
 * **A crash when a journal chapter was opened again after a quest**
   (Seeing Red, chapter 3, from the journal): with full-resolution 3D the
   game ran out of graphics memory in the chapter's scene. Its Graphics

@@ -2065,3 +2065,23 @@ the settings menu stopped the sound, but the game went on behind it.
 * **Seen meanwhile:** the game didn't pause when the Android app went to
   the background (CPU 155% → 255%); the games' front end never set the
   background pause reason. Next section.
+
+## Android: the pause in the background (2026-11-26, fixed)
+
+* **Cause.** Upstream's Android app sets the session's `Background` pause
+  reason from Java (`android/jni/native_session.cpp`); the games' front end
+  doesn't build that and never set it. SDL blocks the front end's event
+  loop while the app is paused, but the guest threads went on, with no
+  surface to draw on.
+* **Fix** (fork `41475130`): the SDL event watch that already flushed the
+  log (`game-frontend/android.cpp`) sets `Background` on
+  `SDL_EVENT_WILL_ENTER_BACKGROUND` and clears it on
+  `SDL_EVENT_DID_ENTER_FOREGROUND`, through the session the front end
+  hands it for the time `run()` lasts. The Ad Hoc rule of the menu's pause
+  applies (`AppSessionController::apply_runtime_state_locked`).
+* **Checked** on the Thor (`kittest`, title screen, `top` on the process):
+  in front 153%, in the background **11%** (16% after 30 s; 240% before),
+  back in front 151% with the same process, the title animating; the log
+  says "Android: the app left the screen" and "is back on the screen".
+  The menu still freezes the title. With the menu open, Home and back: the
+  title stays frozen until the menu closes, then runs.
