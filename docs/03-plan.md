@@ -1444,6 +1444,13 @@ Left for the next release:
     FetchContent, MoltenVK and OpenSSL on macOS) run without a timeout,
     outside `ci-retry.py` and the cache: a GitHub stall can hold a job to
     its 120 min limit.
+  * Gradle's plugin and dependency downloads (the `android` job's "Pack
+    and sign the APK") have no retry and no cache: run 52 (2026-11-26)
+    failed there, "Plugin [id: 'com.android.application', version:
+    '9.2.1'] was not found" (Google's Maven, which served it again
+    minutes later), and the PC jobs, which wait for the APK, with it.
+    Cache `~/.gradle` and retry the step, or resolve the plugins in the
+    download phase.
   * `mozilla-actions/sccache-action` is pinned by tag, in jobs with
     `contents: write`, `id-token: write` and (Android) the signing
     secrets: pin it by SHA.

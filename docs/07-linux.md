@@ -358,6 +358,14 @@ Vulkan, `double-buffer`, `high-accuracy: true`, surface sync on.
   device", then "the game did not load eboot within 45 s"). ST16A (0) from
   Stage Select natively: 60.0 fps, 4.37 W, 0 native-to-JIT calls; F5 sent
   through the FIFO (`key F5`) logged both marks.
+* **0.6.0 from GitHub** (release workflow run 53, `6cd970c`, the commit
+  tagged v0.6.0; 2026-11-26): the `linux` job's archive (SHA-256 checked)
+  unpacked into a fresh folder, the US dump through `--dump ...
+  --build-only` over SSH: exit 0 after 1210 s, 6.0 GB peak used (3.9 GB
+  before), 10 modules. ST16A (0) from Stage Select natively (`quest.sh`):
+  60.0 fps over the last 20 s (worst frame 21.9 ms), 4.40 W; every module
+  matched guest memory, the eboot with `blitz_frame_time loading_race
+  graphics_pool`; two boot hitches (148 and 118 ms).
 * **Hitch lines on the Deck**: with warm caches no frame of the quest
   load passed 55 ms (the loading screen runs at 30 fps, 33 ms a frame), so
   the default 100 ms logs only two boot frames (about 145 and 115 ms).

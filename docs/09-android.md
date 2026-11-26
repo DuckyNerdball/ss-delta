@@ -1108,6 +1108,19 @@ in `Download`):
   because the PC had put the modules there (no `android-build.json`).
   The game ran native code on T23.
 
+**0.6.0's APK from GitHub** (release workflow run 53, `6cd970c`, the
+commit tagged v0.6.0; 2026-11-26), a fresh install on the Thor (0.5.3
+uninstalled, its saves kept on the PC): the notification question as the
+setup screen opened; the EU dump picked from `Download/`; firmware from
+Sony, the game installed in 36 s, "PCSF00532: 1.30 (EU)"; the Turnip
+offer before the module dump (#25); built in **15.3 min** (5 jobs), the
+eboot's code hash `f6f20671281686e3` as on the PC. Play: NativeCPU on
+T23, the eboot with `blitz_frame_time loading_race graphics_pool`. An EU
+save pushed back loaded (Continue, the save dialogs answered with the
+built-in pad); ST16A from Stage Select loaded, walked with the left
+stick, one boot hitch (141 ms). Home: 170% CPU in front, 11.3% behind
+the home screen, logged both ways, and the game went on when it came back.
+
 **Not there yet:** a cancel button (Start over after a stop, or
 force-stopping the app, do for now). Folders (zip them first). A zRIF
 typed instead of a licence file.
