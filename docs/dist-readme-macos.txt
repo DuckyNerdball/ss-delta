@@ -53,7 +53,9 @@ Option+Return while playing), filter, frame rate (frame_rate under
 keyboard and gamepad bindings. The mouse or trackpad is the touchscreen:
 click for the front, right-click (two fingers) for the rear. The Black Rite
 icon (touch and hold) is also on F and the gamepad's left trigger ([touch] in
-ss-delta.ini). F12 saves a screenshot to ss-delta/screenshots.
+ss-delta.ini). F12 saves a screenshot to ss-delta/screenshots. F5 writes a
+mark into ss-delta/vita3k.log: press it when something goes wrong, and
+mention the mark in a bug report.
 
 In fullscreen, started from its app, the game runs in macOS's Game Mode (the
 controller icon in the menu bar): background work waits, and Bluetooth
@@ -90,10 +92,14 @@ the key bound to it in
 pictures and the text.
 
 Controls: the menu's Controls page lists each Vita button with its key, a
-second key and its gamepad button, and the Black Rite. Pick one, press Cross,
-then the new key, mouse button or gamepad button (Esc cancels); Square clears
-it, Triangle restores its default, Reset all controls (Cross twice) restores
-them all. A key already in use changes places with the old one. The mouse's
+second key, its gamepad button and a second gamepad button, and the Black
+Rite. Pick one, press Cross, then the new key, mouse button or gamepad button
+(Esc cancels); Square clears it, Triangle restores its default, Reset all
+controls (Cross twice) restores them all. A key or button already in use
+changes places with the old one. The gamepad's triggers (LT, RT) can be bound
+to any Vita button too, e.g. RT as a second D-pad up ([gamepad] up = dpup,
+righttrigger); they still work as L2 and R2 as well, which the game reads only
+with PS TV controls on. The mouse's
 side buttons can be bound; its left and right buttons too, which then act only
 while the mouse camera has the cursor.
 

@@ -10,10 +10,19 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 * **Key bindings in the settings menu**
   ([#24](https://github.com/vita-recomps/ss-delta/issues/24)): a Controls
-  page lists each Vita button's key, second key and gamepad button, and
-  the Black Rite. Pick one and press the new key or button (one already in
-  use changes places), or reset all controls. On Android the page shows
-  the gamepad's buttons only.
+  page lists each Vita button's key, second key, gamepad button and second
+  gamepad button, and the Black Rite. Pick one and press the new key or
+  button (one already in use changes places), or reset all controls. On
+  Android the page shows the gamepad's buttons only.
+* **Two gamepad inputs per Vita button, the triggers among them**
+  ([#26](https://github.com/vita-recomps/ss-delta/issues/26)): `[gamepad]`
+  takes up to two inputs for each Vita button (`up = dpup, righttrigger`),
+  and LT and RT can be bound like any button, on the Controls page too
+  (#26 asked for RT as a second D-pad up, for the support spells in
+  combat, with the D-pad kept for the menus). A trigger bound this way still works as L2
+  or R2 as well, which the game reads only with PS TV controls on. The
+  button prompts show LT/RT (ZL/ZR, L2/R2) for a Vita button whose first
+  input is a trigger.
 * **Mouse buttons as bindings**: the side buttons (MouseX1, MouseX2) bind
   like keys, and MouseLeft and MouseRight while the mouse camera has the
   cursor.
@@ -93,9 +102,14 @@ full notes are on the [releases page](https://github.com/vita-recomps/ss-delta/r
 
 ### Changed
 
-* **Downloads during setup**: a server slower than 256 KB/s is left for
-  the next mirror, and zig (the compiler on Linux and macOS, and for the
-  Android build from Windows) has community mirrors.
+* **The firmware download** has one more fallback: when Sony's servers
+  and the Wayback Machine's copies both fail, the setup takes the
+  firmware from RetroBIOS's copy on GitHub. Every copy is held to the
+  firmware's known size and SHA-256 while it downloads, so a wrong or
+  damaged file is refused at once rather than after the whole download.
+* **The compiler's download** (zig, which the release already carries; it
+  is downloaded only when building from the repository) has community
+  mirrors, and a mirror slower than 256 KB/s is left for the next.
 * **From Vita3K**: the display queue follows the firmware's limits
   (queue length, waiting for a free slot), and additions to it are
   serialized and refused after the game shuts its graphics down.
