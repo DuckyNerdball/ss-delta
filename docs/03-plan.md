@@ -1375,6 +1375,85 @@ dump; and a dead primary URL is found by F before players report it.
 Met on Windows 2026-11-23 (a fresh release with zig inside and the
 firmware from a bundle, network blocked); Linux and macOS not run yet.
 
+## Next release (0.6.1): from the 0.6.0 review (2026-11-26)
+
+The review of everything since 0.5.3 (this repository, the fork
+`b70141dd..f73546eb`, the kit `7a72d445..9b2a987`) found nothing to hold
+0.6.0. Fixed before the tag (fork `3c2ae20c`, checked in the test folder):
+
+* ☑ A touch kept only its changed line on an ini without `[touch]` (the
+  Controls page wrote `black_rite_key` alone), and the next start dropped
+  the Black Rite: a default touch now starts from its default binding.
+* ☑ The settings menu and Vita3K's dialogs (`poll_overlay_input`) ignored
+  second gamepad inputs, and a trigger bound to a Vita button also turned
+  the menu's page as R2.
+
+Left for the next release:
+
+* ☐ **Audio during an Ad Hoc pause** (fork `app/src/session_controller.cpp`
+  `apply_runtime_state_locked`): the guest keeps running but
+  `audio.switch_state(paused)` pauses the SDL device, so the game's audio
+  queues up (`sdl_audio.cpp` `audio_output` pushes after a `2*len` wait)
+  and plays late after the menu closes, draining at about half speed;
+  with cubeb the audio thread blocks for the whole pause. Every menu pause
+  did this before #29, so not a regression. Mute by volume when the guest
+  isn't frozen, or clear the ports' streams at resume.
+* ☐ **`Queue::abort()` without the mutex** (fork
+  `threads/include/threads/queue.h`): `wait_space()` and `push()` can miss
+  its notify and block for good; at shutdown, with the display queue full,
+  `process_exit`'s join would wait forever (a window of a few
+  instructions). Take `mutex_` in `abort()`.
+* ☐ **The pause's unit tests** (`util/tests/cooperative_pause_tests.cpp`)
+  aren't built by any CMake project or CI, and cover the primitive only
+  (not `pause_threads`, `run_loop`, the import handler, `process_exit`).
+* ☐ **Controls page**:
+  * Binding `leftstick`, `rightstick` or `guide` to a Vita button still
+    presses L3/R3/PS as well (`controller_binds` keeps Vita3K's identity
+    entries for them; the swap logic doesn't know them).
+  * The mouse camera's `capture_key` (Tab) isn't checked for conflicts: a
+    Vita button bound to Tab only captures the cursor while the mouse
+    camera is on; `capture_key = MouseX1` parses but never matches
+    (compared with `key_from_scancode`).
+  * `bind_mouse` (`settings_menu.cpp`) takes the mouse events SDL makes
+    from touches: a tap on a touchscreen PC or the Deck's desktop while a
+    key cell waits binds MouseLeft.
+  * Clearing both the Cross and Start keys leaves a keyboard-only player
+    without a confirm in the menu (an ini edit recovers it): a fixed
+    menu-only confirm key.
+  * `cfg.controller_binds` is written on the main thread while guest
+    threads read it during Ad Hoc Play (the game runs behind the menu):
+    short writes, harmless in practice.
+* ☐ **Kit `tools/toolchain.py` `obtain()`**: a source slower than 256 KB/s
+  is dropped for good; if the last source (no floor) then fails, the
+  download fails on a slow line that ziglang.org alone would have served.
+  Retry the sources dropped for speed without the floor. Players aren't
+  hit (the release carries zig, D32). Also: the curl.exe branch keeps
+  `--retry 3` with `--speed-limit`, so a slow source is dropped after
+  about 2 min instead of 30 s.
+* ☐ **Kit `install-game.py` / `setup.py`**: a stale `step-error.txt` (the
+  front end removes it only when the install step finishes) can blame a
+  run that crashed earlier on the previous run's licence error.
+* ☐ **Kit recompiler**: `decode_arm_table` (`semantics.py`) takes the case
+  count from the last `cmp` without checking it was on the index register
+  (the Thumb `word_table_parts` does); a stale compare sends a valid index
+  to `default: unsupported`. No unit tests for `vuzp`, fixed-point `vcvt`
+  or `arm_mov_imm16`. Not reachable for ss-delta (its modules generate
+  the same code with and without these changes).
+* ☐ **Release workflow**:
+  * Configure-time downloads (FFmpeg prebuilts, curl through
+    FetchContent, MoltenVK and OpenSSL on macOS) run without a timeout,
+    outside `ci-retry.py` and the cache: a GitHub stall can hold a job to
+    its 120 min limit.
+  * `mozilla-actions/sccache-action` is pinned by tag, in jobs with
+    `contents: write`, `id-token: write` and (Android) the signing
+    secrets: pin it by SHA.
+  * `tools/ci-wait-job.py` treats a 401/403 as a passing error and polls
+    for 85 min before failing.
+* ☐ **rePatch**: a zip with a rePatch folder whose game sits at the root as
+  `PCSA00152/` (no `app/`) still gets only the mod installed.
+* ☐ **Not checked in 0.6.0**: #26 on Android (the built-in pad through
+  `sendevent`), and the support spells with RT as a second D-pad up.
+
 ## Later (deferred)
 
 * Modding hooks: C++ function overrides, plus loose files (the engine
