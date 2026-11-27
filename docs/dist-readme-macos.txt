@@ -42,7 +42,8 @@ installed, the US one does; --title-id PCSF00532 starts the EU one.
 Settings: press F1, or hold Select (the View button) on a gamepad for a
 second, to open the settings menu over the paused game (Up/Down choose,
 Left/Right or Cross change, L1/R1 or Q/E switch pages, Circle, Esc or F1
-close). Window size, fullscreen, vsync, filter, FPS counter, volume and frame rate change
+close). Its last page, Exit, quits the game: press Cross (X) twice on Exit
+the game. Window size, fullscreen, vsync, filter, FPS counter, volume and frame rate change
 at once; the rest are marked * and take effect the next time the game starts.
 The menu writes ss-delta.ini, which can also be edited by hand (paths are there only). On a Mac keyboard the F keys need fn held, unless
 they are set as standard function keys (System Settings, Keyboard).
@@ -56,6 +57,14 @@ icon (touch and hold) is also on F and the gamepad's left trigger ([touch] in
 ss-delta.ini). F12 saves a screenshot to ss-delta/screenshots. F5 writes a
 mark into ss-delta/vita3k.log: press it when something goes wrong, and
 mention the mark in a bug report.
+
+Mouse camera: press Tab or click the middle mouse button to capture the
+cursor; moving the mouse then turns the camera. Tab, the middle button or
+Esc releases it, and the mouse or trackpad is the touchscreen again.
+Sensitivity and Invert vertical are on the menu's Mouse page ([mouse] in
+ss-delta.ini). The cursor hides after 3 seconds without mouse motion, or
+when you use a key or the gamepad, and comes back when the mouse moves
+(Hide idle cursor on the Mouse page; [mouse] hide_cursor).
 
 In fullscreen, started from its app, the game runs in macOS's Game Mode (the
 controller icon in the menu bar): background work waits, and Bluetooth
@@ -145,8 +154,8 @@ in ss-delta/save-backups. To copy a slot out:
   "Soul Sacrifice Delta.app/Contents/MacOS/ss-delta" --export-save <folder> [--slot 2]
 
 Ad Hoc Play (Librom, Network, Ad Hoc Play): ss-delta.ini has network = lan
-([multiplayer]): computers in one network, Windows, Linux or macOS, each
-running the game. macOS asks whether the game may "find and
+([multiplayer]): computers and devices in one network, Windows, Linux, macOS
+or Android, each running the game. macOS asks whether the game may "find and
 connect to devices on your local network": allow it, or no room can be
 joined (System Settings, Privacy & Security, Local Network changes it
 later). Over the internet through a VPN such as Tailscale or ZeroTier, the

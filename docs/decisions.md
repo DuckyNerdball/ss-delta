@@ -406,7 +406,9 @@ instruction. Its main job was driving threads into native code.
   the guest returns to the run loop. Single-stepping isn't available.
 * Seventeen font functions (`libSceFt2`, `libpvf`) still use NEON forms
   the translator lacks. None of them has run in any session so far. If one
-  ever does, `NativeCPU` names the address in the log.
+  ever does, `NativeCPU` names the address in the log. Update (2026-10-12,
+  [05-recompiler](05-recompiler.md#firmware-modules-phase-6-d11)): all 17
+  are now translated too (`left to the JIT: 0`).
 * `VITA3K_DYNARMIC=OFF` builds without dynarmic (fork patch 0026). The
   normal build keeps it as the `jit = true` fallback and for the
   differential checks.

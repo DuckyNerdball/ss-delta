@@ -1,7 +1,9 @@
 # CLAUDE.md
 
-A static-recompilation PC port of Soul Sacrifice Delta (PS Vita, PCSA00152,
-1.30). Start with `README.md` and `docs/03-plan.md` to find the current phase.
+A static-recompilation port of Soul Sacrifice Delta (PS Vita, US PCSA00152
+and EU PCSF00532, 1.30) for Windows, Linux / Steam Deck, macOS on Apple
+Silicon, and Android. Start with `README.md` and `docs/03-plan.md` to find
+the current phase.
 Sibling project: utakata (Shinobido 2, PS Vita), which shares this
 project's Vita3K fork and recompiler ([D17](docs/decisions.md)).
 `CLAUDE.local.md` (not committed) imports the owner's machine-specific
@@ -85,8 +87,9 @@ notes, kept in a private repo.
   switches). A regenerated module that changes `aot_abi.h` needs a fork
   rebuild. The eboot is generated with `--overrides overrides/eboot.json`
   (fixes to the game's code, D30; `game.json` `recomp_overrides`, which
-  the install scripts pass on): leave it out and the Blitz fix (#14) and the
-  loading-screen fix are gone (the front end then keeps loading screens at 30).
+  the install scripts pass on): leave it out and the Blitz fix (#14), the
+  loading-screen fix (the front end then keeps loading screens at 30) and the
+  64 MB Graphics pool are gone.
 - `ss-delta.exe` (Phase 6, [D10](docs/decisions.md)) is built next to
   `Vita3K.exe` in `build/vita3k/bin/RelWithDebInfo/`. It reads
   `ss-delta.ini` there (set `vita_fs` and `recompiled` for this machine)

@@ -51,8 +51,8 @@ The whole game plays on native code, without a JIT, from the opening to the
 ending: every quest map and the story up to the final battle render
 correctly on AMD and NVIDIA GPUs, the final battle has been won and its
 ending plays correctly (on an AMD GPU), the add-ons are unlocked, and Ad Hoc
-Play works between copies on one PC and across a LAN
-([compatibility](docs/06-compatibility.md)).
+Play works between copies on one PC, across a LAN and over a VPN
+([compatibility](docs/06-compatibility.md), [online play](docs/ONLINE-PLAY.md)).
 
 Since 0.4.0 it runs on four platforms, each natively at 60 fps:
 
@@ -66,8 +66,8 @@ Since 0.4.0 it runs on four platforms, each natively at 60 fps:
   itself from your dump, no PC needed ([09-android](docs/09-android.md)).
   On a phone without a gamepad it has on-screen controls.
 
-They play Ad Hoc Play together over a LAN: a Windows PC, a Steam Deck and
-a Mac have shared one room and played a quest, with any of them as host.
+They play Ad Hoc Play together over a LAN or a VPN: a Windows PC, a Steam
+Deck, a Mac and an Android handheld join one room and play together.
 
 ## Features
 
@@ -90,12 +90,15 @@ Compared with running the game in Vita3K:
   a "ghost" of the bloom trailing moving objects.
 * **Ad Hoc Play without a Vita.** Up to four copies of the game play
   together: on one PC, each with its own saves and gamepad, or across a LAN,
-  Windows, Linux and macOS mixed ([D15](docs/decisions.md)), or over the
-  internet through a VPN such as Tailscale, ZeroTier or Radmin VPN
+  Windows, Linux, macOS and Android mixed ([D15](docs/decisions.md)), or
+  over the internet through a VPN such as Tailscale, ZeroTier or Radmin VPN
   ([Online play](docs/ONLINE-PLAY.md); 0.5.2 and newer).
 * **The add-ons unlocked.** Their content is in the game since update
   1.30, and PSN, which recorded the purchases, is closed
-  ([D14](docs/decisions.md)).
+  ([D14](docs/decisions.md)): PSN gifts, Japan-only raiments
+  ([gallery](docs/GALLERY.md)), the original game's 20 Spirits' offerings
+  ([ORIGINAL-CONTENT](docs/ORIGINAL-CONTENT.md)) and Sortiara as an optional
+  ally.
 * **An in-game settings menu** (F1, or Select held on a gamepad) over the
   paused game, and a commented `ss-delta.ini`.
 * **The game's languages:** English, French, Spanish and Portuguese (Brazil)
@@ -145,13 +148,14 @@ It unpacks to the game's folder, `ss-delta`, with one program to start:
 | Android 9+, arm64 | `ss-delta-<version>-android.apk` | **ss-delta** (install the APK) |
 
 The first start builds the game from your own dump of it (at update 1.30):
-its importer asks for the dump, downloads the PS Vita firmware from Sony and
-a compiler, and compiles the game's code on your computer, in a few
-minutes. From then on the program goes straight to the game. Everything
-stays in that folder ([D22](docs/decisions.md)), and the command line covers
-everything (`--help`). On Android the app's setup screen does the same on
-the device: you pick the dump, it downloads the firmware and builds the
-game's code there (about 15 minutes on a Snapdragon 8 Gen 2; [D27](docs/decisions.md)).
+its importer asks for the dump, downloads the PS Vita firmware from Sony
+(the compiler comes with the release) and compiles the game's code on your
+computer, in a few minutes. From then on the program goes straight to the
+game. Everything stays in that folder ([D22](docs/decisions.md)), and the
+command line covers everything (`--help`). On Android the app's setup screen
+does the same on the device: you pick the dump, it downloads the firmware
+and builds the game's code there (about 15 minutes on a Snapdragon 8 Gen 2;
+[D27](docs/decisions.md)).
 
 The **[installation guide](docs/INSTALLING.md)** has the details for each
 system: what dumps work, the Steam Deck's Game Mode, macOS's Gatekeeper,
@@ -165,6 +169,7 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 | [CHANGELOG](CHANGELOG.md) | what changed in each release, with the issues that asked for it |
 | [MODS](docs/MODS.md) | for players: installing rePatch and packaged mods, such as the Undub and The Original Raiments (ModDB) |
 | [INSTALLING](docs/INSTALLING.md) | for players: requirements, each system, the first start, saves, Ad Hoc Play, files, command line |
+| [ONLINE-PLAY](docs/ONLINE-PLAY.md) | for players: playing Ad Hoc Play over the internet through Tailscale, ZeroTier or Radmin VPN |
 | [GALLERY](docs/GALLERY.md) | screenshots of the raiments and hoods ss-delta adds, and of the original game's two raiments (a mod) |
 | [ORIGINAL-CONTENT](docs/ORIGINAL-CONTENT.md) | what the original Soul Sacrifice has that Delta lacks, and what ss-delta does about it: the Spirits' offerings, the collaboration raiments |
 | [BUILDING](docs/BUILDING.md) | building from source, installing a game into a build, making a release, the toolchain and tools |
@@ -178,6 +183,7 @@ yourself, see **[BUILDING](docs/BUILDING.md)**.
 | [08-macos](docs/08-macos.md) | macOS on Apple Silicon: what the code needs, MoltenVK and memory mapping, signing |
 | [09-android](docs/09-android.md) | Android on the AYN Thor: what the code needs, the setup on the device |
 | [10-ios](docs/10-ios.md) | iOS and iPadOS (planned): no JIT needed, the modules in a sideloaded IPA, memory limits, developing on the Mac |
+| [11-online](docs/11-online.md) | Online multiplayer without a VPN (planned): P2P overlay under Ad Hoc Play first, optional transition to Play Online (NP Matching2) later |
 | [decisions](docs/decisions.md) | decision log |
 | [hashes](docs/hashes.md) | input hashes |
 

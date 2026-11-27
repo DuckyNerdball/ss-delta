@@ -56,11 +56,10 @@ What differs from the earlier targets:
 * Android (D25) worked out the "a PC builds the modules" model and the
   frontend's glue for a platform without an executable in a folder.
 
-What a no-JIT build gives up: no fallback. The 17 font functions whose
-NEON forms the translator lacks (D11) would stop the game if one ever
-ran. None has in any session so far. The firmware ELF dump
-(`--dump-elfs`) needs the JIT, but it runs on the PC during the setup,
-as now.
+What a no-JIT build gives up: no fallback if unmapped code ever ran (all
+ten modules have 0 functions left to the JIT; [05-recompiler](05-recompiler.md)).
+The firmware ELF dump (`--dump-elfs`) needs the JIT, but it runs on the PC
+during the setup, as now.
 
 ## What the code needs (survey 2026-11-19)
 
@@ -76,14 +75,16 @@ as now.
 | Paths | everything next to the executable (D22); Android: the app's folders | the app's `Documents/` for `ss-delta.ini`, the log, the shader cache and `fs/`. `UIFileSharingEnabled` and `LSSupportsOpeningDocumentsInPlace` make it visible in Finder and Files |
 | Importer | the kit's Python setup | not on the device: the frontend reports what's missing, as on Android |
 | Lifecycle | Android pauses on `onPause` (14d) | stop rendering when the app goes to the background: iOS kills apps that use the GPU there |
-| Controls | SDL3 gamepads, touch as the front touch | gamepads through the Game Controller framework (SDL3), the Magic Keyboard, touch. A touch-only player needs on-screen controls (to design) |
+| Controls | SDL3 gamepads, touch as the front touch, Android's touch on-screen controls (`game-frontend`, 14f) | gamepads through the Game Controller framework (SDL3), the Magic Keyboard, touch, and adapting the shared on-screen controls for iPad aspect ratios |
 | Ad Hoc Play | `local` and `lan` modes | `lan` needs the Local Network permission (`NSLocalNetworkUsageDescription`), as on macOS |
 | Frame pacing | real-time threads on macOS (fork `09587ca1`) | **hypothesis**: the same Mach thread policy works on iOS. 60 fps is every second refresh at 120 Hz |
 
 ### The modules for iOS
 
-* The modules import only `abort` and `sched_yield` and export only
-  `armrecomp_aot_init` (D25). They need a compiler for `aarch64-ios`, a
+* The modules import only `abort`, `sched_yield` and `powf` (where
+  overrides use `<cmath>`) and export only `armrecomp_aot_init` (plus
+  `armrecomp_aot_features` when overrides are active; D25, D30). They need
+  a compiler for `aarch64-ios`, a
   few C headers, a Mach-O linker and a `libSystem.tbd` stub marked as
   iOS. The `LC_BUILD_VERSION` platform must be iOS, or dyld refuses to
   load the library.

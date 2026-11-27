@@ -6,7 +6,8 @@ comes from Sony's update servers.
 | File | Hash |
 |---|---|
 | `rom/Soul Sacrifice Delta [PCSA00152] [USA] [1.30] [NoNpDrm].zip` (3,342,123,622 bytes) | `18e19949296150776f2190aa15a3b79110a01fa86546bc381497ae7a7654569f` |
-| `eboot.bin` 1.30, PFS-decrypted SELF (6,998,944 bytes) | `a13a1bfed7f58aa743fc8c0e2db166438ac3af0f2d92b107c2e3f84b92e64fed` |
+| `eboot.bin` 1.30 US, PFS-decrypted SELF (6,998,944 bytes) | `a13a1bfed7f58aa743fc8c0e2db166438ac3af0f2d92b107c2e3f84b92e64fed` |
+| `eboot.bin` 1.30 EU, PFS-decrypted SELF (`game.json`) | `a1055b12371c4fa7cb2f153d19729ccfae577de582d0cf9e731be83805d27197` |
 | `eboot.bin` 1.00 US, PFS-decrypted SELF (the game without its update, 6,871,152 bytes; #13) | `339fb27bf34794adac8eaad6eab18bcd25603dee598acfec9332834e3bf8a870` |
 | `eboot.bin` 1.30 US, as an older Vita3K's install left it (FSELF around `eboot.elf`, 13,543,649 bytes; 01-research "Dumps decrypted by an older Vita3K") | `b194d16907ce9ff0323155fff7d8bb76394f40298b04ac91d2d54b841a078189` |
 | `eboot.bin` 1.30 EU, the same (derived) | `1730d04bf05e36d04875a8a6d3a24dcfe00ffda54dd362cc91578f42c4248a28` |

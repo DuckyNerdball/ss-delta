@@ -141,11 +141,11 @@ python -I third_party/recomp/recomp/recompile.py extracted/elf/eboot.elf generat
 * `report.txt` counts the overrides; every entry must land in a recompiled
   function, or nothing is written.
 * `features` names what the overrides fix (`blitz_frame_time`,
-  `loading_race`). `table.cpp` holds them and the module exports them
-  (`armrecomp_aot_features`, optional: older modules lack it and still
-  load); the fork's `aot_module_has_feature("eboot", ...)` answers once the
-  module's native code is checked. The front end drops the 30 fps loading
-  screens when the eboot has `loading_race`.
+  `loading_race`, `graphics_pool`). `table.cpp` holds them and the module
+  exports them (`armrecomp_aot_features`, optional: older modules lack it
+  and still load); the fork's `aot_module_has_feature("eboot", ...)`
+  answers once the module's native code is checked. The front end drops the
+  30 fps loading screens when the eboot has `loading_race`.
 
 ## Coverage (1.30)
 

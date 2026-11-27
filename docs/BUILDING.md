@@ -169,12 +169,17 @@ own ([D17](decisions.md)):
 |---|---|
 | `tools/lspk.py` | list, extract and repack the game's LSPK archives (`.pkh`/`.pk`/`.pfs`) |
 | `tools/og-raiments.py` | the original game's raiments mod (D28), a [packaged mod](#packaged-mods) made from the player's dumps of both games; installs it, or writes the `.zip` (`--out`) |
+| `tools/button-atlases.py` | write `button_atlases.inc` (texture hashes and symbol boxes for `[game] button_labels`, nothing of the art) from an archive folder |
 | `tools/questmaps.py` | the quest map list from `quest_param.csv` |
 | `tools/map-sweep.ps1` | screenshot every quest map through Stage Select (`-Frames`: at render resolution) |
 | `tools/devshell.ps1` | dot-source to load MSVC x64 and point CMake at Qt 6.11.0 (a fresh configure of the fork, `recomp/run-tests.ps1`) |
 | `tools/package4090.ps1` | build `dist/ss-delta-vita3k-test` (both Vita3K builds, the installed game, `run-matrix.bat`/`play.bat` from `tools/pkg4090/`) for testing on another PC |
 | `tools/deck-quest.sh` | on a Steam Deck: frame rate and APU power in a quest |
-| `game.json` | this game for the shared scripts: title, supported eboot, modules to recompile, the folder's README per platform |
+| `tools/stamp-recomplauncher.py` | stamp a release tag into `recomplauncher.json`'s `prepare.version` |
+| `tools/ci-retry.py`, `tools/ci-wait-job.py` | release workflow helpers: timed download retries, and waiting on the Android APK job |
+| `game.json` | this game for the shared scripts: title, supported eboot, modules to recompile, overrides, the folder's README per platform |
+| `overrides/eboot.json` | instruction-level C++ overrides applied when recompiling `eboot` ([D30](decisions.md)) |
+| `recomplauncher.json` | [RecompLauncher](https://recomplauncher.com) manifest shipped at the root of each release archive ([D24](decisions.md)) |
 
 ### Packaged mods
 

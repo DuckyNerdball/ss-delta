@@ -47,7 +47,8 @@ touchscreen.
 Settings: press F1, or hold Select (the View button) on a gamepad for a
 second, to open the settings menu over the paused game (Up/Down choose,
 Left/Right or Cross change, L1/R1 or Q/E switch pages, Circle, Esc or F1
-close). Window size, fullscreen, vsync, filter, FPS counter, volume and frame rate change
+close). Its last page, Exit, quits the game: press Cross (X) twice on Exit
+the game. Window size, fullscreen, vsync, filter, FPS counter, volume and frame rate change
 at once; the rest are marked * and take effect the next time the game starts.
 The menu writes ss-delta.ini, which can also be edited by hand (paths are there only).
 
@@ -59,6 +60,14 @@ button rear. The Black Rite icon (touch and hold) is also on F and the
 gamepad's left trigger ([touch] in ss-delta.ini). F12 saves a screenshot to
 ss-delta/screenshots. F5 writes a mark into ss-delta/vita3k.log: press it
 when something goes wrong, and mention the mark in a bug report.
+
+Mouse camera: press Tab or click the middle mouse button to capture the
+cursor; moving the mouse then turns the camera. Tab, the middle button or
+Esc releases it, and the mouse is the touchscreen again. Sensitivity and
+Invert vertical are on the menu's Mouse page ([mouse] in ss-delta.ini).
+The cursor hides after 3 seconds without mouse motion, or when you use a
+key or the gamepad, and comes back when the mouse moves (Hide idle cursor
+on the Mouse page; [mouse] hide_cursor).
 
 Intro logos: Skip intro logos on the menu's Game page ([game] skip_intro in
 ss-delta.ini) skips the health warning and the company logos at start; the
@@ -148,8 +157,9 @@ others use Search for Room. Each player has its own saves (ux0/user/0<N-1>,
 copied from player 1's on its first start), log and config
 (ss-delta/player<N>); ss-delta-player<N>.ini next to ss-delta.ini overrides
 settings for player N. [multiplayer] in ss-delta.ini: network = lan (the
-default: computers in one network, Windows, Linux or macOS, each running the
-game; over the internet through a VPN such as Tailscale or ZeroTier, the
+default: computers and devices in one network, Windows, Linux, macOS or
+Android, each running the game; over the internet through a VPN such as
+Tailscale or ZeroTier, the
 other players enter the host's VPN address in Peers on the settings menu's
 Multiplayer page: docs/ONLINE-PLAY.md in the source repository) or local (copies on this
 computer), and gamepad = 1-4 to give each copy its own gamepad.

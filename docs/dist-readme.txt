@@ -144,8 +144,9 @@ for Room. Each player has its own saves (ux0\user\0<N-1>, copied from player
 1's on its first start), log and config (ss-delta\player<N>);
 ss-delta-player<N>.ini next to ss-delta.ini overrides settings for player N.
 [multiplayer] in ss-delta.ini: network = local (copies on this PC) or lan
-(computers in one network, Windows, Linux or macOS, each running the game;
-allow ss-delta.exe through the firewall on private and public networks;
+(computers and devices in one network, Windows, Linux, macOS or Android, each
+running the game; allow ss-delta.exe through the firewall on private and public
+networks;
 adapter (Network adapter) auto picks the home network's adapter, else set it
 to the one with that network's address, not a virtual one such as vEthernet;
 over the internet through a VPN (Tailscale, ZeroTier, Radmin VPN), the other

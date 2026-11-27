@@ -45,12 +45,15 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 |---|---|---|---|
 | `ss-delta.ini` settings, warnings for unknown keys | ✅ | scripted | Phase 6 |
 | 3D at 960×544 (`full_3d`), `scale` 2 (3D at 1920×1088) | ✅ | scripted, user | all 50 map IDs at 29.3–29.8 fps (Phase 8); depth-of-field haze at 960×544 fixed (patch 0033) |
-| Keyboard and gamepad bindings | ✅ | user | Phase 6 playtests |
-| Mouse as the touchscreen | ✅ | user | title, name entry |
+| Keyboard and gamepad bindings (`[keyboard]`, `[gamepad]`, Controls page) | ✅ | user, scripted | Phase 6 playtests; Controls page (#24), mouse button bindings, two gamepad inputs per Vita button and LT/RT as bindings (#26) checked on Windows (`v3kdrive` `gpad:`) and on the Thor (2026-11-25..26, [03-plan](03-plan.md)) |
+| Mouse as the touchscreen, mouse camera (`[mouse]`) | ✅ | user, scripted | touchscreen in title and name entry; mouse camera (Tab / middle click capture, Sensitivity, Invert vertical) checked via input pipe and played by the owner (2026-11-21, [02-baseline](02-baseline.md#mouse-camera-2026-11-21)) |
+| PS TV controls (`[game] pstv_mode`) | ✅ | scripted | L2/R2 in place of touch (e.g. pulling Librom out of the bones at new game; #12) |
 | Black Rite on a key / trigger (`[touch]`) | ✅ | user | left trigger, in a fight (2026-10-12) |
 | F11 / Alt+Enter fullscreen, F12 screenshot | ✅ | scripted | screenshots at render resolution |
-| 60 fps (`[display] frame_rate`, default 60) | ✅ | scripted, user | patch 0041 (D16): all 50 maps, an idle fight's timing as at 30, hub → journal → story quest → results → hub; loading screens ran at 30 until the game's own race was fixed in the recompiled eboot (D30, 2026-11-23: 9 Stage Select quests at 60). 54–57 fps on the Radeon 760M. The owner played at 60, alone and in Ad Hoc Play (2026-10-13); default since patch 0042 |
-| Xbox button labels (`[game] button_labels`) | ✅ | user, scripted | 2026-11-20, the owner: the icons and `auto` work in play and in the journal, its tutorial pictures (Lore > Tactical advice) included. Scripted: the hub and dialogue prompts (A), a quest's Offerings and set switch (B, Y, X, RB); switched while the game runs (an 8-second toggle in a test build) both ways; the font page with the text's ○ △ □ redrawn at boot, its digits unchanged. the font glyphs checked with `--button-labels-test`; the △ text not yet seen in play |
+| Settings menu cooperative pause, Android background pause | ✅ | scripted | #29 (2026-11-26): pauses game threads on Windows and the Thor while the menu is open or the Android app is in the background; stays running during Ad Hoc Play so rooms don't drop |
+| 60 fps (`[display] frame_rate`, default 60), FPS counter | ✅ | scripted, user | patch 0041 (D16): all 50 maps, an idle fight's timing as at 30, hub → journal → story quest → results → hub; loading-screen race and Blitz distance fixed in the recompiled eboot (D30, 2026-11-23). 54–57 fps on the Radeon 760M. The owner played at 60, alone and in Ad Hoc Play (2026-10-13); default since patch 0042. `[display] fps_counter` checked at its four detail levels (2026-11-26) |
+| Button prompts (`[game] button_labels`: `xbox`, `nintendo`, `handheld`, `keyboard`, `auto`) | ✅ | user, scripted | Xbox icons and `auto` checked in play and in the journal (2026-11-20); `keyboard` keycaps, `nintendo` and Android `handheld` checked across every atlas, tutorial picture and font page with `--button-labels-test`, in quests, and on the Thor (2026-11-25..26) |
+| Skip intro logos (`[game] skip_intro`), Cheats (`[cheats]`) | ✅ | user, scripted | `skip_intro` played by the owner (2026-11-20); Infinite health, Unlimited and Lasting offerings, One-hit kills, Invincible, Max Lacrima and Max levels checked on PC, EU game, Thor and Ad Hoc Play (#7, 2026-11-21..26) |
 | Offline: no network use | ✅ | scripted | Phase 6; the network check dialog ends as cancelled offline (patch 0036) |
 
 ## Boot, saves and add-ons
@@ -88,6 +91,7 @@ cannot win fights: ✅ from a script means "reached and behaved", not
 | Ad Hoc Play: LAN between two PCs (`network = lan`) | ✅ | user | 2026-10-12 |
 | Ad Hoc Play: LAN across Windows, macOS and Linux | ✅ | user, scripted | 2026-11-17, Wi-Fi: the PC (Windows) hosts, the MacBook (M5) and the Steam Deck (the Linux setup's install) join; all three show the same lobby; the owner readied them and played a quest to the results page, without issues (08-macos, *Ad Hoc Play across platforms*). A Deck or a Mac as host works since fork `c5654710` (their Wi-Fi power saving made every join time out before). 2026-11-18, the owner: the Deck hosted from Game Mode (power saving on, `network = lan`, the default there since fork `6cdbf678`), and the Mac hosted from the setup's app, both without problems |
 | Ad Hoc Play: LAN between a PC and Android | ✅ | scripted | 2026-11-21, Wi-Fi: the PC (Windows) hosts, the AYN Thor joins from Search for Room; the same lobby on both, and a quest started together with each sorcerer on the other's screen; not played to the end ([02-baseline](02-baseline.md#cheats-2026-11-21-github-issue-7)) |
+| Ad Hoc Play: over a VPN / routed subnets (`[multiplayer] peers`, `adapter = auto`) | ✅ | user, scripted | 0.5.2 (2026-11-25, [ONLINE-PLAY](ONLINE-PLAY.md)): unicast broadcast fan-out to configured peers and learned senders |
 | Keyboard: diagonal movement (W+D) as fast as straight | ✅ | user | 2026-11-17, fork `232b9d16`: diagonals had run about 1.4 times as fast |
 | Ad Hoc Play: a gamepad per copy (`[multiplayer] gamepad`) | ❔ | | needs two gamepads |
 

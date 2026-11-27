@@ -25,7 +25,7 @@
     },
     {
       "id": "mod",
-      "label": "Optional: a rePatch mod, such as the Undub patch (Japanese voices from the start, also without the pack): the folder that holds its rePatch folder, or a .zip of it (extract a .7z first). For the US or the EU game alike.",
+      "label": "Optional: a rePatch mod such as the Undub patch (the folder that holds its rePatch folder, or a .zip of it; extract a .7z first), or a packaged mod (.zip with ss-delta-mod.json, such as The Original Raiments). For the US or the EU game alike.",
       "role": "dlc",
       "optional": true,
       "formats": [
@@ -111,7 +111,7 @@
     },
     {
       "id": "frame_rate", "label": "Frame rate", "group": "Display",
-      "help": "60 keeps the game's speed (loading screens still run at 30). 30 is the Vita's rate.",
+      "help": "60 keeps the game's speed. 30 is the Vita's rate.",
       "choices": [
         { "label": "60 FPS", "set": { "display/frame_rate": "60" } },
         { "label": "30 FPS, as on the Vita", "set": { "display/frame_rate": "30" } }
@@ -186,7 +186,7 @@
     },
     {
       "id": "network", "label": "Ad Hoc Play", "group": "Game",
-      "help": "Local: copies of the game on this PC play together. Network: PCs, Steam Decks and Macs on one network play together.",
+      "help": "Local: copies of the game on this PC play together. Network: PCs, Steam Decks, Macs and Android devices on one network (or a VPN) play together.",
       "choices": [
         { "label": "This PC", "set": { "multiplayer/network": "local" } },
         { "label": "Network", "set": { "multiplayer/network": "lan" } }

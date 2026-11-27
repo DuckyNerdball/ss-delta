@@ -32,7 +32,7 @@ game on your computer or device from **your own dump** of it.
 | macOS | macOS 13.3 or newer on Apple Silicon (M1 and later) |
 | Android | Android 9 or newer, 64-bit ARM, Vulkan; about 10 GB free while it builds ([Android](#android)) |
 | Disk space | about 4 GB for the game's folder, and up to 2 GB more while it builds |
-| Internet | the first start downloads the PS Vita firmware from Sony and a compiler, unless you kept them ([offline](#without-internet)) |
+| Internet | the first start downloads the PS Vita firmware from Sony (the compiler comes with the release), unless you kept it ([offline](#without-internet)) |
 
 **Your own copy of the game, at update 1.30**, either version:
 
@@ -375,8 +375,8 @@ installs only that.
 
 * **Settings:** F1, or Select (Back/View) held for a second on a gamepad,
   opens the settings menu over the paused game. Everything is also in
-  `ss-delta.ini`, which can be edited by hand (key bindings only there,
-  see [Controls](#controls)).
+  `ss-delta.ini`, which can be edited by hand (paths are there only; see
+  [Controls](#controls) for bindings).
 * **Exit:** the settings menu's last page, Exit: Cross (X on the keyboard)
   twice on Exit the game. Closing the window does the same. Progress since
   the game last saved is lost.
@@ -395,7 +395,7 @@ installs only that.
   of touch. The Vita's "near" feature is unavailable then (it no longer
   works anyway), and so is AR mode, which needs the camera.
 * **Frame rate:** 60 fps by default; `frame_rate = 30` under `[display]`
-  gives the Vita's rate. Loading screens run at 30.
+  gives the Vita's rate.
 * **FPS counter:** FPS counter on the settings menu's Display page
   (`fps_counter` under `[display]`): off, `fps`, `frametime` (and the
   milliseconds a frame), `stats` (and the lowest, average and highest of
@@ -548,17 +548,18 @@ save in `ss-delta/save-backups`.
 Librom → Network → Ad Hoc Play works between copies of the game, as on a
 Vita: one creates a room, the others use Search for Room.
 
-* **Across computers** (Windows, Linux and macOS mixed, any of them as
-  host): `network = lan` under `[multiplayer]` in `ss-delta.ini`, the default
-  on Linux and macOS. On Windows set it, and allow `ss-delta.exe` through the
-  firewall when Windows asks (on private and public networks, or the host
-  never hears the others). The settings menu's Multiplayer page, **Network
-  adapter**, must name the adapter of your home network (its 192.168.x.x
-  address, the Ethernet or Wi-Fi), not a virtual one (vEthernet, Hyper-V,
-  VirtualBox, VPN), which Windows often lists first; since 0.5.2, `auto`
-  (the default) picks it by itself. The log names the
-  adapter in use and lists the others (`Ad Hoc Play: network adapter ...`);
-  `[debug] net_trace` logs every packet, for a connection that doesn't work.
+* **Across computers and devices** (Windows, Linux, macOS and Android mixed,
+  any of them as host): `network = lan` under `[multiplayer]` in
+  `ss-delta.ini`, the default on Linux, macOS and Android. On Windows set
+  it, and allow `ss-delta.exe` through the firewall when Windows asks (on
+  private and public networks, or the host never hears the others). The
+  settings menu's Multiplayer page, **Network adapter**, must name the
+  adapter of your home network (its 192.168.x.x address, the Ethernet or
+  Wi-Fi), not a virtual one (vEthernet, Hyper-V, VirtualBox, VPN), which
+  Windows often lists first; since 0.5.2, `auto` (the default) picks it by
+  itself. The log names the adapter in use and lists the others
+  (`Ad Hoc Play: network adapter ...`); `[debug] net_trace` logs every
+  packet, for a connection that doesn't work.
 * **Over the internet** (0.5.2 and newer): through a VPN (Tailscale,
   ZeroTier, Radmin VPN or another), step by step in
   [Playing together over the internet](ONLINE-PLAY.md). In short: as across

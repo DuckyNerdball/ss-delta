@@ -322,7 +322,7 @@ Design: [D7](decisions.md). Details and numbers:
   11,576 dynarmic tests. See [05-recompiler](05-recompiler.md#neon).
   * Start with `vmov.i q, #imm` and `vdup q, d`. They are the only NEON
     forms in 2,039 of the eboot's 5,577 NEON functions
-    ([05-recompiler](05-recompiler.md#neon-input-to-phase-5)).
+    ([05-recompiler](05-recompiler.md#neon)).
   * Must match ARM semantics: flush-to-zero and default NaN where FPSCR says
     so, saturation, and `vrecpe`/`vrsqrte` estimate tables bit-exact.
   * Unit tests against dynarmic, per op.
@@ -632,7 +632,7 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     a save loaded into the hub.
   * ☑ Playtest by the owner (2026-11-20): the skip works. It stays off by
     default (owner).
-* ☐ **Japanese Voice-over Pack** (a PSN add-on, 2026-11-20; research in
+* ☑ **Japanese Voice-over Pack** (a PSN add-on, 2026-11-20; research in
   [01-research](01-research.md), "Japanese Voice-over Pack"; tests in
   [02-baseline](02-baseline.md#japanese-voice-over-pack-installed-and-heard-from-2026-11-20)).
   * ☑ The installer takes NoNpDrm dumps laid out as ux0 (the licence in
@@ -653,10 +653,10 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     game is built. Tested on the PC and the Thor.
   * ☑ Playtest by the owner (2026-11-21): the lines heard in Japanese
     (story-complete save, Voice Language → Japanese, US game, PC).
-  * ☐ Not supported: a pack for the other region's title (an EU game with
+  * Not supported: a pack for the other region's title (an EU game with
     the US pack). It installs into the other title's folder, which the
     game never reads; the setup says so.
-* ☐ **Undub patch** (GitHub issue #8, 2026-11-21; research in
+* ☑ **Undub patch** (GitHub issue #8, 2026-11-21; research in
   [01-research](01-research.md), "Undub patch"; tests in
   [02-baseline](02-baseline.md#undub-patch-a-repatch-mod-2026-11-21-github-issue-8)).
   * ☑ rePatch mods (fork): `--install-content` takes a folder or zip with
@@ -676,9 +676,9 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
     "Add an add-on" shortcut from a zip, served at boot, the hub reached.
   * ☑ Playtest by the owner (2026-11-21): the prologue's lines heard in
     Japanese (New Game, US game, PC).
-  * ☐ A `.7z` isn't read: players unpack it (on Android, zip the
+  * Note: a `.7z` isn't read; players unpack it (on Android, zip the
     `rePatch` folder).
-* ☐ **Cheats** (GitHub issue #7, 2026-11-21; research in
+* ◐ **Cheats** (GitHub issue #7, 2026-11-21; research in
   [01-research](01-research.md), "Cheats"; tests in
   [02-baseline](02-baseline.md#cheats-2026-11-21-github-issue-7)).
   * ☑ `[cheats]`, the settings menu's Cheats page (every platform, all off,
@@ -716,7 +716,7 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☐ Playtest by the owner: the stats at level 99, a whole quest.
   * ☐ Candidates (addresses known, not used yet): 99 of each owned
     offering, slayer points.
-* ☐ **Mouse camera** (2026-11-21; research in
+* ☑ **Mouse camera** (2026-11-21; research in
   [01-research](01-research.md), "Mouse camera"; tests in
   [02-baseline](02-baseline.md#mouse-camera-2026-11-21)).
   * ☑ `[mouse]` (PC only; the settings menu's Mouse page): Tab or a middle
@@ -731,7 +731,7 @@ Results: [02-baseline](02-baseline.md#phase-8-2026-10-11), decision
   * ☑ Checked through the input pipe: steady 5-200°/s and whole motions
     within about 10%, diagonals at full speed.
   * ☑ Played by the owner with a real mouse (2026-11-21): "it works".
-  * ☐ The pitch's speed is assumed to follow the yaw table
+  * Note: the pitch's speed is assumed to follow the yaw table
     (**hypothesis**, not measured).
 
 **Exit:** a full playthrough is possible on keyboard/controller at
@@ -934,7 +934,7 @@ only: no Rosetta, no Intel Macs.
     threads (fork `09587ca1`) give 60.0 fps natively, p99 17 ms
     (2026-11-17, 08-macos).
   * ☐ A longer play session natively (audio included).
-* ◐ **12e A setup for macOS** (kit): zig or the Command Line Tools,
+* ☑ **12e A setup for macOS** (kit): zig or the Command Line Tools,
   measured on the M5; packaging (folder or `.app`), signing and
   quarantine; a release job. Record the choice in decisions.md.
   * ☑ zig chosen (D21): ten modules in 2.8 min, signed ad hoc by its
@@ -950,8 +950,8 @@ only: no Rosetta, no Intel Macs.
   * ☑ The setup run by the owner from a quarantined download, window and
     all (2026-11-18, 08-macos); it no longer asks for an update or licence
     the dump holds (kit `2b39018`).
-  * ☐ The release workflow's `macos` job run on GitHub (written, not run
-    yet).
+  * ☑ The release workflow's `macos` job run on GitHub (shipped in v0.3.0,
+    2026-11-18).
 * ☐ **12f Mac polish**: Retina and fullscreen, trackpad touch, Ad Hoc
   Play's `local` mode (only 127.0.0.1 exists on `lo0`), thermals and
   battery.
@@ -1001,7 +1001,8 @@ everything ([D22](decisions.md)). 0.3.0 waits for it (its first draft,
   fullscreen.
 * ☐ The window flow on Windows and the Deck in Game Mode (optional:
   both run the same code as the tested paths).
-* ☐ The release workflow's three jobs; 0.3.0 tagged again.
+* ☑ The release workflow's three jobs; 0.3.0 tagged again (shipped
+  2026-11-18).
 
 **Exit:** each platform's archive, unpacked, is the game: started once
 with the player's dump it builds itself, and nothing lands outside its
@@ -1136,7 +1137,7 @@ milestone, and nothing is released before it.
     in Standard (4.1 W from USB, about 5½ h on the battery, an estimate);
     High Performance costs 0.7 W more for nothing. At 2× it drops a few
     frames in either mode (5.3–6.5 W).
-* ☐ **14g The setup on the device: the 0.4.0 milestone**
+* ☑ **14g The setup on the device: the 0.4.0 milestone**
   ([D27](decisions.md); the owner, 2026-11-20: no release before it).
   The APK builds the game itself, with Python, capstone and zig packed
   in it as native libraries. Survey: 09-android, "The setup on the
@@ -1168,15 +1169,10 @@ milestone, and nothing is released before it.
     `versionCode` or new tools) opens the setup again, which builds from
     the installed game and its dumps without the dump (15.3 min on the
     Thor). The saves stay.
-  * ◐ The workflow's APK with the tools: a manual run on GitHub
+  * ☑ The workflow's APK with the tools: a manual run on GitHub
     (2026-11-20, `0d676e5`, 25 min). The APK is 99.4 MB, release-signed,
     with the tools and `game.json`; it updated the owner's app in place
-    (saves intact, straight to the game). INSTALLING's Android section is
-    done. Left: tag v0.4.0 (the owner's call). Prepared (2026-11-20): the
-    release notes in `.github/release-notes/v0.4.0.md` (the workflow drafts
-    the release with them), Android in the README and INSTALLING, and a
-    manual run with the Xbox button labels and the intro skip. When
-    tagging, stamp `v0.4.0` into `recomplauncher.json` first.
+    (saves intact, straight to the game). Shipped as v0.4.0 (2026-11-21).
 
 **Exit (v0.4.0):** with a Thor and their own dump, and no PC, a player
 gets from the release's APK to a quest on native code. With a PC, D25's
@@ -1484,6 +1480,124 @@ Left for the next release:
   180 MB, the Android setup screen 190 MB (128 + 54 MB = 182).
 * ☐ **Not checked in 0.6.0**: #26 on Android (the built-in pad through
   `sendevent`), and the support spells with RT as a second D-pad up.
+* ☐ **Ad Hoc WAN latency and loss spike** (16a.0 in [11-online](11-online.md)):
+  measure the existing `lan` + VPN path with clumsy / `tc netem` at
+  50/100/200 ms RTT and 1–5 % loss through a full quest; look for the
+  ~24 ms XLink Kai ping patch's eboot change (`overrides/eboot.json` fix in
+  0.6.1 if a limit shows up and passes a quest); record Ad Hoc socket types
+  and whether `adhoc_matching` payloads carry IP addresses (`net_trace`).
+* ☐ **30-vs-60 fps constant-scan check** (Phase 8 above, 01-research
+  "1/30 s and 960/544 constants in the eboot"): check in play whether the
+  unscaled reads of global 30.0 at `0x81c9a484` (the Blitz family's movers,
+  the journal's episode playback, `MagicBullet`'s projectiles) run fast at
+  60 fps, and patch any confirmed bug via `overrides/eboot.json`.
+
+## Phase 16 — Online multiplayer without a VPN (overlay first, Play Online later) ☐
+
+Design and breakdown: [11-online](11-online.md). Inspired by
+[Project Nativ](https://github.com/TheLostPantheon/nativ)'s GPL-2.0-or-later
+networking stack (fork only, never into MIT-licensed `third_party/recomp`).
+Staged in two decoupled halves: Part 1 needs no extra firmware modules,
+and its single-WAN-port vport mux, session-wide virtual IPs, loopback bridge
+and guest-agnostic `vita3k/net/online/` library are what Part 2 builds on.
+
+**Prerequisites:** the 0.6.1 Ad Hoc pause audio and `Queue::abort()` items
+are closed (same code paths); 16a.0 (scheduled in 0.6.1 above) passes.
+
+### Part 1 — P2P overlay under Ad Hoc Play (L, ~12–20 sessions) ☐
+
+* ☐ **16a.0 Latency and loss spike (go/no-go, before overlay code)**:
+  on hardware, Ad Hoc needed an eboot patch for a ~24 ms XLink Kai ping
+  limit. Measure the existing `lan` + VPN path with clumsy / `tc netem` at
+  50/100/200 ms RTT and 1–5 % loss through a full quest; look for the
+  XLink Kai patch's eboot change; record Ad Hoc socket types (datagram vs.
+  `SOCK_STREAM_P2P`) and whether `adhoc_matching` payloads carry IP
+  addresses (`net_trace`). No-go if 100 ms is unplayable without a patch.
+* ☐ **16a.1 Transport library** (`third_party/vita3k/vita3k/net/online/`):
+  port/adapt the encrypted P2P overlay (session-wide `198.18.0.0/15`
+  virtual IPs derived from public keys, single-WAN-port vport framing,
+  hole punching, relay client; reliable streams required if 16a.0 finds
+  `SOCK_STREAM_P2P`), Monocypher X25519 + XChaCha20-Poly1305 crypto, LAN
+  multicast discovery, Mainline DHT rendezvous (topics namespaced by
+  protocol version, game ID, compatibility version and `adhoc`/`m2`), STUN
+  and UPnP; build across Windows, Linux, macOS and Android NDK, with
+  standalone unit/fuzz tests.
+* ☐ **16a.2 Relay (decide before 16a.1)**: hosted community relay,
+  self-hostable daemon via `[multiplayer] relay`, or both (cost, abuse,
+  rate limits); required for symmetric and carrier-grade NAT. Configurable
+  DHT bootstrap nodes, with the relay as a rendezvous fallback.
+* ☐ **16a.3 Vita3K socket & Ad Hoc NetCtl integration**: in `network =
+  online`, guest P2P sockets keep real host UDP sockets on `127.0.0.1` and
+  a loopback bridge forwards them to the overlay; `P2PSocket`
+  (`p2psocket.cpp`) only translates virtual IP + vport ↔ loopback port, so
+  `Epoll`, receive timeouts and `sceNetSocketAbort` stay unchanged.
+  `SceNetCtl`'s Ad Hoc peer thread uses the session virtual IP and a
+  virtual broadcast address. `local`, `lan` and VPN `peers` modes (and
+  utakata) stay intact.
+* ☐ **16a.4 Frontend settings, consent & Android permissions**: opt-in
+  `network = online`, `room_code` (generated high-entropy codes by
+  default, KDF into the DHT topic and handshake PSK; no public lobby in
+  Part 1), `relay`, opt-in `upnp`, a status line on the Multiplayer page,
+  and a first-use notice that peers, the DHT and the relay see the
+  player's IP; Android network/multicast permissions and lifecycle;
+  update [ONLINE-PLAY](ONLINE-PLAY.md) with a privacy note.
+* ☐ **16a.5 WAN & cross-platform verification**: `--player 3`/`4`
+  loopback, LAN multicast, cross-NAT hole punch, forced relay at the
+  latency and loss 16a.0 passed, across Windows, Steam Deck, macOS and
+  Android (Wi-Fi and mobile hotspot), US ↔ EU.
+* ☐ **16a.6 Security review**: bounds, amplification and peer-table audit
+  of all untrusted-packet handlers before release; the bridge forwards
+  only authenticated peers of the current room.
+
+**Exit (Part 1):** two players on separate home networks with no VPN
+installed set `network = online` with a shared `room_code`, find each
+other in **Ad Hoc Play** and complete a quest, both direct hole-punched
+and via relay.
+
+### Part 2 — Later transition to full Play Online via NP Matching2 (L–XL) ☐
+
+Triggered if in-game room passwords/filters, lobby text chat, kick, host
+handover, a working **Play Online** button or `SceLibRudp` WAN transport
+are needed (or if 16a.0 finds a latency limit with no patch). Reuses Part
+1's overlay, virtual IPs and vport mux; room search across the internet is
+new work (Nativ's Matching2 service is local per host).
+
+* ☐ **16b.1 Gatekeeper spike (JIT)**: flip `cfg.offline` off in a test
+  run, LLE `np_matching2` / `np_common` / `libssl` / `librudp`, trace
+  **Play Online** with `SSD_TRACE_IMPORTS=1`, and check `STN001`
+  online-pass entitlement, `SceNpUtility` (`WordFilter`), `SceNpBasic`,
+  `SceNpTus`, `SceNpScore`, US ↔ EU `comm_id`, and firmware 3.74
+  dependencies (`np_signaling`, `libhttp`).
+* ☐ **16b.2 LLE & static recompilation**: implement missing internal
+  imports, dump and pin `load_bases` for the 4+ firmware modules (~455 KB+
+  vs. 14 KB for `adhoc_matching`), fix any new recompiler forms with
+  dynarmic tests, and add incremental module compilation in `setup.py` so
+  upgrades don't rebuild `eboot`.
+* ☐ **16b.3 Fork NP / HTTP / SSL / NetCtl runtime**: split `cfg.offline`
+  to intercept Sony hosts locally, serve the local HTTPS matching-server
+  list with `libssl` cert trust, implement PSN tickets + `STN001`
+  entitlement (`SceNpCommon`), `SceNpManager` signed-in state/region,
+  `sceNetCheckDialog` PSN mode, `sceNetCtlGetNatInfo` (NAT type 1), and
+  clean stubs for `WordFilter`/Basic/Tus/Score.
+* ☐ **16b.4 Matching2 server, room directory & room proxy**: port
+  `m2_wire`, `m2_server`, `m2_rooms`, `m2_proxy` and `basic_msg` onto
+  Part 1's overlay (`m2` service tag), design a distributed room directory
+  for `SearchRoom` / `GetWorldInfoList`, and cover Soul Sacrifice Delta's
+  26 `SceNpMatching2` imports (world list, room external/internal data,
+  chat, kick, owner handover).
+* ☐ **16b.5 Frontend UX, pause & security**: `[multiplayer] online_id`,
+  keep the game unpaused during Play Online in fork
+  `app/src/session_controller.cpp`, and restrict guest-bound packet
+  forwarding to authenticated room peers.
+* ☐ **16b.6 End-to-end verification**: public & passworded rooms, search
+  filters, lobby chat, kick, host handover, full quest, US ↔ EU, across
+  Windows, Steam Deck, macOS and Android (direct + relay), with Ad Hoc Play
+  still working alongside.
+
+**Exit (Part 2):** two players on separate networks (no VPN, native code
+without dynarmic) use **Librom → Network → Play Online** to create/find a
+room, chat, complete a quest and survive host handover across all four
+platforms.
 
 ## Later (deferred)
 
@@ -1662,6 +1776,6 @@ Left for the next release:
 | R5 | Threads/ULT/callback integration with Vita3K's kernel | deadlocks, crashes | keep Vita3K's thread model in the hybrid; fibers only in Phase 6 |
 | R6 | Firmware modules (fonts, AvPlayer) are Sony code run as LLE | can't drop the PUP dependency | FFmpeg for FMV; pvf/ft2 recompiled locally or replaced |
 | R7 | Frame-locked game logic | no 60 fps | treat 60 fps as optional; logic steps by frame time, loading screens kept at 30 ([D16](decisions.md)) |
-| R8 | GPL (Vita3K) | the runtime can't be relicensed | private, non-distributed project ([D2](decisions.md)); keep the recompiler tool separate |
+| R8 | GPL (Vita3K) | the runtime can't be relicensed | keep this repo and `third_party/recomp` MIT-licensed, `third_party/vita3k` GPL-2.0-or-later, and ship no game-derived code ([D2](decisions.md), [D17](decisions.md), [D18](decisions.md)) |
 | R9 | First Vita recomp: no prior art to copy | slower progress | borrow patterns from PSP recompilers (Yakumo's psprecomp fallback), N64Recomp/XenonRecomp (lookup tables), 3dsrecomp (verify mode) |
 | R10 | A download the setup needs disappears (Sony's update servers, ziglang.org, Google's adb) | new players can't build the game | offline files matched by hash, offline bundles, fallback URLs, a link check ("Installer future-proofing") |
